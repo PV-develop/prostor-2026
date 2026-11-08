@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../components/layouts/BaseLayout.astro';
+import SiteHeader from '../components/blocks/SiteHeader.astro';
+import MobileMenu from '../components/blocks/MobileMenu.astro';
+import HeroMain from '../components/blocks/HeroMain.astro';
+import ServiceList from '../components/blocks/ServiceList.astro';
+import CasesSection from '../components/blocks/CasesSection.astro';
+import ProcessSection from '../components/blocks/ProcessSection.astro';
+import CtaForm from '../components/blocks/CtaForm.astro';
+import TeamSection from '../components/blocks/TeamSection.astro';
+import ReviewsSection from '../components/blocks/ReviewsSection.astro';
+import ContactSection from '../components/blocks/ContactSection.astro';
+import SiteFooter from '../components/blocks/SiteFooter.astro';
+---
+
+<BaseLayout
+  title="Простор — digital-маркетинг с 2006 года"
+  description="Объединяем стратегию, продвижение, разработку и аналитику в единую систему: performance-маркетинг, SEO, AI-продвижение, репутация и разработка сайтов."
+>
+  <SiteHeader />
+  <MobileMenu />
+  <main>
+    <HeroMain />
+    <ServiceList />
+    <CasesSection />
+    <ProcessSection />
+    <CtaForm />
+    <div class="spacer" aria-hidden="true" data-m="spacer"></div>
+    <div class="dark-section">
+      <TeamSection />
+      <ReviewsSection />
+      <ContactSection />
+      <SiteFooter />
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .spacer {
+    height: var(--space-section-y);
+    background: var(--color-bg-page);
+  }
+  /* Команда и отзывы — единая тёмная секция (как в экспорте) */
+  .dark-section {
+    background: var(--color-bg-dark);
+    color: var(--color-text-primary-inverse);
+    overflow: hidden;
+  }
+  @media (max-width: 768px) {
+    .spacer {
+      height: 80px;
+    }
+  }
+</style>

@@ -1,0 +1,347 @@
+---
+import { contacts, footer } from '../../content/home';
+---
+
+<footer class="site-footer" aria-label="Подвал сайта">
+  <div class="site-footer__top">
+    <div class="site-footer__left">
+      <div class="site-footer__intro">
+        <div class="site-footer__title">
+          {footer.titleLines[0]}<br /><span class="site-footer__accent">{footer.titleLines[1]}</span>
+        </div>
+        <div class="site-footer__contacts">
+          <a href={contacts.emailHref} class="site-footer__contact">{contacts.email}</a>
+          <a href={contacts.phone800Href} class="site-footer__contact">{contacts.phone800}</a>
+          <a href={contacts.phone812Href} class="site-footer__contact">{contacts.phone812}</a>
+        </div>
+        <div class="site-footer__socials">
+          {contacts.socials.slice(0, 2).map((s) => (
+            <a href={s.href} target="_blank" rel="noopener noreferrer" class="site-footer__soc">{s.label}</a>
+          ))}
+        </div>
+        <div class="site-footer__address">{contacts.address}</div>
+      </div>
+      <div class="site-footer__actions">
+        {footer.actions.map((a) => (
+          <a href={a.href} class="site-footer__action">
+            {a.label}<span aria-hidden="true">→</span>
+          </a>
+        ))}
+        {/* TODO: страниц пока нет — разметка сохранена, показать при создании страниц
+        <a class="site-footer__action">Присоединиться к команде<span aria-hidden="true">→</span></a>
+        <a class="site-footer__action">Стать партнёром<span aria-hidden="true">→</span></a>
+        */}
+      </div>
+    </div>
+    <div class="site-footer__services">
+      <div class="site-footer__group-title">
+        <span class="tag-square"></span>{footer.servicesTitle}
+      </div>
+      <div class="site-footer__services-grid">
+        {footer.serviceGroups.map((group) => (
+          <div class="site-footer__service-group">
+            {group.links.map((link, i) =>
+              link.href ? (
+                <a href={link.href} class:list={['site-footer__link', i === 0 && 'site-footer__link--strong']}>{link.label}</a>
+              ) : (
+                // TODO: страница услуги пока не создана — разметка сохранена
+                <span class:list={['site-footer__link', i === 0 && 'site-footer__link--strong']}>{link.label}</span>
+              )
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+    <div class="site-footer__agency">
+      <div class="site-footer__group-title">
+        <span class="tag-square"></span>{footer.agencyTitle}
+      </div>
+      <div class="site-footer__agency-links">
+        {footer.agencyLinks.map((link) =>
+          link.href ? (
+            <a href={link.href} class="site-footer__link">{link.label}</a>
+          ) : (
+            // TODO: страница пока не создана — разметка сохранена
+            <span class="site-footer__link">{link.label}</span>
+          )
+        )}
+      </div>
+      <div class="site-footer__group-title">
+        <span class="tag-square"></span>{footer.solutionsTitle}
+      </div>
+      <div class="site-footer__agency-links">
+        {footer.solutionsLinks.map((link) => (
+          // TODO: страницы отраслей пока нет — разметка сохранена
+          <span class="site-footer__link">{link.label}</span>
+        ))}
+      </div>
+      <div class="site-footer__quick">
+        {footer.quickLinks.map((link) =>
+          link.href ? (
+            <a href={link.href} class="site-footer__quick-link">{link.label}</a>
+          ) : (
+            // TODO: страница пока не создана — разметка сохранена
+            <span class="site-footer__quick-link">{link.label}</span>
+          )
+        )}
+      </div>
+    </div>
+  </div>
+  <div class="site-footer__bar" data-m="fbar">
+    <span class="site-footer__copy">{footer.copyright}</span>
+    <div class="site-footer__legal">
+      {footer.legal.map((link) => (
+        // TODO: страницы пока нет — разметка сохранена
+        <span class="site-footer__legal-link">{link.label}</span>
+      ))}
+    </div>
+    <button type="button" data-to-top class="site-footer__top-btn" aria-label="Наверх">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" class="site-footer__top-icon" aria-hidden="true">
+        <path d="M12 20V5M5 12l7-7 7 7"></path>
+      </svg>
+    </button>
+  </div>
+  <div class="site-footer__mark" data-fmark aria-label="Простор" role="img"></div>
+</footer>
+
+<style>
+  .site-footer {
+    margin: 120px var(--space-page) 0;
+    border-top: 1px solid var(--color-text-on-dark-18);
+    padding-top: var(--space-4xl);
+    color: var(--color-text-primary-inverse);
+  }
+  .site-footer__top {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 56px var(--space-3xl);
+  }
+  .site-footer__left {
+    flex: 4 1 320px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 56px;
+  }
+  .site-footer__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .site-footer__title {
+    font: 700 clamp(44px, 4.4vw, 64px) / 0.92 var(--font-display);
+    font-stretch: 25%;
+    text-transform: uppercase;
+  }
+  .site-footer__accent {
+    color: var(--color-accent);
+  }
+  .site-footer__contacts {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .site-footer__contact {
+    font: 700 var(--fs-h4) / 1 var(--font-display);
+    font-stretch: 25%;
+    color: var(--color-text-primary-inverse);
+    transition: color var(--dur-instant);
+  }
+  .site-footer__contact:hover {
+    color: var(--color-accent);
+  }
+  .site-footer__socials {
+    display: flex;
+    gap: 2px;
+    flex-wrap: wrap;
+  }
+  .site-footer__soc {
+    border: 1px solid var(--border-dark-32);
+    padding: var(--space-sm) var(--space-md);
+    font: 600 var(--fs-btn-sm) var(--font-mono);
+    letter-spacing: var(--ls-btn-md);
+    text-transform: uppercase;
+    color: var(--color-text-primary-inverse);
+    transition:
+      background var(--dur-fast),
+      color var(--dur-fast);
+  }
+  .site-footer__soc:hover {
+    background: var(--color-bg-page);
+    color: var(--color-text-primary);
+  }
+  .site-footer__address {
+    font: 400 var(--fs-body-xs) / var(--lh-body) var(--font-body);
+    color: var(--color-text-on-dark-60);
+    white-space: pre-line;
+  }
+  .site-footer__actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+  .site-footer__action {
+    display: flex;
+    gap: var(--space-sm);
+    align-items: center;
+    font: 700 var(--fs-h5) / 1 var(--font-display);
+    font-stretch: 25%;
+    text-transform: uppercase;
+    color: var(--color-text-primary-inverse);
+    transition:
+      color var(--dur-instant),
+      gap var(--dur-base);
+  }
+  .site-footer__action:hover {
+    color: var(--color-accent);
+    gap: var(--space-xl);
+  }
+  .site-footer__services {
+    flex: 5 1 420px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .site-footer__group-title {
+    font: 500 var(--fs-label) / var(--lh-label) var(--font-body);
+    color: var(--color-text-accent);
+    display: flex;
+    gap: var(--space-sm);
+    align-items: center;
+  }
+  .site-footer__services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+    gap: var(--space-xl);
+  }
+  .site-footer__service-group {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .site-footer__agency {
+    flex: 3 1 240px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .site-footer__agency-links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+  .site-footer__link {
+    font: 400 var(--fs-body-xs) / 1.4 var(--font-body);
+    color: var(--color-text-on-dark-60);
+    transition: color var(--dur-instant);
+    cursor: pointer;
+  }
+  .site-footer__link--strong {
+    font-weight: 500;
+    color: var(--color-text-primary-inverse);
+  }
+  .site-footer__link:hover {
+    color: var(--color-accent);
+  }
+  .site-footer__quick {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding-top: var(--space-sm);
+  }
+  .site-footer__quick-link {
+    font: 700 var(--fs-h5) / 1 var(--font-display);
+    font-stretch: 25%;
+    text-transform: uppercase;
+    color: var(--color-text-primary-inverse);
+    transition: color var(--dur-instant);
+    cursor: pointer;
+  }
+  .site-footer__quick-link:hover {
+    color: var(--color-accent);
+  }
+  .site-footer__bar {
+    margin-top: var(--space-6xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--color-text-on-dark-18);
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px 40px;
+    font: 400 var(--fs-label) / var(--lh-body) var(--font-body);
+    color: var(--color-text-on-dark-50);
+  }
+  .site-footer__legal {
+    display: flex;
+    gap: 8px 28px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .site-footer__legal-link {
+    color: var(--color-text-on-dark-50);
+    transition: color var(--dur-instant);
+    cursor: pointer;
+  }
+  .site-footer__legal-link:hover {
+    color: var(--color-text-primary-inverse);
+  }
+  .site-footer__top-btn {
+    flex: none;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-dark-32);
+    color: var(--color-text-primary-inverse);
+    background: transparent;
+    cursor: pointer;
+    transition:
+      background var(--dur-fast),
+      color var(--dur-fast),
+      border-color var(--dur-fast);
+  }
+  .site-footer__top-btn:hover {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+  .site-footer__top-icon {
+    width: 18px;
+    height: 18px;
+  }
+  /* Контейнер для анимированной марки логотипа (рисует скрипт) */
+  .site-footer__mark {
+    margin-top: var(--space-6xl);
+    width: 100%;
+    aspect-ratio: 219 / 34;
+    position: relative;
+  }
+  @media (max-width: 768px) {
+    .site-footer__mark {
+      background: url('/images/logo/logo-white.svg') no-repeat 100% 0 / 130.36% auto;
+    }
+  }
+  @media (max-width: 768px) {
+    .site-footer {
+      margin: 80px var(--space-page-mobile) 0;
+      padding-top: 48px;
+    }
+    .site-footer__bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px var(--space-lg);
+      margin-top: 56px;
+    }
+    .site-footer__legal {
+      justify-content: flex-start;
+      order: 3;
+      flex-basis: 100%;
+    }
+    .site-footer__top-btn {
+      margin-left: auto;
+    }
+  }
+</style>

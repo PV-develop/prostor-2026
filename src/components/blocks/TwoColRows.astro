@@ -1,0 +1,180 @@
+---
+interface Props {
+  rows: Array<{ left: string; right: string }>;
+  headLeft: string;
+  headRight: string;
+  mobileLeftLabel?: string;
+  mobileRightLabel?: string;
+  variant?: 'matrix' | 'levels';
+  tone?: 'light' | 'dark';
+}
+const {
+  rows,
+  headLeft,
+  headRight,
+  mobileLeftLabel = headLeft,
+  mobileRightLabel = headRight,
+  variant = 'matrix',
+  tone = 'light',
+} = Astro.props;
+---
+
+<div class:list={['rows-table', `rows-table--${variant}`, `rows-table--${tone}`]}>
+  <div class="rows-table__head" aria-hidden="true">
+    <span>{headLeft}</span>
+    <span>{headRight}</span>
+  </div>
+  {
+    rows.map((row, i) => (
+      <div class="rows-table__row" data-reveal>
+        <div class="rows-table__cell rows-table__cell--left">
+          {variant === 'levels' && <span class="rows-table__index">{String(i + 1).padStart(2, '0')}</span>}
+          <span class="rows-table__cell-label">{mobileLeftLabel}</span>
+          <span class="rows-table__cell-value">{row.left}</span>
+        </div>
+        <div class="rows-table__cell rows-table__cell--right">
+          {variant === 'matrix' && <span class="rows-table__transition" aria-hidden="true">→</span>}
+          <span class="rows-table__cell-label">{mobileRightLabel}</span>
+          <span class="rows-table__cell-value">{row.right}</span>
+        </div>
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .rows-table {
+    display: flex;
+    flex-direction: column;
+  }
+  .rows-table__head,
+  .rows-table__row {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    column-gap: var(--space-col-gap);
+  }
+  .rows-table__head {
+    padding: 0 0 var(--space-md);
+    border-bottom: 1px solid var(--color-text-primary);
+    font: 500 var(--fs-tag) / var(--lh-label) var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-btn-sm);
+    color: var(--color-text-accent-dark);
+  }
+  .rows-table__row {
+    padding: var(--space-lg) 0;
+    border-bottom: 1px solid var(--color-line-dark-soft);
+  }
+  .rows-table__cell {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    min-width: 0;
+  }
+  .rows-table__cell-label {
+    display: none;
+    font: 500 var(--fs-tag) / var(--lh-label) var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-btn-sm);
+    color: var(--color-text-accent-dark);
+  }
+  .rows-table__cell-value {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    text-wrap: pretty;
+  }
+  .rows-table__cell--left .rows-table__cell-value {
+    font: 700 var(--fs-h4) / var(--lh-tight) var(--font-display);
+    font-stretch: 25%;
+    text-transform: uppercase;
+  }
+  .rows-table--matrix .rows-table__cell--right {
+    position: relative;
+    padding-left: var(--space-4xl);
+    border-left: 1px solid var(--color-line-dark-soft);
+    justify-content: center;
+  }
+  .rows-table--matrix .rows-table__cell--right .rows-table__cell-value {
+    color: var(--color-text-on-light-80);
+  }
+  .rows-table__transition {
+    position: absolute;
+    left: var(--space-lg);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-accent-dark);
+    font: 500 var(--fs-body) / var(--lh-tight) var(--font-mono);
+  }
+  .rows-table--levels {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-md);
+  }
+  .rows-table--levels .rows-table__head {
+    display: none;
+  }
+  .rows-table--levels .rows-table__row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    padding: var(--space-xl);
+    border: 0;
+    border-top: 2px solid var(--color-accent);
+    background: var(--color-bg-card-dark);
+  }
+  .rows-table--levels .rows-table__cell {
+    gap: var(--space-md);
+  }
+  .rows-table--levels .rows-table__cell--right {
+    margin-top: auto;
+  }
+  .rows-table__index {
+    font: 500 var(--fs-label) / var(--lh-label) var(--font-mono);
+    letter-spacing: var(--ls-mono);
+    color: var(--color-text-accent);
+  }
+  .rows-table--levels .rows-table__cell--left .rows-table__cell-value {
+    color: var(--color-text-primary-inverse);
+  }
+  .rows-table--levels .rows-table__cell--right .rows-table__cell-value {
+    color: var(--color-text-on-dark-80);
+  }
+  @media (max-width: 1024px) {
+    .rows-table--levels {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 768px) {
+    .rows-table--matrix .rows-table__head {
+      display: none;
+    }
+    .rows-table--matrix .rows-table__row {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: var(--space-md);
+      padding: var(--space-lg);
+      background: var(--color-bg-card-light);
+      border: 1px solid var(--color-line-dark-soft);
+      margin-bottom: var(--space-sm);
+    }
+    .rows-table--matrix .rows-table__cell-label {
+      display: block;
+    }
+    .rows-table--matrix .rows-table__cell--right {
+      padding: var(--space-md) 0 0;
+      border-left: 0;
+      border-top: 1px solid var(--color-line-dark-soft);
+      justify-content: flex-start;
+    }
+    .rows-table__transition {
+      display: none;
+    }
+    .rows-table--levels {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-sm);
+    }
+    .rows-table--levels .rows-table__row {
+      padding: var(--space-lg);
+      gap: var(--space-md);
+    }
+  }
+</style>

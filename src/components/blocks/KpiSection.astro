@@ -1,0 +1,78 @@
+---
+import Container from '../ui/Container.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+import TwoColRows from './TwoColRows.astro';
+
+interface Props {
+  id?: string;
+  label?: string;
+  heading: string;
+  rows: Array<{ level: string; metrics: string }>;
+  note?: string;
+}
+const { id, label, heading, rows, note } = Astro.props;
+---
+
+<section class="kpi" id={id} aria-label={heading.replace(/<[^>]+>/g, '')}>
+  <Container>
+    <div class="kpi__head" data-reveal>
+      {label && <SectionLabel text={label} variant="h" tone="light" />}
+      <SectionHeading html={heading} size="md" class="kpi__heading" />
+    </div>
+    <div class="kpi__table" data-reveal>
+      <TwoColRows
+        variant="levels"
+        tone="dark"
+        rows={rows.map((row) => ({ left: row.level, right: row.metrics }))}
+        headLeft="Уровень"
+        headRight="Что предлагаем отслеживать"
+        mobileLeftLabel="Уровень"
+        mobileRightLabel="Что предлагаем отслеживать"
+      />
+    </div>
+    {note && <p class="kpi__note" data-reveal>{note}</p>}
+  </Container>
+</section>
+
+<style>
+  .kpi {
+    padding: var(--space-section-page-y) 0;
+    background: var(--color-bg-dark);
+    color: var(--color-text-primary-inverse);
+  }
+  .kpi__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+  .section-heading :global(.stroke) {
+    -webkit-text-stroke: 2px var(--color-text-primary-inverse);
+    color: transparent;
+  }
+  .kpi__table {
+    margin-top: var(--space-3xl);
+  }
+  .kpi__note {
+    margin: var(--space-xl) 0 0;
+    max-width: var(--note-max);
+    padding-left: var(--space-lg);
+    border-left: 2px solid var(--color-accent);
+    font-size: var(--fs-lead);
+    line-height: var(--lh-body);
+    color: var(--color-text-on-dark-80);
+    text-wrap: pretty;
+  }
+  @media (max-width: 768px) {
+    .kpi {
+      padding: var(--space-section-page-y-mobile) 0;
+    }
+    .kpi__table {
+      margin-top: var(--space-xl);
+    }
+    .kpi__note {
+      margin-top: var(--space-lg);
+      font-size: var(--fs-body);
+    }
+  }
+</style>

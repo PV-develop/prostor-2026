@@ -1,0 +1,180 @@
+---
+import SectionLabel from '../ui/SectionLabel.astro';
+import ContactForm from './ContactForm.astro';
+import { contacts } from '../../content/home';
+---
+
+<section class="contact" id="contacts" aria-label="Контакты">
+  <SectionLabel text="Контакты" variant="h" tone="light" class="contact__label" />
+  <div class="contact__grid" data-reveal data-m="contacts">
+    <ContactForm />
+    <div class="contact__aside">
+      <div class="contact__brief">
+        <div class="contact__brief-head">
+          <h3 class="contact__brief-title">Или сразу заполните бриф из 5 вопросов</h3>
+          <p class="contact__brief-lead">Чем раньше мы поймём задачу, тем точнее подготовим предложение.</p>
+        </div>
+        <!-- TODO: страницы брифа пока нет — ссылка ведёт к форме; вернуть href при создании страницы -->
+        <a href="#contacts" class="btn contact__brief-btn btn-fill">Заполнить бриф <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="contact__info">
+        <h3 class="contact__info-title">Контакты</h3>
+        <div class="contact__info-grid">
+          <a href={contacts.phone800Href} class="contact__info-item">
+            <span class="contact__info-value">{contacts.phone800}</span>
+            <span class="contact__info-hint">Бесплатно по России</span>
+          </a>
+          <a href={contacts.phone812Href} class="contact__info-item">
+            <span class="contact__info-value">{contacts.phone812}</span>
+            <span class="contact__info-hint">Санкт-Петербург, Липовая аллея, 9</span>
+          </a>
+          <a href={contacts.emailHref} class="contact__info-item">
+            <span class="contact__info-value">{contacts.email}</span>
+            <span class="contact__info-hint">Почта для заявок</span>
+          </a>
+          <div class="contact__messengers">
+            <span class="contact__info-hint">Написать в мессенджер</span>
+            <div class="contact__messengers-row">
+              <a href={contacts.socials[0].href} target="_blank" rel="noopener noreferrer" class="contact__msg">Telegram</a>
+              <a href={contacts.socials[1].href} target="_blank" rel="noopener noreferrer" class="contact__msg">WhatsApp</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact {
+    background: var(--color-bg-dark);
+    color: var(--color-text-primary-inverse);
+    padding: 60px 0 48px;
+    overflow: hidden;
+  }
+:global(.contact__label) {
+    margin: 0 var(--space-page) 40px;
+  }
+  .contact__grid {
+    padding: 0 var(--space-page);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr));
+    gap: 2px;
+  }
+  .contact__aside {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 2px;
+    min-width: 0;
+  }
+  .contact__brief {
+    background: var(--color-bg-page);
+    color: var(--color-text-primary);
+    padding: clamp(32px, 4vw, 56px);
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .contact__brief-head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+  .contact__brief-title {
+    margin: 0;
+    font: 700 var(--fs-h3-sm) / 0.92 var(--font-display);
+    font-stretch: 25%;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+  .contact__brief-lead {
+    margin: 0;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    max-width: var(--desc-max);
+    text-wrap: pretty;
+  }
+  .contact__brief-btn {
+    align-self: flex-start;
+    background-image: var(--fill-accent-to-dark);
+    color: var(--color-white-pure);
+    padding: 22px 28px;
+  }
+  .contact__brief-btn:hover {
+    background-position: 0 0;
+  }
+  .contact__info {
+    background: var(--color-bg-card-dark);
+    padding: clamp(32px, 4vw, 56px);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+  .contact__info-title {
+    margin: 0;
+    font: 700 var(--fs-h3-sm) / 0.92 var(--font-display);
+    font-stretch: 25%;
+    text-transform: uppercase;
+  }
+  .contact__info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 28px var(--space-xl);
+  }
+  .contact__info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: var(--color-text-primary-inverse);
+    transition: color var(--dur-fast);
+  }
+  .contact__info-item:hover {
+    color: var(--color-accent);
+  }
+  .contact__info-value {
+    font: 700 var(--fs-h4) / 1 var(--font-display);
+    font-stretch: 25%;
+  }
+  .contact__info-hint {
+    font-size: var(--fs-label);
+    line-height: 1.4;
+    color: var(--color-text-on-dark-50);
+  }
+  .contact__messengers {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .contact__messengers-row {
+    display: flex;
+    gap: 2px;
+    flex-wrap: wrap;
+  }
+  .contact__msg {
+    border: 1px solid var(--border-dark-32);
+    padding: var(--space-sm) var(--space-md);
+    font: 600 var(--fs-btn-sm) var(--font-mono);
+    letter-spacing: var(--ls-btn-md);
+    text-transform: uppercase;
+    color: var(--color-text-primary-inverse);
+    transition:
+      background var(--dur-fast),
+      color var(--dur-fast);
+  }
+  .contact__msg:hover {
+    background: var(--color-bg-page);
+    color: var(--color-text-primary);
+  }
+  @media (max-width: 768px) {
+    .contact {
+      margin: 80px var(--space-page-mobile) 0;
+      padding-top: 48px;
+    }
+    .contact__label {
+      margin: 0 var(--space-page-mobile) 40px;
+    }
+    .contact__grid {
+      padding: 0 var(--space-page-mobile);
+    }
+  }
+</style>

@@ -1,0 +1,54 @@
+---
+import '../../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Абсолютный URL страницы для OG/Twitter; canonical не выводится без site */
+  pageUrl?: string;
+}
+
+const { title, description, pageUrl } = Astro.props;
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/images/logo/logo-white.svg" type="image/svg+xml" />
+
+    <!-- Критические шрифты -->
+    <link rel="preload" href="/fonts/Steelfish-Bold.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" href="/fonts/Steelfish-ExtraBold.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" href="/fonts/onest-400.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" href="/fonts/onest-500.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" href="/fonts/jetbrains-mono-600.ttf" as="font" type="font/ttf" crossorigin />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {pageUrl && <meta property="og:url" content={pageUrl} />}
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+  </head>
+  <body>
+    <div class="page">
+      <slot />
+    </div>
+    <script src="../../scripts/main.ts"></script>
+    <noscript>
+      <style>
+        [data-reveal], .section-label[data-tl] { opacity: 1 !important; transform: none !important; clip-path: none !important; }
+        .hero__cap-line, .hero__cap-plate { transform: none !important; clip-path: none !important; }
+      </style>
+    </noscript>
+  </body>
+</html>

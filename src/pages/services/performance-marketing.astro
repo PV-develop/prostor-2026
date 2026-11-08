@@ -1,0 +1,296 @@
+---
+import BaseLayout from '../../components/layouts/BaseLayout.astro';
+import SiteHeader from '../../components/blocks/SiteHeader.astro';
+import MobileMenu from '../../components/blocks/MobileMenu.astro';
+import HeroMain from '../../components/blocks/HeroMain.astro';
+import AnchorNav from '../../components/blocks/AnchorNav.astro';
+import ScenarioGrid from '../../components/blocks/ScenarioGrid.astro';
+import ChannelsSection from '../../components/blocks/ChannelsSection.astro';
+import CasesSection from '../../components/blocks/CasesSection.astro';
+import ApproachSection from '../../components/blocks/ApproachSection.astro';
+import KpiSection from '../../components/blocks/KpiSection.astro';
+import ProcessSection from '../../components/blocks/ProcessSection.astro';
+import PricingSection from '../../components/blocks/PricingSection.astro';
+import FaqSection from '../../components/blocks/FaqSection.astro';
+import CtaForm from '../../components/blocks/CtaForm.astro';
+import ContactForm from '../../components/blocks/ContactForm.astro';
+import SiteFooter from '../../components/blocks/SiteFooter.astro';
+import { contacts } from '../../content/home';
+import {
+  seo,
+  hero,
+  anchorNav,
+  tasks,
+  channels,
+  pageCases,
+  approach,
+  kpi,
+  processPm,
+  pricing,
+  faq,
+  ctaFormPm,
+  formOptions,
+} from '../../content/performance-marketing';
+
+// Секции без контента на страницу не выводятся (TODO в контент-файле);
+// соответствующие пункты якорной навигации скрываем, чтобы не было пустых якорей
+const showCases = pageCases.items.length > 0;
+const showFaq = faq.items.length > 0 && faq.items.every((item) => Boolean(item.answer));
+const anchorItems = anchorNav.filter((item) => {
+  if (item.href === '#cases' && !showCases) return false;
+  if (item.href === '#faq' && !showFaq) return false;
+  return true;
+});
+---
+
+<BaseLayout title={seo.title} description={seo.description}>
+  <SiteHeader />
+  <MobileMenu activeSection="services" />
+  <main>
+    <HeroMain variant="page" showMarquee={false} hero={hero} />
+    <AnchorNav items={anchorItems} />
+    <ScenarioGrid
+      id="tasks"
+      label={tasks.label}
+      heading={tasks.heading}
+      cards={tasks.cards}
+      note={tasks.note}
+      cta={tasks.cta}
+    />
+    <ChannelsSection id="channels" label={channels.label} heading={channels.heading} items={channels.items} />
+    {showCases && (
+      <CasesSection label={pageCases.label} titleHtml={pageCases.heading} items={pageCases.items} showAllLink={false} />
+    )}
+    <ApproachSection id="approach" label={approach.label} heading={approach.heading} rows={approach.rows} note={approach.note} />
+    <KpiSection id="kpi" label={kpi.label} heading={kpi.heading} rows={kpi.rows} note={kpi.note} />
+    <ProcessSection
+      variant="table"
+      label={processPm.label}
+      heading={processPm.heading}
+      lead="Пять этапов — от первой диагностики до решения о развитии. Состав и объём работ на каждом этапе фиксируем до старта."
+      steps={processPm.steps}
+      notes={[]}
+    />
+    <PricingSection
+      id="pricing"
+      label={pricing.label}
+      heading={pricing.heading}
+      parts={pricing.parts}
+      extrasTitle={pricing.extrasTitle}
+      extras={pricing.extras}
+      cta={pricing.cta}
+    />
+    {showFaq && <FaqSection id="faq" label={faq.label} heading={faq.heading} items={faq.items} />}
+    <div class="dark-section">
+      <section class="page-contacts" id="contacts" aria-label="Контакты">
+        <div id="contact-form">
+          <CtaForm titleHtml={ctaFormPm.heading} lead={ctaFormPm.lead} stacked>
+            <div slot="form" class="cta-form-slot">
+              <ContactForm
+                showHead={false}
+                submitLabel="Отправить заявку"
+                requiredFields
+                messageLabel="Короткое описание задачи"
+                fields={{
+                  name: true,
+                  contact: 'single',
+                  company: true,
+                  scenario: { enabled: true, options: formOptions.scenarios },
+                  message: true,
+                  statusToggle: { enabled: true, options: formOptions.status },
+                  file: true,
+                }}
+              />
+              <aside class="cta-aside">
+                <div class="cta-audit" data-reveal>
+                  <p class="cta-audit__lead">{ctaFormPm.auditLead}</p>
+                  <a href={ctaFormPm.auditCta.href} class="btn cta-audit__btn btn-fill">
+                    {ctaFormPm.auditCta.label} <span aria-hidden="true">↓</span>
+                  </a>
+                </div>
+                <div class="cta-contacts" data-reveal>
+                  <h3 class="cta-contacts__title">Прямые контакты</h3>
+                  <div class="cta-contacts__grid">
+                    <a href={contacts.emailHref} class="cta-contacts__item">
+                      <span class="cta-contacts__value">{contacts.email}</span>
+                      <span class="cta-contacts__hint">Почта для заявок</span>
+                    </a>
+                    <a href={contacts.phone800Href} class="cta-contacts__item">
+                      <span class="cta-contacts__value">{contacts.phone800}</span>
+                      <span class="cta-contacts__hint">Бесплатно по России</span>
+                    </a>
+                    <a href={contacts.phone812Href} class="cta-contacts__item">
+                      <span class="cta-contacts__value">{contacts.phone812}</span>
+                      <span class="cta-contacts__hint">Санкт-Петербург</span>
+                    </a>
+                    <div class="cta-contacts__messengers">
+                      <span class="cta-contacts__hint">Написать в мессенджер</span>
+                      <div class="cta-contacts__messengers-row">
+                        <a href={contacts.socials[0].href} target="_blank" rel="noopener noreferrer" class="cta-contacts__msg">Telegram</a>
+                        <a href={contacts.socials[1].href} target="_blank" rel="noopener noreferrer" class="cta-contacts__msg">WhatsApp</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </aside>
+            </div>
+          </CtaForm>
+        </div>
+      </section>
+      <SiteFooter />
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .dark-section {
+    background: var(--color-bg-dark);
+    color: var(--color-text-primary-inverse);
+    overflow: hidden;
+  }
+  .page-contacts {
+    padding: var(--space-section-page-y) 0 var(--space-5xl);
+  }
+  .page-contacts :global(.cta) {
+    margin: 0 var(--space-page);
+    padding: 0;
+    gap: var(--space-3xl);
+  }
+  .page-contacts :global(.cta--stacked .cta__title) {
+    max-width: var(--note-max);
+  }
+  .cta-form-slot {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    min-width: 0;
+    border: 1px solid var(--color-line-light);
+    background: var(--color-bg-card-dark);
+  }
+  .cta-aside {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-width: 0;
+    border-left: 1px solid var(--color-line-light);
+  }
+  .cta-audit {
+    padding: var(--space-page-card);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    border-bottom: 1px solid var(--color-line-light);
+  }
+  .cta-audit__lead {
+    margin: 0;
+    font-size: var(--fs-lead);
+    line-height: var(--lh-body);
+    color: var(--color-text-on-dark-86);
+    text-wrap: pretty;
+  }
+  .cta-audit__btn {
+    align-self: flex-start;
+    gap: var(--space-md);
+    background-image: var(--fill-accent);
+    color: var(--color-white-pure);
+    padding: var(--space-lg) var(--space-xl);
+  }
+  .cta-audit__btn:hover {
+    color: var(--color-text-primary);
+  }
+  .cta-contacts {
+    padding: var(--space-page-card);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+  .cta-contacts__title {
+    margin: 0;
+    font: 700 var(--fs-h4) / var(--lh-tight) var(--font-display);
+    font-stretch: 25%;
+    text-transform: uppercase;
+  }
+  .cta-contacts__grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+  .cta-contacts__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    color: var(--color-text-primary-inverse);
+    transition: color var(--dur-fast);
+  }
+  .cta-contacts__item:hover {
+    color: var(--color-accent);
+  }
+  .cta-contacts__value {
+    font: 700 var(--fs-h5) / var(--lh-tight) var(--font-display);
+    font-stretch: 25%;
+  }
+  .cta-contacts__hint {
+    font-size: var(--fs-label);
+    line-height: var(--lh-label);
+    color: var(--color-text-on-dark-60);
+  }
+  .cta-contacts__messengers {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding-top: var(--space-xs);
+  }
+  .cta-contacts__messengers-row {
+    display: flex;
+    gap: var(--space-xs);
+    flex-wrap: wrap;
+  }
+  .cta-contacts__msg {
+    border: 1px solid var(--border-dark-32);
+    padding: var(--space-sm) var(--space-md);
+    font: 600 var(--fs-btn-sm) var(--font-mono);
+    letter-spacing: var(--ls-btn-md);
+    text-transform: uppercase;
+    color: var(--color-text-primary-inverse);
+    transition:
+      background var(--dur-fast),
+      color var(--dur-fast);
+  }
+  .cta-contacts__msg:hover {
+    background: var(--color-bg-page);
+    color: var(--color-text-primary);
+  }
+  @media (max-width: 1024px) {
+    .cta-form-slot {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .cta-aside {
+      grid-template-rows: none;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      border-left: 0;
+      border-top: 1px solid var(--color-line-light);
+    }
+    .cta-audit {
+      border-bottom: 0;
+      border-right: 1px solid var(--color-line-light);
+    }
+  }
+  @media (max-width: 768px) {
+    .page-contacts {
+      padding: var(--space-section-page-y-mobile) 0 var(--space-xl);
+    }
+    .page-contacts :global(.cta) {
+      margin: 0 var(--space-page-mobile);
+      gap: var(--space-xl);
+    }
+    .cta-aside {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .cta-audit {
+      border-right: 0;
+      border-bottom: 1px solid var(--color-line-light);
+    }
+    .cta-audit__btn {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+</style>

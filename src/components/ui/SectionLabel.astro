@@ -1,0 +1,60 @@
+---
+interface Props {
+  text: string;
+  /** h — горизонтальная, v — вертикальная (writing-mode) */
+  variant?: 'h' | 'v';
+  /** dark — светлая подпись для тёмных секций */
+  tone?: 'light' | 'dark';
+  class?: string;
+}
+const { text, variant = 'h', tone = 'dark', class: className = '' } = Astro.props;
+---
+
+<span
+  class={`section-label section-label--${variant} section-label--${tone} ${className}`}
+  data-tl={variant}
+>
+  {text}<span class="tag-square"></span>
+</span>
+
+<style>
+  .section-label {
+    display: flex;
+    gap: var(--space-sm);
+    align-items: center;
+    font: 500 var(--fs-label) / var(--lh-label) var(--font-body);
+    letter-spacing: var(--ls-normal);
+    width: max-content;
+  }
+  .section-label--dark {
+    color: var(--color-text-accent-dark);
+  }
+  .section-label--light {
+    color: var(--color-text-accent);
+  }
+  .section-label--v {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+  }
+  /* Вертикальные подписи раскрываются скролл-нитью через clip-path */
+  .section-label--v[data-tl='v'] {
+    clip-path: inset(100% 0 0 0);
+  }
+  /* Горизонтальные — выезжают слева при появлении */
+  .section-label[data-tl='h'] {
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path var(--dur-clip-long) var(--ease-swipe) var(--dur-swipe);
+  }
+  .section-label[data-tl='h'].in {
+    clip-path: inset(0 0 0 0);
+  }
+  @media (max-width: 768px) {
+    .section-label--v[data-tl='v'] {
+      display: none;
+    }
+    .section-label--v {
+      writing-mode: horizontal-tb;
+      transform: none;
+    }
+  }
+</style>

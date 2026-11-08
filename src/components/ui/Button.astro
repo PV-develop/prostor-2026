@@ -1,0 +1,62 @@
+---
+interface Props {
+  href: string;
+  label: string;
+  /** fill-accent — красная заливка; outline-light — контур на тёмном; outline-dark — контур на светлом; fill-light-to-accent — светлая→красная */
+  variant?: 'fill-accent' | 'outline-light' | 'outline-dark' | 'fill-light-to-accent';
+  arrow?: 'none' | 'arrow' | 'down' | 'up' | 'external';
+  class?: string;
+}
+const { href, label, variant = 'fill-accent', arrow = 'none', class: className = '' } = Astro.props;
+const arrows: Record<string, string> = {
+  arrow: '→',
+  down: '↓',
+  up: '↑',
+  external: '↗',
+};
+---
+
+<a href={href} class={`btn btn-fill ui-btn ui-btn--${variant} ${className}`}>
+  <span>{label}</span>
+  {arrow !== 'none' && <span aria-hidden="true">{arrows[arrow]}</span>}
+</a>
+
+<style>
+  .ui-btn {
+    padding: 28px 36px;
+  }
+  .ui-btn--fill-accent {
+    background-image: var(--fill-accent);
+    color: var(--color-text-primary-inverse);
+  }
+  .ui-btn--fill-accent:hover {
+    color: var(--color-text-primary);
+  }
+  .ui-btn--outline-light {
+    border: 1px solid var(--border-dark-40);
+    background-image: var(--fill-light);
+    color: var(--color-text-primary-inverse);
+  }
+  .ui-btn--outline-light:hover {
+    color: var(--color-text-primary);
+    border-color: var(--color-text-primary-inverse);
+  }
+  .ui-btn--outline-dark {
+    border: 1px solid var(--color-text-primary);
+    background-image: var(--fill-dark-on-light);
+    color: var(--color-text-primary);
+  }
+  .ui-btn--outline-dark:hover {
+    color: var(--color-text-primary-inverse);
+  }
+  .ui-btn--fill-light-to-accent {
+    background-image: var(--fill-light-to-accent);
+    color: var(--color-white-pure);
+  }
+  .ui-btn--fill-light-to-accent:hover {
+    color: var(--color-text-primary);
+  }
+  .ui-btn:hover {
+    gap: 36px;
+  }
+</style>

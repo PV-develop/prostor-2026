@@ -1,0 +1,187 @@
+---
+import Container from '../ui/Container.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+import Button from '../ui/Button.astro';
+
+interface Props {
+  id?: string;
+  label?: string;
+  heading: string;
+  parts: Array<{ title: string; description: string }>;
+  extrasTitle?: string;
+  extras: string[];
+  cta?: { label: string; href: string };
+}
+const { id, label, heading, parts, extrasTitle, extras, cta } = Astro.props;
+---
+
+<section class="pricing" id={id} aria-label={heading.replace(/<[^>]+>/g, '')}>
+  <Container>
+    <div class="pricing__head" data-reveal>
+      {label && <SectionLabel text={label} variant="h" tone="light" />}
+      <SectionHeading html={heading} size="md" class="pricing__heading" />
+    </div>
+    <div class="pricing__parts">
+      {
+        parts.map((part, i) => (
+          <article class="pricing__part" data-reveal style={`transition-delay:${i * 60}ms`}>
+            <span class="pricing__part-num">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="pricing__part-title">{part.title}</h3>
+            <p class="pricing__part-desc">{part.description}</p>
+          </article>
+        ))
+      }
+    </div>
+    {
+      extras.length > 0 && (
+        <div class="pricing__extras" data-reveal>
+          {extrasTitle && <h3 class="pricing__extras-title">{extrasTitle}</h3>}
+          <ul class="pricing__extras-list">
+            {extras.map((extra) => (
+              <li class="pricing__extras-item">
+                <span class="tag-square" aria-hidden="true" />
+                {extra}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+    {
+      cta && (
+        <div class="pricing__cta" data-reveal>
+          <Button href={cta.href} label={cta.label} variant="fill-accent" arrow="down" />
+        </div>
+      )
+    }
+  </Container>
+</section>
+
+<style>
+  .pricing {
+    padding: var(--space-section-page-y) 0;
+    background: var(--color-bg-page);
+  }
+  .pricing__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+  .section-heading :global(.stroke) {
+    -webkit-text-stroke: 2px var(--color-text-primary);
+    color: transparent;
+  }
+  .pricing__parts {
+    margin-top: var(--space-3xl);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-md);
+  }
+  .pricing__part {
+    background: var(--color-white-pure);
+    border: 1px solid var(--color-line-dark-soft);
+    border-top: 2px solid var(--color-text-primary);
+    padding: var(--space-page-card);
+    display: grid;
+    grid-template-columns: var(--page-index-col) minmax(0, 1fr);
+    gap: var(--space-lg) var(--space-md);
+    min-width: 0;
+  }
+  .pricing__part-num {
+    grid-row: 1 / 3;
+    font: 500 var(--fs-label) / var(--lh-label) var(--font-mono);
+    letter-spacing: var(--ls-mono);
+    color: var(--color-text-accent-dark);
+  }
+  .pricing__part-title {
+    margin: 0;
+    font: 700 var(--fs-h3-sm) / var(--lh-display-3) var(--font-display);
+    font-stretch: 25%;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+  .pricing__part-desc {
+    margin: 0;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--color-text-on-light-74);
+    max-width: var(--desc-max);
+    text-wrap: pretty;
+  }
+  .pricing__extras {
+    margin-top: var(--space-md);
+    padding: var(--space-xl) var(--space-page-card);
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: var(--space-xl) var(--space-col-gap);
+    background: var(--color-bg-card-light);
+    border: 1px solid var(--color-line-dark-soft);
+  }
+  .pricing__extras-title {
+    margin: 0;
+    font: 700 var(--fs-h5) / var(--lh-tight) var(--font-display);
+    font-stretch: 25%;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+  .pricing__extras-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-xl);
+  }
+  .pricing__extras-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md) 0;
+    border-top: 1px solid var(--color-line-dark-soft);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--color-text-on-light-80);
+  }
+  .pricing__extras-item .tag-square {
+    flex: none;
+  }
+  .pricing__cta :global(a) {
+    width: 100%;
+    justify-content: space-between;
+    padding: var(--space-lg) var(--space-page-card);
+  }
+  @media (max-width: 768px) {
+    .pricing {
+      padding: var(--space-section-page-y-mobile) 0;
+    }
+    .pricing__parts {
+      grid-template-columns: minmax(0, 1fr);
+      margin-top: var(--space-xl);
+      gap: var(--space-sm);
+    }
+    .pricing__part {
+      grid-template-columns: var(--page-index-col-mobile) minmax(0, 1fr);
+      padding: var(--space-lg);
+      gap: var(--space-md) var(--space-sm);
+    }
+    .pricing__part-title {
+      font-size: var(--fs-h4);
+    }
+    .pricing__extras {
+      grid-template-columns: minmax(0, 1fr);
+      margin-top: var(--space-sm);
+      padding: var(--space-lg);
+      gap: var(--space-lg);
+    }
+    .pricing__extras-list {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .pricing__extras-item {
+      padding: var(--space-sm) 0;
+    }
+    .pricing__cta :global(a) {
+      padding: var(--space-lg);
+    }
+  }
+</style>

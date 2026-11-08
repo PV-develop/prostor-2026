@@ -1,0 +1,202 @@
+---
+import { contacts } from '../../content/home';
+---
+
+<header class="site-header" data-hdr>
+  <span class="site-header__conn" data-hconn aria-hidden="true"></span>
+  <a href="#" class="site-header__logo" data-logo aria-label="Простор">
+    <img
+      src="/images/logo/logo-white.svg"
+      alt=""
+      class="site-header__logo-img"
+      data-logo-word
+      width="167"
+      height="26"
+    />
+  </a>
+  <div class="site-header__right" data-m="hright">
+    <span class="site-header__phone" data-m="hphone">{contacts.phone800}</span>
+    <a href="#contacts" class="btn site-header__cta btn-fill">
+      <span data-mfull>Обсудить задачу</span><span data-mshort>Обсудить</span> <span aria-hidden="true">↗</span>
+    </a>
+    <button type="button" data-mbtn class="site-header__menu-btn" aria-label="Меню" aria-expanded="false" aria-controls="mobile-menu">
+      <span data-mblabel>Меню</span>
+      <span class="site-header__burger" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </span>
+    </button>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: var(--space-lg);
+    align-items: center;
+    padding: var(--space-lg) var(--space-page);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    box-sizing: border-box;
+    z-index: var(--z-header);
+    color: var(--color-text-primary-inverse);
+    background: rgba(15, 15, 15, 0);
+    transition:
+      background 0.4s,
+      backdrop-filter 0.4s,
+      -webkit-backdrop-filter 0.4s;
+  }
+  .site-header.is-scrolled {
+    background: rgba(15, 15, 15, 0.62);
+    backdrop-filter: blur(18px) saturate(1.4);
+    -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  }
+  .site-header__conn {
+    position: absolute;
+    left: 22px;
+    top: 56px;
+    bottom: 0;
+    width: 1px;
+    background: var(--color-accent);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform var(--dur-clip) var(--ease-io);
+  }
+  .site-header__logo {
+    position: relative;
+    display: block;
+    height: 26px;
+    width: 128px;
+  }
+  .site-header__logo-img {
+    position: absolute;
+    top: 0;
+    left: -39px;
+    height: 26px;
+    width: auto;
+    max-width: none;
+    clip-path: inset(0 0 0 39px);
+  }
+  .site-header__right {
+    display: flex;
+    gap: var(--space-md);
+    align-items: center;
+    justify-self: end;
+    font: 500 var(--fs-tag) var(--font-mono);
+    letter-spacing: var(--ls-mono);
+    white-space: nowrap;
+  }
+  .site-header__phone {
+    font: 700 24px / 1 var(--font-display);
+    font-stretch: 25%;
+    letter-spacing: 0.02em;
+  }
+  .site-header__cta {
+    background-image: var(--fill-light-to-accent);
+    padding: 0 18px;
+    height: 44px;
+    font-weight: 600;
+    letter-spacing: var(--ls-btn-md);
+    color: var(--color-white-pure);
+  }
+  .site-header__cta:hover {
+    color: var(--color-text-primary);
+  }
+  .site-header__menu-btn {
+    all: unset;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 44px;
+    padding: 13px var(--space-md);
+    border: 1px solid var(--border-dark-32);
+    color: var(--color-text-primary-inverse);
+    font: 600 var(--fs-tag) / 1 var(--font-mono);
+    letter-spacing: var(--ls-btn-sm);
+    text-transform: uppercase;
+    cursor: pointer;
+    background-image: var(--fill-light);
+    background-repeat: no-repeat;
+    background-size: 201% 100%;
+    background-position: 100% 0;
+    transition:
+      background-position var(--dur-swipe) var(--ease-swipe),
+      color var(--dur-slow),
+      border-color var(--dur-slow);
+  }
+  .site-header__menu-btn:hover {
+    background-position: 0 0;
+    color: var(--color-text-primary);
+    border-color: var(--color-text-primary-inverse);
+  }
+  .site-header__burger {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .site-header__burger span {
+    width: 14px;
+    height: 1.5px;
+    background: currentColor;
+  }
+  [data-mshort] {
+    display: none;
+  }
+  @media (max-width: 1100px) {
+    .site-header__phone {
+      display: none;
+    }
+  }
+  @media (max-width: 768px) {
+    .site-header {
+      padding: 14px var(--space-page-mobile);
+      gap: var(--space-sm);
+      grid-template-columns: auto minmax(0, 1fr) auto;
+    }
+    .site-header__conn {
+      display: none;
+    }
+    .site-header__right {
+      gap: var(--space-sm);
+    }
+    .site-header__right > a {
+      padding: var(--space-sm) 14px;
+      height: 40px;
+    }
+    .site-header__right > button {
+      padding: 0;
+      width: 40px;
+      height: 40px;
+      justify-content: center;
+    }
+    [data-mblabel] {
+      display: none;
+    }
+    [data-mfull] {
+      display: none;
+    }
+    [data-mshort] {
+      display: inline;
+    }
+    /* Логотип фоновой картинкой без иконки (как в мобильном экспорте) */
+    .site-header__logo {
+      background: url('/images/logo/logo-white.svg') no-repeat -39px 0 / auto 26px;
+    }
+    .site-header__logo-img {
+      display: none;
+    }
+    .site-header__logo :global(svg) {
+      display: none;
+    }
+  }
+  /* На узких экранах CTA убираем из шапки — она есть внутри открытого меню */
+  @media (max-width: 560px) {
+    .site-header__cta {
+      display: none;
+    }
+  }
+</style>

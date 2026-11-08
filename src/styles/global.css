@@ -1,0 +1,213 @@
+@import './design-tokens.css';
+
+/* ---------- Шрифты (локально, из public/fonts) ---------- */
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/onest-400.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/onest-500.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/onest-600.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-400.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-500.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-600.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Steelfish';
+  font-weight: 700;
+  font-display: swap;
+  font-stretch: 25% 100%;
+  src: url('/fonts/Steelfish-Bold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Steelfish';
+  font-weight: 800;
+  font-display: swap;
+  font-stretch: 25% 100%;
+  src: url('/fonts/Steelfish-ExtraBold.ttf') format('truetype');
+}
+
+/* ---------- База ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg-dark);
+  font-family: var(--font-body);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg {
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
+.btn:focus {
+  outline: none;
+}
+
+/* Общая обёртка страницы */
+.page {
+  margin: 0 auto;
+  max-width: var(--container-max);
+  background: var(--color-bg-page);
+  overflow: clip;
+}
+
+/* ---------- Анимации: keyframes ---------- */
+@keyframes marq {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes marqR {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------- Scroll-reveal ---------- */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(40px);
+  transition:
+    opacity var(--dur-reveal) var(--ease-out),
+    transform var(--dur-reveal) var(--ease-out);
+}
+[data-reveal].in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- Маркированные подписи секций (красный квадрат + текст) ---------- */
+.tag-square {
+  width: var(--space-xs);
+  height: var(--space-xs);
+  background: var(--color-accent);
+  display: inline-block;
+  flex: none;
+}
+
+/* ---------- Кнопки и ссылки-кнопки: hover-свайп заливки ---------- */
+/* Вариант «заливка цветом поверх прозрачного/цветного фона». */
+.btn-fill {
+  background-repeat: no-repeat;
+  background-size: 201% 100%;
+  background-position: 100% 0;
+  transition:
+    background-position var(--dur-swipe) var(--ease-swipe),
+    color var(--dur-slow),
+    border-color var(--dur-slow),
+    gap var(--dur-slow);
+}
+.btn-fill:hover {
+  background-position: 0 0;
+}
+
+/* Типовые стили кнопки (mono, uppercase) */
+.btn {
+  font: 600 var(--fs-btn) / 1 var(--font-mono);
+  letter-spacing: var(--ls-btn);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  cursor: pointer;
+}
+
+/* У кнопок убираем браузерную обводку по клику; видимый фокус остаётся при keyboard-навигации */
+.btn:focus:not(:focus-visible),
+button:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+  /* Без JS-анимаций подписи и цифра показываются сразу */
+  .section-label[data-tl] {
+    clip-path: none !important;
+  }
+  .hero__cap-line {
+    transform: none !important;
+  }
+  .hero__cap-plate {
+    clip-path: none !important;
+  }
+}
+
+/* ---------- JS-фолбэки ---------- */
+/* Число «20» рисуется частицами на canvas; текст скрываем только при включённом fx */
+html.fx .hero__number {
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}

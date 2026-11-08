@@ -1,0 +1,576 @@
+---
+import { process as homeProcess } from '../../content/home';
+
+export interface ProcessStepData {
+  /** Название этапа */
+  title: string;
+  /** cards: описание; table: «что мы делаем» */
+  description?: string;
+  /** cards: «вы получаете»; table: «что вы получаете» */
+  result?: string;
+  /** table: «что мы делаем» (приоритет над description) */
+  detail?: string;
+  /** table: «что вы получаете» (приоритет над result) */
+  outcome?: string;
+  num?: string;
+  duration?: string;
+  accent?: boolean;
+}
+
+interface Props {
+  /** cards — исходные карточки (по умолчанию); table — адаптивная таблица «этап/что делаем/что получаете» */
+  variant?: 'cards' | 'table';
+  /** HTML-строка заголовка; по умолчанию — заголовок главной */
+  heading?: string;
+  label?: string;
+  lead?: string;
+  steps?: ProcessStepData[];
+  notes?: string[];
+}
+
+const {
+  variant = 'cards',
+  heading,
+  label,
+  lead,
+  steps,
+  notes,
+} = Astro.props;
+
+// По умолчанию — контент главной (разметка и поведение главной не меняются)
+const procSteps: ProcessStepData[] = steps ?? homeProcess.steps;
+const procLabel = label ?? homeProcess.label;
+const procLead = lead ?? homeProcess.lead;
+const procNotes = notes ?? homeProcess.notes;
+const procHeading =
+  heading ?? 'Как мы<br />выстраиваем <span class="process__stroke">работу</span>';
+---
+
+<section class:list={['process', variant === 'table' && 'process--table']} id="process" aria-label="Как мы работаем">
+  <div class="process__head" data-reveal data-m="s4head">
+    <div class="process__head-left">
+      <span class="process__label">{procLabel}<span class="tag-square"></span></span>
+      <h2 class="process__title" set:html={procHeading} />
+    </div>
+    <p class="process__lead">{procLead}</p>
+  </div>
+  {
+    variant === 'cards' ? (
+      <Fragment>
+        <div class="process__hint" data-m="prochint">
+          <span>5 этапов · листайте</span>
+          <span class="process__hint-line" aria-hidden="true"></span>
+          <span class="process__hint-arrow" aria-hidden="true">→</span>
+        </div>
+        <div class="process__grid" lang="ru" data-m="proc">
+          {procSteps.map((step, i) => (
+            <div
+              class:list={['process-card', step.accent && 'process-card--accent']}
+              data-reveal
+              style={`transition-delay:${i * 90}ms`}
+            >
+              <div class="process-card__top">
+                <div class="process-card__num">{step.num}</div>
+                <div class="process-card__meta">
+                  <div class="process-card__duration">{step.duration}</div>
+                  {i === 2 && (
+                    <div class="process-card__corner" data-arw-c aria-hidden="true">
+                      <span class="process-card__corner-el"></span>
+                    </div>
+                  )}
+                  {i === 3 && (
+                    <div class="process-card__loop" aria-hidden="true">
+                      <span class="process-card__loop-top" data-arw-a></span>
+                      <span class="process-card__loop-bar" data-arw-b>
+                        <span class="process-card__loop-arrow"></span>
+                      </span>
+                    </div>
+                  )}
+                  {i !== 3 && (
+                    <div class="process-card__arrow" data-arw aria-hidden="true">
+                      <span class="process-card__arrow-line"></span>
+                      <span class="process-card__arrow-head"></span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div class="process-card__name">{step.title}</div>
+              <div class="process-card__desc">{step.description}</div>
+              <div class="process-card__result">
+                <div class="process-card__result-label">Вы получаете</div>
+                <div class="process-card__result-text">{step.result}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Fragment>
+    ) : (
+      <div class="process__table" lang="ru">
+        <div class="process-table__head" aria-hidden="true">
+          <span>Этап</span>
+          <span>Что мы делаем</span>
+          <span>Что вы получаете</span>
+        </div>
+        {procSteps.map((step, i) => (
+          <div class="process-table__row" data-reveal style={`transition-delay:${i * 50}ms`}>
+            <div class="process-table__cell process-table__cell--stage">
+              <span class="process-table__num">{String(i + 1).padStart(2, '0')}</span>
+              <span class="process-table__stage">{step.title}</span>
+            </div>
+            <div class="process-table__cell">
+              <span class="process-table__cell-label">Что мы делаем</span>
+              <span class="process-table__cell-text">{step.detail ?? step.description}</span>
+            </div>
+            <div class="process-table__cell">
+              <span class="process-table__cell-label">Что вы получаете</span>
+              <span class="process-table__cell-text">{step.outcome ?? step.result}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+  {
+    procNotes.length > 0 && (
+      <div class="process__notes" data-reveal data-m="procnote">
+        {procNotes.map((note) => <span>{note}</span>)}
+      </div>
+    )
+  }
+</section>
+
+<style>
+  .process {
+    position: relative;
+    padding: var(--space-section-y) 0 0;
+    background: var(--color-bg-page);
+  }
+  .process__head {
+    padding: 0 var(--space-page);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: var(--space-lg) var(--space-3xl);
+  }
+  .process__head-left {
+    display: flex;
+    gap: var(--space-lg);
+  }
+  .process__label {
+    font: 500 var(--fs-label) / var(--lh-label) var(--font-body);
+    color: var(--color-text-accent-dark);
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    display: flex;
+    gap: var(--space-sm);
+    align-items: center;
+    align-self: flex-start;
+    flex: none;
+  }
+  .process__title {
+    margin: 0;
+    font: 700 var(--fs-h2-md) / var(--lh-display-2) var(--font-display);
+    font-stretch: 25%;
+    text-transform: uppercase;
+  }
+  .process__title :global(.process__stroke) {
+    -webkit-text-stroke: 2px var(--color-text-primary);
+    color: transparent;
+  }
+  .process__lead {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--color-text-on-light-74);
+    max-width: 460px;
+    text-wrap: pretty;
+    margin: 0;
+  }
+  .process__hint {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    font: 500 var(--fs-label) / 1 var(--font-body);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-text-on-light-60);
+  }
+  .process__hint-line {
+    display: flex;
+    width: 28px;
+    height: 1px;
+    background: currentColor;
+  }
+  .process__hint-arrow {
+    margin-left: -12px;
+  }
+  .process__grid {
+    padding: 0 var(--space-page);
+    margin-top: var(--space-7xl);
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0 12px;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    overflow-wrap: break-word;
+  }
+  .process-card {
+    position: relative;
+    background: var(--color-bg-card-light);
+    color: var(--color-text-primary);
+    padding: 32px clamp(18px, 1.6vw, 28px) 40px;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 480px;
+    box-sizing: border-box;
+  }
+  .process-card:nth-child(1) { z-index: 10; }
+  .process-card:nth-child(2) { z-index: 9; }
+  .process-card:nth-child(3) { z-index: 8; }
+  .process-card:nth-child(4) { z-index: 7; }
+  .process-card--accent {
+    background: var(--color-accent);
+    color: var(--color-text-primary-inverse);
+  }
+  .process-card__top {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-sm);
+  }
+  .process-card__num {
+    font: 700 var(--fs-process-num) / 0.8 var(--font-display);
+    font-stretch: 25%;
+    letter-spacing: var(--ls-condensed);
+    color: var(--color-text-primary);
+    flex: none;
+  }
+  .process-card--accent .process-card__num {
+    color: var(--color-text-primary-inverse);
+  }
+  .process-card__meta {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding-bottom: 6px;
+  }
+  .process-card__duration {
+    font: 500 clamp(11px, 1vw, 13px) / 1.25 var(--font-body);
+    white-space: nowrap;
+    color: var(--color-text-on-light-70);
+  }
+  .process-card--accent .process-card__duration {
+    color: var(--color-text-primary-inverse);
+  }
+  .process-card__arrow {
+    position: relative;
+    height: 2px;
+  }
+  .process-card__arrow-line {
+    position: absolute;
+    left: 0;
+    right: 1px;
+    top: 0;
+    height: 2px;
+    background: var(--color-arrow);
+  }
+  .process-card__arrow-head {
+    position: absolute;
+    right: 1px;
+    top: -3px;
+    width: var(--space-xs);
+    height: var(--space-xs);
+    box-sizing: border-box;
+    border-top: 2px solid var(--color-arrow);
+    border-right: 2px solid var(--color-arrow);
+    transform: rotate(45deg);
+  }
+  /* Поворот стрелки на карточке 03 */
+  .process-card__corner {
+    position: relative;
+    height: 0;
+    margin-bottom: -8px;
+  }
+  .process-card__corner-el {
+    position: absolute;
+    left: 0;
+    right: 1px;
+    top: 0;
+    height: 12px;
+    box-sizing: border-box;
+    border-left: 2px solid var(--color-arrow);
+    border-bottom: 2px solid var(--color-arrow);
+  }
+  /* Петля на карточке 04 */
+  .process-card__loop {
+    position: relative;
+    height: 14px;
+    margin-bottom: -12px;
+  }
+  .process-card__loop-top {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 12px;
+    box-sizing: border-box;
+    border-top: 2px solid var(--color-arrow);
+    border-right: 2px solid var(--color-arrow);
+  }
+  .process-card__loop-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 10px;
+    height: 2px;
+    background: var(--color-arrow);
+  }
+  .process-card__loop-arrow {
+    position: absolute;
+    left: 1px;
+    top: -3px;
+    width: var(--space-xs);
+    height: var(--space-xs);
+    box-sizing: border-box;
+    border-left: 2px solid var(--color-arrow);
+    border-bottom: 2px solid var(--color-arrow);
+    transform: rotate(45deg);
+  }
+  .process-card__name {
+    margin-top: 44px;
+    font: 700 clamp(22px, 1.9vw, 32px) / 0.95 var(--font-display);
+    font-stretch: 25%;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+  .process-card--accent .process-card__name {
+    font-size: clamp(28px, 2.5vw, 46px);
+  }
+  .process-card__desc {
+    margin-top: var(--space-lg);
+    font-size: clamp(13px, 1.1vw, 15px);
+    line-height: var(--lh-body);
+    color: var(--color-text-on-light-70);
+    text-wrap: pretty;
+  }
+  .process-card--accent .process-card__desc {
+    color: var(--color-text-on-dark-85);
+  }
+  /* На красной карточке стрелка белая */
+  .process-card--accent .process-card__arrow-line {
+    background: var(--color-text-primary-inverse);
+  }
+  .process-card--accent .process-card__arrow-head {
+    border-top-color: var(--color-text-primary-inverse);
+    border-right-color: var(--color-text-primary-inverse);
+  }
+  .process-card__result {
+    margin-top: auto;
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--color-text-on-light-14);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .process-card--accent .process-card__result {
+    border-top-color: var(--color-text-on-dark-35);
+  }
+  .process-card__result-label {
+    font: 500 var(--fs-label) / 1.3 var(--font-body);
+    color: var(--color-text-accent-dark);
+  }
+  .process-card--accent .process-card__result-label {
+    color: var(--color-text-primary-inverse);
+  }
+  .process-card__result-text {
+    font: 500 clamp(14px, 1.2vw, 17px) / 1.3 var(--font-body);
+    text-wrap: pretty;
+  }
+  .process__notes {
+    margin: 8px var(--space-page) 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-sm) var(--space-xl);
+    font: 400 var(--fs-body-sm) / var(--lh-body) var(--font-body);
+    color: var(--color-text-on-light-60);
+  }
+  /* Стрелки анимируются через clip-path из main.ts; начальное состояние — скрыто */
+  .process-card [data-arw],
+  .process-card [data-arw-a],
+  .process-card [data-arw-b],
+  .process-card [data-arw-c] {
+    will-change: clip-path;
+  }
+
+  /* ---------- Табличный вариант ---------- */
+  .process--table {
+    padding-top: var(--space-section-page-y);
+  }
+  .process--table .process__head {
+    align-items: end;
+  }
+  .process__table {
+    margin: var(--space-3xl) var(--space-page) 0;
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid var(--color-text-primary);
+  }
+  .process-table__head {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 5fr) minmax(0, 3fr);
+    column-gap: var(--space-col-gap);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--color-text-primary);
+    font: 500 var(--fs-tag) / var(--lh-label) var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-btn-sm);
+    color: var(--color-text-accent-dark);
+  }
+  .process-table__row {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 5fr) minmax(0, 3fr);
+    column-gap: var(--space-col-gap);
+    padding: var(--space-lg) 0;
+    border-bottom: 1px solid var(--color-line-dark-soft);
+  }
+  .process-table__row:last-child {
+    border-bottom: 0;
+  }
+  .process-table__cell {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    min-width: 0;
+  }
+  .process-table__cell--stage {
+    flex-direction: row;
+    align-items: baseline;
+    gap: var(--space-md);
+  }
+  .process-table__num {
+    font: 700 var(--fs-h4) / var(--lh-tight) var(--font-display);
+    font-stretch: 25%;
+    color: var(--color-text-accent-dark);
+    flex: none;
+  }
+  .process-table__stage {
+    font: 700 var(--fs-h5) / var(--lh-tight) var(--font-display);
+    font-stretch: 25%;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+  .process-table__cell:last-child {
+    padding-left: var(--space-lg);
+    border-left: 1px solid var(--color-line-dark-soft);
+  }
+  .process-table__cell:last-child .process-table__cell-text {
+    color: var(--color-text-primary);
+  }
+  .process-table__cell-label {
+    display: none;
+    font: 500 var(--fs-tag) / var(--lh-label) var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-btn-sm);
+    color: var(--color-text-accent-dark);
+  }
+  .process-table__cell-text {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--color-text-on-light-74);
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 1024px) {
+    .process__grid {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 2px;
+      scroll-padding: 0 48px;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+    }
+    .process__grid::-webkit-scrollbar {
+      display: none;
+    }
+    .process__grid > div {
+      flex: 0 0 min(78vw, 340px);
+      scroll-snap-align: start;
+      min-height: 380px;
+    }
+  }
+  @media (max-width: 768px) {
+    .process {
+      padding-top: 88px;
+    }
+    .process__head {
+      padding: 0 var(--space-page-mobile);
+      gap: var(--space-xl);
+    }
+    .process__head-left {
+      flex-direction: column;
+      gap: var(--space-xl);
+    }
+    .process__head-left > .process__label {
+      writing-mode: horizontal-tb;
+      transform: none;
+    }
+    .process__hint {
+      display: flex;
+      margin: var(--space-md) var(--space-page-mobile) 0;
+    }
+    .process__grid {
+      padding-left: var(--space-page-mobile);
+      padding-right: var(--space-page-mobile);
+      margin-top: var(--space-md);
+      scroll-padding: 0 var(--space-page-mobile);
+    }
+    .process__grid > div {
+      flex: 0 0 80%;
+      min-height: 0;
+    }
+    .process__notes {
+      margin: var(--space-md) var(--space-page-mobile) 0;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    /* Табличный вариант на mobile: строка стекается в карточку этапа */
+    .process--table {
+      padding-top: var(--space-section-page-y-mobile);
+    }
+    .process__table {
+      margin: var(--space-xl) var(--space-page-mobile) 0;
+      border-bottom: 0;
+    }
+    .process-table__head {
+      display: none;
+    }
+    .process-table__row {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: var(--space-md);
+      padding: var(--space-lg);
+      background: var(--color-bg-card-light);
+      border: 1px solid var(--color-line-dark-soft);
+      margin-bottom: var(--space-sm);
+    }
+    .process-table__cell--stage {
+      padding-bottom: var(--space-md);
+      border-bottom: 1px solid var(--color-line-dark-soft);
+    }
+    .process-table__cell:last-child {
+      padding: var(--space-md) 0 0;
+      border-left: 0;
+      border-top: 1px solid var(--color-line-dark-soft);
+    }
+    .process-table__cell-label {
+      display: block;
+    }
+    .process-table__cell-text {
+      font-size: var(--fs-body-sm);
+    }
+  }
+</style>

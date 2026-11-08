@@ -1,0 +1,85 @@
+---
+interface Props {
+  name: string;
+  legend: string;
+  options: string[];
+  class?: string;
+}
+const { name, legend, options, class: className = '' } = Astro.props;
+---
+
+<fieldset class={`toggle-group ${className}`}>
+  <legend class="toggle-group__legend">{legend}</legend>
+  <div class="toggle-group__row">
+    {
+      options.map((option) => (
+        <label class="toggle-group__item">
+          <input type="radio" name={name} value={option} class="toggle-group__input" />
+          <span class="toggle-group__pill">{option}</span>
+        </label>
+      ))
+    }
+  </div>
+</fieldset>
+
+<style>
+  .toggle-group {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    min-width: 0;
+  }
+  .toggle-group__legend {
+    padding: 0 0 0 18px;
+    font: 400 var(--fs-tag) / 1.3 var(--font-body);
+    color: var(--color-text-on-dark-50);
+  }
+  .toggle-group__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+  .toggle-group__item {
+    position: relative;
+    cursor: pointer;
+  }
+  /* Радио-кнопка остаётся в DOM для доступности и отправки формы */
+  .toggle-group__input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .toggle-group__pill {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: var(--space-sm) var(--space-lg);
+    border: 1px solid var(--color-text-on-dark-22);
+    color: var(--color-text-on-dark-72);
+    font: 400 var(--fs-body-sm) / 1.2 var(--font-body);
+    transition:
+      background var(--dur-fast),
+      color var(--dur-fast),
+      border-color var(--dur-fast);
+  }
+  .toggle-group__item:hover .toggle-group__pill {
+    border-color: var(--color-text-primary-inverse);
+    color: var(--color-text-primary-inverse);
+  }
+  .toggle-group__input:checked + .toggle-group__pill {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-text-primary);
+  }
+  .toggle-group__input:focus-visible + .toggle-group__pill {
+    outline: var(--focus-outline);
+    outline-offset: 2px;
+  }
+</style>

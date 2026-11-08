@@ -1,0 +1,66 @@
+---
+interface Props {
+  name?: string;
+  label?: string;
+  hint?: string;
+  class?: string;
+}
+const {
+  name = 'file',
+  label = 'Приложить бриф или документ',
+  hint = 'PDF, DOC, XLS, PPT — до 20 МБ',
+  class: className = '',
+} = Astro.props;
+---
+
+<label class={`file-field ${className}`} data-file-field>
+  <input type="file" name={name} accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt" class="file-field__input" />
+  <svg viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2" stroke-linecap="square" class="file-field__icon" aria-hidden="true">
+    <path d="M20 11.5l-8.2 8.2a5 5 0 01-7.1-7.1l8.5-8.5a3.3 3.3 0 014.7 4.7l-8.5 8.5a1.7 1.7 0 01-2.4-2.4l7.8-7.8"></path>
+  </svg>
+  <span class="file-field__text">
+    <span class="file-field__label" data-file-label>{label}</span>
+    <span class="file-field__hint">{hint}</span>
+  </span>
+</label>
+
+<style>
+  .file-field {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    min-height: 60px;
+    padding: var(--space-sm) 18px;
+    border: 1px dashed var(--color-text-on-dark-32);
+    cursor: pointer;
+    transition: border-color var(--dur-base);
+  }
+  .file-field:hover {
+    border-color: var(--color-text-primary-inverse);
+  }
+  .file-field__input {
+    display: none;
+  }
+  .file-field__icon {
+    width: 20px;
+    height: 20px;
+    flex: none;
+  }
+  .file-field__text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .file-field__label {
+    font: 500 15px / 1.3 var(--font-body);
+    color: var(--color-text-primary-inverse);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .file-field__hint {
+    font: 400 var(--fs-tag) / 1.3 var(--font-body);
+    color: var(--color-text-on-dark-50);
+  }
+</style>

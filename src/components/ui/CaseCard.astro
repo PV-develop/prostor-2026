@@ -1,0 +1,119 @@
+---
+interface Props {
+  photo: string;
+  photoAlt: string;
+  tag: string;
+  industry: string;
+  value: number;
+  suffix: string;
+  metric: string;
+  title: string;
+  description: string;
+  href?: string;
+}
+const { photo, photoAlt, tag, industry, value, suffix, metric, title, description, href = '#' } = Astro.props;
+---
+
+<a href={href} class="case-card" data-reveal data-case-card>
+  <div class="case-card__photo">
+    <img src={photo} alt={photoAlt} loading="lazy" />
+  </div>
+  <div class="case-card__meta">
+    <span class="case-card__tag">{tag}</span>
+    <span class="case-card__industry">{industry}</span>
+  </div>
+  <div class="case-card__body">
+    <div class="case-card__value">
+      +<span data-count={value}>0</span><span class="case-card__suffix">{suffix}</span>
+    </div>
+    <div class="case-card__metric">{metric}</div>
+    <div class="case-card__title">{title}</div>
+    <div class="case-card__description">{description}</div>
+  </div>
+</a>
+
+<style>
+  .case-card {
+    position: relative;
+    background: var(--color-bg-card-dark);
+    color: var(--color-text-primary-inverse);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.5s;
+  }
+  .case-card:hover {
+    transform: translateY(-12px);
+  }
+  .case-card__photo {
+    position: relative;
+    height: var(--case-photo-h);
+    flex: none;
+    overflow: hidden;
+  }
+  .case-card__photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.7) grayscale(1);
+    transition: filter var(--dur-clip-long) var(--ease-swipe);
+  }
+  /* По hover карточки фото «расцветает» (вуаль снимается снизу вверх) */
+  .case-card:hover .case-card__photo img {
+    filter: brightness(0.7) grayscale(0);
+  }
+  .case-card__meta {
+    position: relative;
+    padding: var(--space-lg);
+    display: flex;
+    justify-content: space-between;
+    font: 600 var(--fs-tag) / 1.2 var(--font-body);
+    letter-spacing: 0.01em;
+    pointer-events: none;
+  }
+  .case-card__tag {
+    background: var(--color-accent);
+    color: var(--color-text-primary);
+    padding: 6px 10px;
+  }
+  .case-card__industry {
+    opacity: 0.6;
+  }
+  .case-card__body {
+    position: relative;
+    padding: 0 var(--space-lg) 28px;
+    pointer-events: none;
+  }
+  .case-card__value {
+    font: 700 var(--fs-case-num) / var(--lh-number) var(--font-display);
+    font-stretch: 25%;
+  }
+  .case-card__suffix {
+    color: var(--color-text-accent);
+    font-size: 0.55em;
+  }
+  .case-card__metric {
+    font: 500 var(--fs-label) / var(--lh-label) var(--font-body);
+    opacity: 0.6;
+    margin-top: var(--space-md);
+  }
+  .case-card__title {
+    font: 700 30px / var(--lh-tight) var(--font-display);
+    font-stretch: 25%;
+    text-transform: uppercase;
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid var(--color-text-on-dark-25);
+  }
+  .case-card__description {
+    font-size: var(--fs-body-xs);
+    line-height: 1.45;
+    opacity: 0.75;
+    margin-top: 10px;
+  }
+  @media (max-width: 768px) {
+    .case-card__photo {
+      height: var(--case-photo-h-mobile);
+    }
+  }
+</style>

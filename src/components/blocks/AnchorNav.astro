@@ -1,0 +1,82 @@
+---
+import Container from '../ui/Container.astro';
+
+interface Props {
+  items: Array<{ label: string; href: string }>;
+}
+const { items } = Astro.props;
+---
+
+<nav class="anchor-nav" aria-label="Навигация по странице">
+  <Container>
+    <ul class="anchor-nav__list">
+      {
+        items.map((item) => (
+          <li class="anchor-nav__item">
+            <a class="anchor-nav__link" href={item.href}>
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </Container>
+</nav>
+
+<style>
+  .anchor-nav {
+    background: var(--color-bg-dark);
+    border-top: 1px solid var(--color-line-light);
+    border-bottom: 1px solid var(--color-line-light);
+    color: var(--color-text-primary-inverse);
+  }
+  .anchor-nav__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .anchor-nav__item + .anchor-nav__item {
+    border-left: 1px solid var(--color-line-light);
+  }
+  .anchor-nav__link {
+    display: flex;
+    align-items: center;
+    min-height: var(--space-3xl);
+    padding: var(--space-sm) var(--space-lg);
+    font: 600 var(--fs-btn-sm) / var(--lh-tight) var(--font-mono);
+    letter-spacing: var(--ls-btn-md);
+    text-transform: uppercase;
+    color: var(--color-text-on-dark-72);
+    transition:
+      background var(--dur-fast),
+      color var(--dur-fast);
+  }
+  .anchor-nav__item:first-child .anchor-nav__link {
+    padding-left: 0;
+  }
+  .anchor-nav__link:hover {
+    background: var(--color-bg-card-dark);
+    color: var(--color-text-primary-inverse);
+  }
+  @media (max-width: 768px) {
+    .anchor-nav__list {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scroll-snap-type: x proximity;
+      scrollbar-width: none;
+    }
+    .anchor-nav__list::-webkit-scrollbar {
+      display: none;
+    }
+    .anchor-nav__item {
+      flex: none;
+      scroll-snap-align: start;
+    }
+    .anchor-nav__link {
+      min-height: var(--space-3xl);
+      padding-inline: var(--space-md);
+    }
+  }
+</style>

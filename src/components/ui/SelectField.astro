@@ -1,0 +1,81 @@
+---
+interface Props {
+  name: string;
+  label: string;
+  options: string[];
+  /** Подпись нейтрального пункта, выбранного по умолчанию */
+  placeholder?: string;
+  class?: string;
+}
+const { name, label, options, placeholder = 'Выберите вариант', class: className = '' } = Astro.props;
+---
+
+<label class={`select-field ${className}`}>
+  <span class="select-field__label">{label}</span>
+  <span class="select-field__wrap">
+    <select class="select-field__select" name={name}>
+      <option value="" selected disabled>{placeholder}</option>
+      {options.map((option) => <option value={option}>{option}</option>)}
+    </select>
+    <svg
+      class="select-field__chevron"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="square"
+      aria-hidden="true"
+    >
+      <path d="M5 9l7 7 7-7"></path>
+    </svg>
+  </span>
+</label>
+
+<style>
+  .select-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+  .select-field__label {
+    padding-left: 18px;
+    font: 400 var(--fs-tag) / 1.3 var(--font-body);
+    color: var(--color-text-on-dark-50);
+  }
+  .select-field__wrap {
+    position: relative;
+    display: block;
+  }
+  .select-field__select {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    height: 60px;
+    padding: 0 48px 0 18px;
+    background-color: var(--color-bg-card-dark);
+    border: 1px solid var(--color-text-on-dark-22);
+    border-radius: 0;
+    color: var(--color-text-primary-inverse);
+    font: 400 var(--fs-body) var(--font-body);
+    cursor: pointer;
+    appearance: none;
+    transition: border-color var(--dur-base);
+  }
+  .select-field__select:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: 2px;
+  }
+  .select-field__select:hover {
+    border-color: var(--color-text-primary-inverse);
+  }
+  .select-field__chevron {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    transform: translateY(-50%);
+    color: var(--color-text-on-dark-55);
+    pointer-events: none;
+  }
+</style>

@@ -1,0 +1,161 @@
+---
+import Container from '../ui/Container.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+import Button from '../ui/Button.astro';
+
+interface Props {
+  id?: string;
+  label?: string;
+  heading: string;
+  intro?: string;
+  cards: Array<{ title: string; description: string }>;
+  note?: string;
+  cta?: { label: string; href: string };
+}
+const { id, label, heading, intro, cards, note, cta } = Astro.props;
+---
+
+<section class="scenarios" id={id} aria-label={heading.replace(/<[^>]+>/g, '')}>
+  <Container>
+    <div class="scenarios__head" data-reveal>
+      {label && <SectionLabel text={label} variant="h" tone="light" />}
+      <SectionHeading html={heading} size="md" class="scenarios__heading" />
+      {intro && <p class="scenarios__intro">{intro}</p>}
+    </div>
+    <div class="scenarios__grid">
+      {
+        cards.map((card, i) => (
+          <article class="scenarios__card" data-reveal style={`transition-delay:${i * 60}ms`}>
+            <span class="scenarios__card-num">{String(i + 1).padStart(2, '0')}</span>
+            <div class="scenarios__card-body">
+              <h3 class="scenarios__card-title">{card.title}</h3>
+              <p class="scenarios__card-desc">{card.description}</p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+    {
+      (note || cta) && (
+        <div class="scenarios__foot" data-reveal>
+          {note && <p class="scenarios__note">{note}</p>}
+          {cta && <Button href={cta.href} label={cta.label} variant="fill-accent" arrow="down" />}
+        </div>
+      )
+    }
+  </Container>
+</section>
+
+<style>
+  .scenarios {
+    padding: var(--space-section-page-y) 0 0;
+    background: var(--color-bg-page);
+  }
+  .scenarios__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+  .section-heading :global(.stroke) {
+    -webkit-text-stroke: 2px var(--color-text-primary);
+    color: transparent;
+  }
+  .scenarios__intro {
+    margin: 0;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--color-text-on-light-74);
+    max-width: var(--desc-max);
+    text-wrap: pretty;
+  }
+  .scenarios__grid {
+    margin-top: var(--space-3xl);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-md);
+  }
+  .scenarios__card {
+    display: grid;
+    grid-template-columns: var(--page-index-col) minmax(0, 1fr);
+    gap: var(--space-md);
+    min-width: 0;
+    padding: var(--space-page-card);
+    border: 1px solid var(--color-line-dark-soft);
+    border-top: 2px solid var(--color-text-primary);
+    background: var(--color-white-pure);
+  }
+  .scenarios__card-num {
+    font: 500 var(--fs-label) / var(--lh-label) var(--font-mono);
+    letter-spacing: var(--ls-mono);
+    color: var(--color-text-accent-dark);
+  }
+  .scenarios__card-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+  .scenarios__card-title {
+    margin: 0;
+    font: 700 var(--fs-h4) / var(--lh-tight) var(--font-display);
+    font-stretch: 25%;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+  .scenarios__card-desc {
+    margin: 0;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--color-text-on-light-74);
+    text-wrap: pretty;
+  }
+  .scenarios__foot {
+    margin-top: var(--space-md);
+    padding: var(--space-xl) var(--space-page-card);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-xl) var(--space-3xl);
+    background: var(--color-bg-dark);
+    color: var(--color-text-primary-inverse);
+  }
+  .scenarios__note {
+    margin: 0;
+    max-width: var(--note-max);
+    font-size: var(--fs-lead);
+    line-height: var(--lh-body);
+    color: var(--color-text-on-dark-86);
+    text-wrap: pretty;
+  }
+  .scenarios__foot :global(a) {
+    justify-content: space-between;
+    white-space: nowrap;
+  }
+  @media (max-width: 768px) {
+    .scenarios {
+      padding-top: var(--space-section-page-y-mobile);
+    }
+    .scenarios__grid {
+      grid-template-columns: minmax(0, 1fr);
+      margin-top: var(--space-xl);
+      gap: var(--space-sm);
+    }
+    .scenarios__card {
+      grid-template-columns: var(--page-index-col-mobile) minmax(0, 1fr);
+      gap: var(--space-sm);
+      padding: var(--space-lg);
+    }
+    .scenarios__card-body {
+      gap: var(--space-md);
+    }
+    .scenarios__foot {
+      grid-template-columns: minmax(0, 1fr);
+      margin-top: var(--space-sm);
+      padding: var(--space-lg);
+      gap: var(--space-lg);
+    }
+    .scenarios__foot :global(a) {
+      width: 100%;
+    }
+  }
+</style>

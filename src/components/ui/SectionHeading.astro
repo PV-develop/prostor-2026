@@ -1,0 +1,39 @@
+---
+interface Props {
+  /** HTML-строки строк заголовка; поддерживает <br> и <span> */
+  html: string;
+  as?: 'h1' | 'h2' | 'h3';
+  size?: 'xl' | 'lg' | 'md' | 'sm';
+  class?: string;
+}
+const { html, as: Tag = 'h2', size = 'lg', class: className = '' } = Astro.props;
+---
+
+<Tag class={`section-heading section-heading--${size} ${className}`} set:html={html} />
+
+<style>
+  .section-heading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-stretch: 25%;
+    text-transform: uppercase;
+    letter-spacing: var(--ls-display);
+  }
+  .section-heading--xl {
+    font-size: var(--fs-hero-title);
+    line-height: var(--lh-display);
+  }
+  .section-heading--lg {
+    font-size: var(--fs-h2);
+    line-height: var(--lh-display-2);
+  }
+  .section-heading--md {
+    font-size: var(--fs-h2-md);
+    line-height: var(--lh-display-2);
+  }
+  .section-heading--sm {
+    font-size: var(--fs-h3);
+    line-height: var(--lh-display-3);
+  }
+</style>

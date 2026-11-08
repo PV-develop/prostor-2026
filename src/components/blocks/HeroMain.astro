@@ -1,0 +1,406 @@
+---
+import SectionLabel from '../ui/SectionLabel.astro';
+import Button from '../ui/Button.astro';
+import TrustMarquee from './TrustMarquee.astro';
+import { hero as homeHero } from '../../content/home';
+
+export interface HeroContent {
+  /** HTML, поддерживает <br> и stroke-спаны */
+  title: string;
+  lead: string;
+  /** Дополнительная строка меньшим акцентом */
+  note?: string;
+  primaryCta?: { label: string; href: string };
+  secondaryCta?: { label: string; href: string };
+  /** Вертикальная подпись (для page — опционально) */
+  label?: string;
+}
+
+interface Props {
+  /** home — главная (по умолчанию); page — внутренняя страница */
+  variant?: 'home' | 'page';
+  /** Вывод TrustMarquee; для page — false */
+  showMarquee?: boolean;
+  /** Контент героя; по умолчанию — контент главной */
+  hero?: HeroContent;
+}
+
+const { variant = 'home', showMarquee = true, hero } = Astro.props;
+const isPage = variant === 'page';
+// Для home без пропсов используем исходный контент главной
+const h = hero ?? {
+  title: '',
+  lead: homeHero.lead,
+  note: undefined,
+  primaryCta: homeHero.ctaPrimary,
+  secondaryCta: homeHero.ctaSecondary,
+  label: homeHero.verticalLabel,
+};
+---
+
+<section class:list={['hero', isPage && 'hero--page']} aria-label="Первый экран">
+  <div aria-hidden="true" data-hsp class="hero__spacer"></div>
+  <div class="hero__noise" aria-hidden="true"></div>
+  <div class="hero__pad">
+    {h.label && <SectionLabel text={h.label} variant="v" tone="light" class="hero__vlabel" />}
+    <div class="hero__grid">
+      {
+        isPage ? (
+          <h1 class="hero__title" data-reveal set:html={h.title} />
+        ) : (
+          <h1 class="hero__title" data-reveal>
+            {homeHero.titleTop}
+            <br />
+            <span class="hero__title-line">
+              маркетинг,
+              <span class="hero__lead" data-m="lead">
+                <span class="hero__lead-text">{h.lead}</span>
+              </span>
+            </span>
+            <br />
+            <span class="hero__accent">{homeHero.titleAccent}</span> в бизнес<span class="hero__accent">.</span>
+          </h1>
+        )
+      }
+      {isPage && (
+        <div class="hero__aside" data-reveal>
+          <p class="hero__lead-page">{h.lead}</p>
+          {h.note && <p class="hero__note">{h.note}</p>}
+          {(h.primaryCta || h.secondaryCta) && (
+            <div class="hero__cta-row hero__cta-row--col">
+              {h.primaryCta && <Button href={h.primaryCta.href} label={h.primaryCta.label} arrow="down" />}
+              {h.secondaryCta && (
+                <Button href={h.secondaryCta.href} label={h.secondaryCta.label} variant="outline-light" arrow="down" />
+              )}
+            </div>
+          )}
+        </div>
+      )}
+      {!isPage && (
+        <p class="hero__lead-mobile" data-m="leadm">
+          {h.lead}
+        </p>
+      )}
+      {!isPage && (
+        <div class="hero__twenty" data-reveal data-m="twenty">
+          <div class="hero__cap" data-cap>
+            <span class="hero__cap-mask">
+              <span class="hero__cap-line" data-cap-line>{homeHero.captionLines[0]}</span>
+            </span>
+            <span class="hero__cap-mask">
+              <span class="hero__cap-line" data-cap-line>
+                <span class="hero__cap-plate" data-cap-plate>{homeHero.captionLines[1]}</span>
+              </span>
+            </span>
+          </div>
+          <div class="hero__number" data-parallax aria-hidden="true">{homeHero.number}</div>
+        </div>
+      )}
+      {!isPage && (
+        <div class="hero__cta" data-reveal data-m="herocta">
+          <div class="hero__cta-row">
+            {h.primaryCta && <Button href={h.primaryCta.href} label={h.primaryCta.label} arrow="arrow" />}
+            {h.secondaryCta && (
+              <Button href={h.secondaryCta.href} label={h.secondaryCta.label} variant="outline-light" arrow="down" />
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+  {showMarquee && <TrustMarquee />}
+</section>
+
+<style>
+  .hero {
+    background: var(--color-bg-dark);
+    color: var(--color-text-primary-inverse);
+    position: relative;
+    min-height: 860px;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    overflow: hidden;
+  }
+  .hero__spacer {
+    height: var(--header-h);
+  }
+  .hero__noise {
+    position: absolute;
+    inset: 0;
+    z-index: var(--z-noise);
+    pointer-events: none;
+    opacity: 0.07;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 220px 220px;
+  }
+  .hero__pad {
+    position: relative;
+    padding: 0 var(--space-page);
+    display: flex;
+    flex-direction: column;
+  }
+  :global(.hero__vlabel) {
+    position: absolute;
+    left: 30px;
+    top: 40px;
+  }
+  .hero__grid {
+    position: relative;
+    z-index: var(--z-hero-content);
+    display: grid;
+    grid-template-columns: var(--grid-12);
+    column-gap: var(--space-col-gap);
+    padding: 72px 0 56px 32px;
+    align-items: start;
+  }
+  .hero__title {
+    margin: 0;
+    font: 700 var(--fs-hero-title) / var(--lh-display) var(--font-display);
+    font-stretch: 25%;
+    text-transform: uppercase;
+    letter-spacing: var(--ls-display);
+    grid-column: 1 / 9;
+    grid-row: 1;
+    text-wrap: balance;
+    position: relative;
+    z-index: 2;
+  }
+  .hero__accent {
+    color: var(--color-accent);
+  }
+  .hero__title-line {
+    position: relative;
+  }
+  .hero__lead {
+    position: absolute;
+    left: calc(100% + 0.3em);
+    top: -0.66em;
+    width: min(340px, 22vw);
+  }
+  .hero__lead-text {
+    display: block;
+    font: 400 var(--fs-lead) / 1.45 var(--font-body);
+    font-stretch: 100%;
+    text-transform: none;
+    letter-spacing: var(--ls-normal);
+    color: var(--color-text-on-dark-86);
+    text-wrap: pretty;
+    text-align: left;
+  }
+  .hero__lead-mobile {
+    display: none;
+    margin: 0;
+    font: 400 var(--fs-lead-mobile) / 1.5 var(--font-body);
+    color: var(--color-text-on-dark-86);
+    text-wrap: pretty;
+    max-width: 520px;
+  }
+  .hero__twenty {
+    grid-column: 9 / 13;
+    grid-row: 1;
+    justify-self: end;
+    align-self: end;
+    margin-bottom: 0.02em;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 28px;
+    position: relative;
+    z-index: 1;
+    font-size: var(--fs-hero-title);
+  }
+  .hero__cap {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    pointer-events: none;
+  }
+  .hero__cap-mask {
+    display: block;
+    overflow: hidden;
+    padding: 0 4px;
+  }
+  .hero__cap-line {
+    display: block;
+    transform: translateY(110%);
+    font: 700 var(--fs-caption-line) / var(--lh-caption) var(--font-display);
+    font-stretch: 25%;
+    text-transform: uppercase;
+    color: var(--color-text-primary-inverse);
+    white-space: nowrap;
+  }
+  .hero__cap-line[data-cap-line]:nth-child(1) {
+    display: block;
+  }
+  .hero__cap-plate {
+    display: inline-block;
+    background: var(--color-accent);
+    color: var(--color-text-primary);
+    padding: 0 var(--space-xs);
+    clip-path: inset(0 100% 0 0);
+  }
+  .hero__number {
+    font: 800 var(--fs-hero-number) / var(--lh-hero-number) var(--font-display);
+    font-stretch: 25%;
+    letter-spacing: var(--ls-hero-number);
+    text-align: right;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    user-select: none;
+  }
+  .hero__cta {
+    grid-column: 1 / 8;
+    grid-row: 2;
+    align-self: start;
+    margin-top: var(--space-4xl);
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    max-width: 620px;
+  }
+  .hero__cta-row {
+    display: flex;
+    gap: 2px;
+    flex-wrap: wrap;
+  }
+  .hero__cta-row > :global(a:first-child) {
+    background-image: var(--fill-accent);
+    color: var(--color-text-primary-inverse);
+  }
+  .hero__cta-row > :global(a:first-child:hover) {
+    color: var(--color-text-primary);
+  }
+  .hero__cta-row > :global(a:last-child) {
+    padding: 28px;
+  }
+
+  /* ---------- Вариант внутренней страницы ---------- */
+  .hero--page {
+    min-height: 0;
+  }
+  .hero--page .hero__grid {
+    padding: 88px 0 96px 32px;
+    row-gap: var(--space-5xl);
+  }
+  .hero--page .hero__title {
+    font-size: var(--fs-h2-md);
+    grid-column: 1 / 10;
+  }
+  .hero--page .hero__title :global(.stroke) {
+    -webkit-text-stroke: 2px var(--color-text-primary-inverse);
+    color: transparent;
+  }
+  .hero--page .hero__title :global(.accent) {
+    color: var(--color-accent);
+  }
+  .hero__aside {
+    grid-column: 10 / 13;
+    grid-row: 1;
+    align-self: end;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+    min-width: 0;
+  }
+  .hero__lead-page {
+    margin: 0;
+    font: 400 var(--fs-lead) / 1.45 var(--font-body);
+    color: var(--color-text-on-dark-86);
+    text-wrap: pretty;
+  }
+  .hero__note {
+    margin: 0;
+    font: 500 var(--fs-label) / var(--lh-label) var(--font-mono);
+    letter-spacing: var(--ls-mono);
+    text-transform: uppercase;
+    color: var(--color-text-on-dark-50);
+  }
+  .hero__cta-row--col {
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+  .hero__cta-row--col > :global(a) {
+    justify-content: space-between;
+    padding: var(--space-lg);
+    font-size: var(--fs-btn-sm);
+    letter-spacing: var(--ls-btn-sm);
+    white-space: nowrap;
+  }
+  .hero__cta-row--col > :global(a:last-child) {
+    padding: var(--space-lg);
+  }
+
+  @media (max-width: 768px) {
+    .hero {
+      min-height: 0;
+    }
+    .hero__pad {
+      padding: 0 var(--space-page-mobile);
+    }
+    .hero__grid {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      padding: 36px 0 48px;
+      gap: var(--space-xl);
+    }
+    .hero__title {
+      font-size: min(22vw, 96px);
+    }
+    .hero__lead {
+      display: none;
+    }
+    .hero__lead-mobile {
+      display: block;
+      order: 1;
+    }
+    .hero__cta {
+      order: 2;
+      margin-top: 0;
+      max-width: none;
+    }
+    .hero__cta :global(a) {
+      flex: 1 1 150px;
+      justify-content: center;
+      padding: 22px var(--space-lg);
+    }
+    .hero__twenty {
+      order: -1;
+      align-items: center;
+      align-self: center;
+      justify-self: center;
+      gap: var(--space-sm);
+      margin: 0 0 var(--space-sm);
+    }
+    .hero__cap {
+      align-items: center;
+      text-align: center;
+    }
+    .hero__number {
+      font-size: min(88vw, 420px);
+      width: max-content;
+      text-align: center;
+    }
+    .hero__cap-line {
+      font-size: 30px;
+    }
+
+    /* Вариант page на mobile: вертикальный стек, кнопки во всю ширину */
+    .hero--page .hero__grid {
+      padding: 40px 0 56px;
+      gap: var(--space-xl);
+    }
+    .hero--page .hero__title {
+      font-size: min(13vw, 64px);
+    }
+    .hero__aside {
+      gap: var(--space-lg);
+    }
+    .hero__cta-row--col > :global(a) {
+      justify-content: center;
+    }
+  }
+</style>

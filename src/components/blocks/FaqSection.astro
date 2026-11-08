@@ -1,0 +1,148 @@
+---
+import Container from '../ui/Container.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+interface Props {
+  id?: string;
+  label?: string;
+  heading: string;
+  items: Array<{ question: string; answer?: string }>;
+}
+const { id, label, heading, items } = Astro.props;
+---
+
+<section class="faq" id={id} aria-label={heading.replace(/<[^>]+>/g, '')}>
+  <Container>
+    <div class="faq__head" data-reveal>
+      {label && <SectionLabel text={label} variant="h" tone="light" />}
+      <SectionHeading html={heading} size="md" class="faq__heading" />
+    </div>
+    <div class="faq__list">
+      {
+        items.map((item, i) => {
+          const buttonId = `faq-q-${i}`;
+          const panelId = `faq-a-${i}`;
+          return (
+            <div class="faq__item" data-faq-item data-reveal style={`transition-delay:${i * 40}ms`}>
+              <h3 class="faq__question">
+                <button
+                  type="button"
+                  class="faq__button"
+                  id={buttonId}
+                  aria-expanded="false"
+                  aria-controls={panelId}
+                  data-faq-button
+                >
+                  <span>{item.question}</span>
+                  <span class="faq__mark" aria-hidden="true" />
+                </button>
+              </h3>
+              <div class="faq__answer" id={panelId} role="region" aria-labelledby={buttonId} data-faq-panel hidden>
+                {/* TODO: ответ не подготовлен — секция не должна публиковаться без ответов */}
+                <p>{item.answer ?? 'Ответ готовится.'}</p>
+              </div>
+            </div>
+          );
+        })
+      }
+    </div>
+  </Container>
+</section>
+
+<style>
+  .faq {
+    padding: var(--space-section-y) 0;
+    background: var(--color-bg-page);
+  }
+  .faq__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+  .section-heading :global(.stroke) {
+    -webkit-text-stroke: 2px var(--color-text-primary);
+    color: transparent;
+  }
+  .faq__list {
+    margin-top: var(--space-5xl);
+    border-top: 1px solid var(--color-line-dark-soft);
+  }
+  .faq__item {
+    border-bottom: 1px solid var(--color-line-dark-soft);
+  }
+  .faq__question {
+    margin: 0;
+  }
+  .faq__button {
+    all: unset;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-xl);
+    width: 100%;
+    padding: var(--space-xl) 0;
+    cursor: pointer;
+    font: 500 var(--fs-lead-section) / 1.25 var(--font-body);
+    letter-spacing: var(--ls-normal);
+    color: var(--color-text-primary);
+    transition: color var(--dur-fast);
+  }
+  .faq__button:hover {
+    color: var(--color-text-accent-dark);
+  }
+  /* Квадратный «плюс» из токенов: развёрнутый пункт показывает минус */
+  .faq__mark {
+    position: relative;
+    width: var(--space-md);
+    height: var(--space-md);
+    flex: none;
+  }
+  .faq__mark::before,
+  .faq__mark::after {
+    content: '';
+    position: absolute;
+    background: var(--color-accent);
+  }
+  .faq__mark::before {
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 2px;
+    transform: translateY(-50%);
+  }
+  .faq__mark::after {
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    transform: translateX(-50%);
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+  .faq__button[aria-expanded='true'] .faq__mark::after {
+    transform: translateX(-50%) scaleY(0);
+  }
+  .faq__answer {
+    padding: 0 0 var(--space-xl);
+    max-width: 760px;
+  }
+  .faq__answer p {
+    margin: 0;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--color-text-on-light-74);
+    text-wrap: pretty;
+  }
+  @media (max-width: 768px) {
+    .faq {
+      padding: 88px 0;
+    }
+    .faq__list {
+      margin-top: var(--space-2xl);
+    }
+    .faq__button {
+      padding: var(--space-lg) 0;
+    }
+  }
+</style>

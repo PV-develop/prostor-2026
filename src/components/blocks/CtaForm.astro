@@ -1,0 +1,103 @@
+---
+import TextField from '../ui/TextField.astro';
+import { ctaForm as homeCtaForm } from '../../content/home';
+
+interface Props {
+  /** HTML-строка заголовка (поддерживает <br> и span.cta__accent); по умолчанию — заголовок главной */
+  titleHtml?: string;
+  lead?: string;
+  submitLabel?: string;
+  /** true — заголовок на всю ширину, слот с формой отдельной строкой ниже (внутренние страницы) */
+  stacked?: boolean;
+}
+
+const { titleHtml, lead, submitLabel, stacked = false } = Astro.props;
+const title = titleHtml ?? `${homeCtaForm.titleLines[0]}<br />${homeCtaForm.titleLines[1]}<br /><span class="cta__accent">${homeCtaForm.titleLines[2]}</span>`;
+const leadText = lead ?? homeCtaForm.lead;
+const submit = submitLabel ?? homeCtaForm.submit;
+---
+
+<div class:list={['cta', stacked && 'cta--stacked']} data-reveal data-m="cta">
+  <div class="cta__title" set:html={title} />
+  <!-- TODO: форма — визуальный mock без реальной отправки; подключить обработчик при появлении бэкенда -->
+  <slot name="form">
+    <form class="cta__form" data-mock-form>
+      <p class="cta__lead">{leadText}</p>
+      <TextField name="cta-name" label="Имя" autocomplete="name" />
+      <TextField name="cta-phone" label="Телефон" type="tel" placeholderOnFocus="+7 (___) ___-__-__" autocomplete="tel" />
+      <button type="submit" class="btn cta__submit btn-fill">
+        <span data-send-label>{submit}</span><span aria-hidden="true">→</span>
+      </button>
+    </form>
+  </slot>
+</div>
+
+<style>
+  .cta {
+    margin: var(--space-7xl) var(--space-page) 0;
+    background: var(--color-bg-dark);
+    color: var(--color-text-primary-inverse);
+    padding: var(--space-5xl) var(--space-4xl);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+    gap: 40px var(--space-4xl);
+    align-items: start;
+  }
+  .cta__title {
+    font: 700 var(--fs-h3) / var(--lh-display-2) var(--font-display);
+    font-stretch: 25%;
+    text-transform: uppercase;
+  }
+  .cta__title :global(.cta__accent) {
+    color: var(--color-accent);
+  }
+  .cta__form {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-xl) 28px;
+    align-items: end;
+  }
+  .cta__lead {
+    grid-column: 1 / -1;
+    margin: 0;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--color-text-on-dark-72);
+    max-width: var(--desc-max);
+    text-wrap: pretty;
+  }
+  .cta__submit {
+    grid-column: 1 / -1;
+    justify-content: space-between;
+    background-image: var(--fill-accent);
+    color: var(--color-text-primary-inverse);
+    padding: 26px 30px;
+  }
+  .cta__submit:hover {
+    color: var(--color-text-primary);
+    gap: 36px;
+  }
+  /* Слот с произвольной формой (внутренняя страница): растягаем на колонку */
+  .cta__form-slot {
+    min-width: 0;
+  }
+  /* Заголовок строкой сверху, слот с формой — на всю ширину ниже */
+  .cta--stacked {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cta--stacked .cta__title {
+    max-width: 720px;
+  }
+  @media (max-width: 768px) {
+    .cta {
+      margin: 56px var(--space-page-mobile) 0;
+      padding: 36px var(--space-page-mobile);
+      gap: 28px;
+    }
+    .cta__form {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 14px;
+    }
+  }
+</style>

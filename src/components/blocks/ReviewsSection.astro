@@ -1,0 +1,154 @@
+---
+import SectionLabel from '../ui/SectionLabel.astro';
+import { reviews } from '../../content/home';
+
+const logos = [...reviews.logos, ...reviews.logos];
+---
+
+<div class="reviews">
+  <SectionLabel text="Отзывы" variant="h" tone="light" class="reviews__label" />
+  <div class="reviews__logos">
+    <div class="reviews__track">
+      {logos.map((logo) => (
+        <div class="reviews__logo">{logo}</div>
+      ))}
+    </div>
+  </div>
+  <div class="reviews__quote" data-reveal data-m="quote">
+    <div class="reviews__mark" aria-hidden="true">«</div>
+    <div class="reviews__body">
+      <blockquote class="reviews__text">
+        {reviews.quote.slice(0, reviews.quote.lastIndexOf('про продажи.'))}
+        <span class="reviews__stroke">про продажи.</span>
+      </blockquote>
+      <div class="reviews__meta">
+        <div class="reviews__author">
+          {reviews.author}<br />{reviews.authorRole}
+        </div>
+        <div class="reviews__progress" aria-hidden="true">
+          <span class="reviews__progress-bar reviews__progress-bar--active"></span>
+          <span class="reviews__progress-bar"></span>
+          <span class="reviews__progress-bar"></span>
+        </div>
+        <!-- TODO: страницы всех отзывов пока нет — разметка сохранена, href временно ведёт к форме -->
+        <a href="#contacts" class="reviews__all">Все отзывы <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .reviews {
+    margin-top: 0;
+  }
+:global(.reviews__label) {
+    margin: 180px var(--space-page) 40px;
+  }
+  .reviews__logos {
+    border-top: 1px solid var(--color-text-on-dark-18);
+    border-bottom: 1px solid var(--color-text-on-dark-18);
+    overflow: hidden;
+    padding: 18px 0;
+  }
+  .reviews__track {
+    display: flex;
+    gap: var(--space-md);
+    width: max-content;
+    animation: marqR var(--dur-marquee-reviews) linear infinite;
+    padding-right: var(--space-md);
+  }
+  .reviews__logo {
+    flex: none;
+    width: 168px;
+    height: 64px;
+    border: 1px dashed var(--color-text-on-dark-22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 500 var(--fs-btn-sm) / 1 var(--font-mono);
+    letter-spacing: var(--ls-btn-sm);
+    text-transform: uppercase;
+    color: var(--color-text-on-dark-40);
+  }
+  .reviews__quote {
+    padding: 96px var(--space-page) 100px;
+    display: grid;
+    grid-template-columns: minmax(24px, 120px) minmax(0, 1fr);
+    column-gap: var(--space-xl);
+  }
+  .reviews__mark {
+    font: 700 var(--fs-quote-mark) / var(--lh-quote) var(--font-display);
+    font-stretch: 25%;
+    color: var(--color-accent);
+  }
+  .reviews__text {
+    margin: 0;
+    font: 700 var(--fs-quote) / 1 var(--font-display);
+    font-stretch: 25%;
+    text-transform: uppercase;
+    max-width: 1100px;
+    text-wrap: balance;
+  }
+  .reviews__stroke {
+    -webkit-text-stroke: 2px var(--color-text-primary-inverse);
+    color: transparent;
+  }
+  .reviews__meta {
+    margin-top: 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    flex-wrap: wrap;
+    gap: var(--space-lg);
+  }
+  .reviews__author {
+    font: 500 var(--fs-label) / var(--lh-label) var(--font-body);
+    color: var(--color-text-on-dark-55);
+    line-height: 1.8;
+  }
+  .reviews__progress {
+    display: flex;
+    gap: 2px;
+  }
+  .reviews__progress-bar {
+    width: 40px;
+    height: 4px;
+    background: var(--color-text-on-dark-25);
+  }
+  .reviews__progress-bar--active {
+    background: var(--color-accent);
+  }
+  .reviews__all {
+    font: 600 var(--fs-btn-sm) var(--font-mono);
+    letter-spacing: var(--ls-btn-md);
+    text-transform: uppercase;
+    display: flex;
+    gap: var(--space-md);
+    border-bottom: 1px solid var(--color-text-primary-inverse);
+    padding-bottom: 4px;
+    transition:
+      gap var(--dur-base),
+      color var(--dur-base),
+      border-color var(--dur-base);
+  }
+  .reviews__all:hover {
+    gap: 26px;
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+  @media (max-width: 768px) {
+    .reviews__label {
+      margin: 96px var(--space-page-mobile) 40px;
+    }
+    .reviews__quote {
+      padding: 64px var(--space-page-mobile) 72px;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xl);
+    }
+    .reviews__mark {
+      font-size: 96px;
+      line-height: 0.8;
+    }
+  }
+</style>

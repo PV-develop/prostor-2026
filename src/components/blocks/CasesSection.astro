@@ -1,0 +1,120 @@
+---
+import SectionLabel from '../ui/SectionLabel.astro';
+import Button from '../ui/Button.astro';
+import CaseCard from '../ui/CaseCard.astro';
+import { cases as homeCases } from '../../content/home';
+
+export interface CaseItemData {
+  photo: string;
+  photoAlt: string;
+  tag: string;
+  industry: string;
+  value: number;
+  suffix: string;
+  metric: string;
+  title: string;
+  description: string;
+  /** Реальная страница кейса; без неё кнопка/ссылка карточки не выводится */
+  href?: string;
+}
+
+interface Props {
+  label?: string;
+  /** HTML-строка заголовка; по умолчанию — заголовок главной */
+  titleHtml?: string;
+  items?: CaseItemData[];
+  /** Ссылка «Все кейсы» (главная). Для страниц без архива — false */
+  showAllLink?: boolean;
+}
+
+const {
+  label,
+  titleHtml,
+  items,
+  showAllLink = true,
+} = Astro.props;
+
+// По умолчанию — контент главной (разметка и поведение главной не меняются)
+const secLabel = label ?? homeCases.label;
+const title = titleHtml ?? 'Задачи бизнеса,<br /><span class="cases__stroke">которые уже</span> решили';
+const caseItems = items ?? homeCases.items;
+---
+
+<section class="cases" id="cases" aria-label="Кейсы">
+  <SectionLabel text={secLabel} variant="h" tone="light" class="cases__label" />
+  <div class="cases__head" data-reveal data-m="sechead">
+    <h2 class="cases__title" set:html={title} />
+    {
+      showAllLink && (
+        /* TODO: страницы всех кейсов пока нет — ссылка ведёт на форму; вернуть href при создании страницы */
+        <Button href="#contacts" label="Все кейсы" variant="outline-light" arrow="arrow" class="cases__all" />
+      )
+    }
+  </div>
+  <div class="cases__grid" data-m="cases">
+    {caseItems.map((item) => <CaseCard {...item} />)}
+  </div>
+</section>
+
+<style>
+  .cases {
+    background: var(--color-bg-dark);
+    color: var(--color-text-primary-inverse);
+    padding: var(--space-section-y) 0 var(--space-section-b);
+    overflow: hidden;
+  }
+  :global(.cases__label) {
+    margin: 0 var(--space-page) 40px;
+  }
+  .cases__head {
+    padding: 0 var(--space-page);
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: var(--space-3xl);
+  }
+  .cases__title {
+    margin: 0;
+    font: 700 var(--fs-h2) / var(--lh-display-2) var(--font-display);
+    font-stretch: 25%;
+    text-transform: uppercase;
+  }
+  .cases__title :global(.cases__stroke) {
+    -webkit-text-stroke: 2px var(--color-text-primary-inverse);
+    color: transparent;
+  }
+  :global(.cases__all) {
+    margin-bottom: 12px;
+    padding: 24px 28px;
+  }
+  .cases__grid {
+    margin-top: 96px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2px;
+    padding: 0 var(--space-page);
+  }
+  @media (max-width: 768px) {
+    .cases {
+      padding: 88px 0 96px;
+    }
+    .cases__label {
+      margin: 0 var(--space-page-mobile) 40px;
+    }
+    .cases__head {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 28px;
+      padding: 0 var(--space-page-mobile);
+    }
+    .cases__all {
+      margin-bottom: 0;
+    }
+    .cases__grid {
+      margin-top: 48px;
+      padding: 0 var(--space-page-mobile);
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-xl);
+    }
+  }
+</style>

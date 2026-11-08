@@ -1,0 +1,372 @@
+---
+import SectionLabel from '../ui/SectionLabel.astro';
+import { services, industries } from '../../content/home';
+---
+
+<section class="services" id="directions" aria-label="Направления">
+  <div class="services__head" data-reveal data-m="s2head">
+    <SectionLabel text={services.label} variant="v" />
+    <h2 class="services__title">
+      С какой задачей<br />требуется <span class="services__stroke">помощь</span><span class="services__q">?</span>
+    </h2>
+    <p class="services__lead">{services.lead}</p>
+  </div>
+
+  <div class="services__rows">
+    {services.rows.map((row) => (
+      <a
+        href="#contacts"
+        class:list={['service-row', row.featured && 'service-row--featured']}
+        data-reveal
+        data-m="srow"
+        {...(row.featured ? { 'data-tl-inv': true } : {})}
+      >
+        <span class="service-row__num" data-tl>
+          <span class:list={['tag-square', row.featured && 'tag-square--dark']}></span>
+          <span class="service-row__num-text">{row.num}</span>
+        </span>
+        <span class="service-row__title-wrap">
+          {row.badge && <span class:list={['service-row__badge', row.featured && 'service-row__badge--dark']}>{row.badge}</span>}
+          <span class="service-row__title">
+            {row.featured && <span class="service-row__title-dark">Комплексный</span>}
+            {row.featured ? ' маркетинг' : row.title}
+          </span>
+        </span>
+        <span class="service-row__desc">
+          {row.description}
+          <span class:list={['service-row__channels', row.featured && 'service-row__channels--strong']}>{row.channels}</span>
+        </span>
+        <span class="service-row__arrow" aria-hidden="true">→</span>
+      </a>
+    ))}
+  </div>
+
+  <div class="industries" data-reveal data-m="otr">
+    <SectionLabel text={industries.label} variant="v" />
+    <div class="industries__main">
+      <div class="industries__row">
+        <span class="industries__accent">{industries.headingAccent}</span>
+        {industries.items.map((item) => (
+          // TODO: страницы отраслей пока нет — href="#" не используем; фото-подложка hover сохранена
+          <a class="industry-chip" data-chip={item.label} data-chip-photo={item.photo}>{item.label}</a>
+        ))}
+        <!-- TODO: страницы «других отраслей» пока нет — разметка сохранена без href -->
+        <span class="industries__more">
+          и других отраслей
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square" class="industries__more-icon" aria-hidden="true">
+            <path d="M3 12h17M13 5l7 7-7 7"></path>
+          </svg>
+        </span>
+      </div>
+      <div class="industries__foot">
+        <span class="industries__note">{industries.note}</span>
+        <a href="#contacts" class="btn industries__cta btn-fill">{industries.cta} <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .services {
+    padding: var(--space-section-y) 0 var(--space-section-b);
+    position: relative;
+  }
+  .services__head {
+    padding: 0 var(--space-page);
+    display: grid;
+    grid-template-columns: var(--col-side) minmax(0, 3fr) minmax(0, 2fr) 56px;
+    column-gap: var(--space-col-gap);
+    row-gap: var(--space-row-gap);
+    align-items: end;
+  }
+  .services__head :global(.section-label) {
+    grid-column: 1;
+    align-self: start;
+    justify-self: start;
+  }
+  .services__title {
+    grid-column: 2;
+    margin: 0;
+    font: 700 var(--fs-h2) / var(--lh-display-2) var(--font-display);
+    font-stretch: 25%;
+    text-transform: uppercase;
+    letter-spacing: var(--ls-display);
+  }
+  .services__stroke {
+    -webkit-text-stroke: 2px var(--color-text-primary);
+    color: transparent;
+  }
+  .services__q {
+    color: var(--color-accent);
+  }
+  .services__lead {
+    grid-column: 3 / 5;
+    align-self: end;
+    margin: 0;
+    max-width: var(--lead-max);
+    font: 400 var(--fs-lead-section) / 1.45 var(--font-body);
+    color: var(--color-text-primary);
+    text-wrap: pretty;
+  }
+
+  .services__rows {
+    margin-top: var(--space-6xl);
+    border-top: 1px solid var(--color-line-dark);
+  }
+  .service-row {
+    display: grid;
+    grid-template-columns: var(--col-side) minmax(0, 3fr) minmax(0, 2fr) 56px;
+    column-gap: var(--space-col-gap);
+    align-items: center;
+    padding: 36px var(--space-page);
+    border-bottom: 1px solid var(--color-line-dark);
+    background-image: var(--fill-dark);
+    background-size: 201% 100%;
+    background-position: 100% 0;
+    background-repeat: no-repeat;
+    transition:
+      background-position var(--dur-clip-long) var(--ease-swipe),
+      color 0.4s;
+  }
+  .service-row:hover {
+    background-position: 0 0;
+    color: var(--color-text-primary-inverse);
+  }
+  .service-row__num {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font: 500 var(--fs-label) / var(--lh-label) var(--font-body);
+    align-self: start;
+    margin: 10px 0 0 var(--space-sm);
+    justify-self: start;
+  }
+  .service-row__num-text {
+    opacity: 0.5;
+  }
+  .tag-square--dark {
+    background: var(--color-text-primary);
+  }
+  .service-row--featured .service-row__num-text {
+    opacity: 0.7;
+  }
+  .service-row__title-wrap {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .service-row__badge {
+    font: 600 var(--fs-tag) / 1.2 var(--font-body);
+    background: var(--color-accent);
+    color: var(--color-text-primary);
+    padding: 5px var(--space-xs);
+    flex: none;
+    white-space: nowrap;
+    line-height: 1;
+    margin-top: calc(var(--fs-service-title) * 0.06);
+  }
+  .service-row__badge--dark {
+    background: var(--color-text-primary);
+    color: var(--color-text-primary-inverse);
+  }
+  .service-row__title {
+    font: 700 var(--fs-service-title) / var(--lh-service) var(--font-display);
+    font-stretch: 25%;
+    text-transform: uppercase;
+    letter-spacing: var(--ls-display);
+  }
+  .service-row__title-dark {
+    color: var(--color-text-primary);
+  }
+  .service-row--featured {
+    position: relative;
+    color: var(--color-text-primary-inverse);
+    background-image: var(--fill-accent);
+    border-bottom: 1px solid var(--color-line-dark);
+  }
+  .service-row--featured:hover {
+    color: var(--color-text-primary);
+  }
+  .service-row__desc {
+    font-size: var(--fs-body-sm);
+    line-height: var(--lh-body);
+    opacity: 0.8;
+    max-width: var(--desc-max);
+    text-wrap: pretty;
+  }
+  .service-row__channels {
+    font: 500 var(--fs-label) / var(--lh-label) var(--font-body);
+    display: block;
+    margin-top: 14px;
+    opacity: 0.65;
+  }
+  .service-row__channels--strong {
+    font: 600 var(--fs-tag) / 1.2 var(--font-body);
+    letter-spacing: 0.01em;
+    opacity: 1;
+  }
+  .service-row__arrow {
+    width: 56px;
+    height: 56px;
+    border: 1px solid currentColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 500 var(--fs-body) var(--font-mono);
+  }
+
+  .industries {
+    margin-top: var(--space-section-y);
+    padding: 0 var(--space-page);
+    display: grid;
+    grid-template-columns: minmax(24px, 120px) minmax(0, 1fr);
+    column-gap: var(--space-xl);
+  }
+  .industries__main {
+    min-width: 0;
+  }
+  .industries__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    align-items: center;
+    font: 700 var(--fs-industry) / 1 var(--font-display);
+    font-stretch: 25%;
+    text-transform: uppercase;
+  }
+  .industries__accent {
+    margin-right: var(--space-xl);
+    color: var(--color-accent);
+  }
+  .industry-chip {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border: 1px solid var(--color-text-primary);
+    padding: 16px 22px;
+    background-image: var(--fill-dark-on-light);
+    background-size: 201% 100%;
+    background-position: 100% 0;
+    background-repeat: no-repeat;
+    transition:
+      background-position 0.5s var(--ease-swipe),
+      color var(--dur-slow);
+    cursor: pointer;
+  }
+  .industry-chip:hover {
+    background-position: 0 0;
+    color: var(--color-text-primary-inverse);
+  }
+  /* Фото-подложка при hover создаётся скриптом из data-chip-photo */
+  .industry-chip__photo {
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    pointer-events: none;
+    background-size: cover;
+    background-position: center;
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 0.5s var(--ease-swipe);
+  }
+  .industries__more {
+    display: inline-flex;
+    gap: 0.22em;
+    align-items: center;
+    color: var(--color-text-on-light-35);
+    transition:
+      color var(--dur-base),
+      gap var(--dur-base);
+    cursor: pointer;
+  }
+  .industries__more:hover {
+    color: var(--color-text-primary);
+    gap: 0.36em;
+  }
+  .industries__more-icon {
+    width: 0.6em;
+    height: 0.6em;
+    flex: none;
+  }
+  .industries__foot {
+    margin-top: var(--space-3xl);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-lg) 40px;
+    align-items: center;
+  }
+  .industries__note {
+    font-size: var(--fs-body-sm);
+    color: var(--color-text-on-light-70);
+    max-width: var(--desc-max);
+    flex: 1 1 300px;
+  }
+  .industries__cta {
+    background-image: var(--fill-accent-to-dark);
+    color: var(--color-text-primary-inverse);
+    padding: 22px 28px;
+  }
+  .industries__cta:hover {
+    background-position: 0 0;
+  }
+
+  @media (max-width: 768px) {
+    .services {
+      padding: 88px 0 96px;
+    }
+    .services__head {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-lg);
+      padding: 0 var(--space-page-mobile);
+    }
+    .services__lead {
+      font-size: var(--fs-lead-mobile);
+    }
+    .services__rows {
+      margin-top: var(--space-section-y);
+    }
+    .service-row {
+      grid-template-columns: minmax(0, 1fr) 48px;
+      grid-template-areas: 'n a' 't t' 'd d';
+      gap: 14px var(--space-md);
+      padding: 28px var(--space-page-mobile);
+      align-items: start;
+    }
+    .service-row__num {
+      grid-area: n;
+      margin: 0;
+      align-self: center;
+    }
+    .service-row__title-wrap {
+      grid-area: t;
+    }
+    .service-row__desc {
+      grid-area: d;
+      max-width: none;
+    }
+    .service-row__arrow {
+      grid-area: a;
+      width: 48px;
+      height: 48px;
+      justify-self: end;
+    }
+    .industries {
+      margin-top: 96px;
+      padding: 0 var(--space-page-mobile);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+    }
+    .industries__row {
+      gap: var(--space-sm);
+    }
+    .industries__foot {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-lg);
+    }
+  }
+</style>

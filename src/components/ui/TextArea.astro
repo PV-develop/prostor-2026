@@ -1,0 +1,55 @@
+---
+interface Props {
+  name: string;
+  label: string;
+  rows?: number;
+  class?: string;
+}
+const { name, label, rows = 4, class: className = '' } = Astro.props;
+---
+
+<label class={`field ${className}`} data-field>
+  <span class="field__label">{label}</span>
+  <textarea class="field__input field__input--area" name={name} rows={rows} data-float-input></textarea>
+</label>
+
+<style>
+  .field {
+    position: relative;
+    display: block;
+    cursor: text;
+  }
+  .field__label {
+    position: absolute;
+    left: 18px;
+    top: 20px;
+    font: 400 var(--fs-body) var(--font-body);
+    color: var(--color-text-on-dark-55);
+    pointer-events: none;
+    transition:
+      top var(--dur-fast),
+      font-size var(--dur-fast);
+  }
+  .field__input--area {
+    all: unset;
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    min-height: 136px;
+    padding: 30px 18px 14px;
+    background: var(--color-bg-dark);
+    border: 1px solid var(--color-text-on-dark-22);
+    color: var(--color-text-primary-inverse);
+    font: 400 var(--fs-body) / var(--lh-body) var(--font-body);
+    white-space: pre-wrap;
+    transition: border-color var(--dur-base);
+  }
+  .field:focus-within .field__input--area {
+    border-color: var(--color-text-primary-inverse);
+  }
+  .field:focus-within .field__label,
+  .field.is-filled .field__label {
+    top: 10px;
+    font-size: var(--fs-tag);
+  }
+</style>

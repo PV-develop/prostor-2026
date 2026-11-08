@@ -1,0 +1,77 @@
+---
+import Container from '../ui/Container.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+import TwoColRows from './TwoColRows.astro';
+
+interface Props {
+  id?: string;
+  label?: string;
+  heading: string;
+  rows: Array<{ question: string; decision: string }>;
+  note?: string;
+}
+const { id, label, heading, rows, note } = Astro.props;
+---
+
+<section class="approach" id={id} aria-label={heading.replace(/<[^>]+>/g, '')}>
+  <Container>
+    <div class="approach__head" data-reveal>
+      {label && <SectionLabel text={label} variant="h" tone="light" />}
+      <SectionHeading html={heading} size="md" class="approach__heading" />
+    </div>
+    <div class="approach__table" data-reveal>
+      <TwoColRows
+        rows={rows.map((row) => ({ left: row.question, right: row.decision }))}
+        headLeft="Что выясняем"
+        headRight="Какое решение принимаем"
+        mobileLeftLabel="Что выясняем"
+        mobileRightLabel="Какое решение принимаем"
+      />
+    </div>
+    {note && <p class="approach__note" data-reveal>{note}</p>}
+  </Container>
+</section>
+
+<style>
+  .approach {
+    padding: var(--space-section-page-y) 0 0;
+    background: var(--color-bg-page);
+  }
+  .approach__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+  .section-heading :global(.stroke) {
+    -webkit-text-stroke: 2px var(--color-text-primary);
+    color: transparent;
+  }
+  .approach__table {
+    margin-top: var(--space-3xl);
+  }
+  .approach__note {
+    margin: var(--space-xl) 0 0 auto;
+    max-width: var(--note-max);
+    padding: var(--space-lg) var(--space-xl);
+    border-left: 2px solid var(--color-accent);
+    background: var(--color-bg-card-light);
+    font-size: var(--fs-lead);
+    line-height: var(--lh-body);
+    color: var(--color-text-primary);
+    text-wrap: pretty;
+  }
+  @media (max-width: 768px) {
+    .approach {
+      padding-top: var(--space-section-page-y-mobile);
+    }
+    .approach__table {
+      margin-top: var(--space-xl);
+    }
+    .approach__note {
+      margin-top: var(--space-lg);
+      padding: var(--space-lg);
+      font-size: var(--fs-body);
+    }
+  }
+</style>

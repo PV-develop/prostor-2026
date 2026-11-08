@@ -1,0 +1,185 @@
+---
+import TextField from '../ui/TextField.astro';
+import TextArea from '../ui/TextArea.astro';
+import FileField from '../ui/FileField.astro';
+import SelectField from '../ui/SelectField.astro';
+import ToggleGroup from '../ui/ToggleGroup.astro';
+
+export interface ContactFormFields {
+  /** Имя (default true) */
+  name?: boolean;
+  /** split — почта+телефон (как на главной); single — одно поле «Контакт и предпочтительный способ связи» */
+  contact?: 'split' | 'single';
+  /** при contact: 'split' */
+  email?: boolean;
+  phone?: boolean;
+  /** «Сайт или название компании» */
+  company?: boolean;
+  /** select «Сценарий/задача» */
+  scenario?: { enabled: boolean; options: string[] };
+  /** «Опишите задачу» */
+  message?: boolean;
+  file?: boolean;
+  /** «Статус рекламы» — группа из 2–3 опций */
+  statusToggle?: { enabled: boolean; options: string[] };
+}
+
+interface Props {
+  /** HTML; по умолчанию — текущий заголовок главной */
+  title?: string;
+  lead?: string;
+  submitLabel?: string;
+  fields?: ContactFormFields;
+  /** Подпись поля описания задачи (default «Опишите задачу») */
+  messageLabel?: string;
+  /** Включить обязательность имени и контакта (валидация в main.ts); для главной не включается */
+  requiredFields?: boolean;
+  /** Показать заголовок и лид над полями (default true) */
+  showHead?: boolean;
+}
+
+const {
+  title = 'Оставьте заявку, чтобы <span class="contact-form__accent">обсудить проект</span>',
+  lead = 'Свяжемся в течение часа и проконсультируем по вашему вопросу.',
+  submitLabel = 'Отправить заявку',
+  fields = {},
+  messageLabel = 'Опишите задачу',
+  requiredFields = false,
+  showHead = true,
+} = Astro.props;
+
+// Значения по умолчанию = набор полей главной (поведение главной не меняется)
+const f: Required<Omit<ContactFormFields, 'scenario' | 'statusToggle'>> & Pick<ContactFormFields, 'scenario' | 'statusToggle'> = {
+  name: fields.name ?? true,
+  contact: fields.contact ?? 'split',
+  email: fields.email ?? true,
+  phone: fields.phone ?? true,
+  company: fields.company ?? false,
+  message: fields.message ?? true,
+  file: fields.file ?? true,
+  scenario: fields.scenario,
+  statusToggle: fields.statusToggle,
+};
+---
+
+<form class="contact-form" data-mock-form>
+  {showHead && (
+    <div class="contact-form__head">
+      <h2 class="contact-form__title" set:html={title} />
+      <p class="contact-form__lead">{lead}</p>
+    </div>
+  )}
+  <div class="contact-form__fields">
+    {f.name && <TextField name="name" label="Имя" tone="dark" autocomplete="name" required={requiredFields} class="contact-form__wide" />}
+    {
+      f.contact === 'single' ? (
+        <TextField
+          name="contact"
+          label="Контакт и предпочтительный способ связи"
+          tone="dark"
+          required={requiredFields}
+          errorText="Укажите, как с вами связаться"
+          class="contact-form__wide"
+        />
+      ) : (
+        <Fragment>
+          {f.email && <TextField name="email" label="Почта" type="email" tone="dark" autocomplete="email" />}
+          {f.phone && (
+            <TextField name="phone" label="Телефон" type="tel" tone="dark" placeholderOnFocus="+7 (___) ___-__-__" autocomplete="tel" />
+          )}
+        </Fragment>
+      )
+    }
+    {f.company && <TextField name="company" label="Сайт или название компании" tone="dark" class="contact-form__wide" />}
+    {f.scenario?.enabled && (
+      <SelectField
+        name="scenario"
+        label="Сценарий/задача"
+        options={f.scenario.options}
+        class="contact-form__wide"
+      />
+    )}
+    {f.message && <TextArea name="message" label={messageLabel} class="contact-form__wide" />}
+    {f.statusToggle?.enabled && (
+      <ToggleGroup name="ad-status" legend="Статус рекламы" options={f.statusToggle.options} class="contact-form__wide" />
+    )}
+    {f.file && <FileField class="contact-form__wide" />}
+  </div>
+  <div class="contact-form__submit">
+    <button type="submit" class="btn contact-form__button btn-fill">
+      <span data-send-label>{submitLabel}</span><span aria-hidden="true">→</span>
+    </button>
+    <div class="contact-form__legal">
+      Отправляя заявку, вы соглашаетесь с
+      <!-- TODO: страницы политики пока нет — разметка сохранена -->
+      <span class="contact-form__policy">политикой обработки персональных данных</span>
+    </div>
+  </div>
+</form>
+
+<style>
+  .contact-form {
+    margin: 0;
+    background: var(--color-bg-card-dark);
+    padding: clamp(32px, 4vw, 56px);
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .contact-form__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+  .contact-form__title {
+    margin: 0;
+    font: 700 clamp(44px, 4.6vw, 68px) / 0.92 var(--font-display);
+    font-stretch: 25%;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+  .contact-form__accent {
+    color: var(--color-accent);
+  }
+  .contact-form__lead {
+    margin: 0;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--color-text-on-dark-72);
+    max-width: var(--desc-max);
+    text-wrap: pretty;
+  }
+  .contact-form__fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(max(220px, calc(50% - 6px)), 1fr));
+    gap: var(--space-sm);
+  }
+  :global(.contact-form__wide) {
+    grid-column: 1 / -1;
+  }
+  .contact-form__submit {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .contact-form__button {
+    justify-content: space-between;
+    background-image: var(--fill-light-to-accent);
+    color: var(--color-white-pure);
+    padding: 24px 28px;
+  }
+  .contact-form__button:hover {
+    color: var(--color-text-primary);
+  }
+  .contact-form__legal {
+    font-size: var(--fs-tag);
+    line-height: var(--lh-body);
+    color: var(--color-text-on-dark-50);
+  }
+  .contact-form__policy {
+    color: var(--color-text-on-dark-80);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+</style>
