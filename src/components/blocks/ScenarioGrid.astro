@@ -1,0 +1,218 @@
+---
+/**
+ * Сценарии «когда бизнесу нужна работа с ...».
+ * layout="cards" (default): сетка карточек 2×2 (mobile — стек).
+ * layout="rows": редакционная композиция — слева маркер/заголовок/пояснение,
+ * справа вертикальный нумерованный список строк со стрелками и разделителями.
+ * После основного блока — пояснение и CTA. Карточки/строки некликабельны.
+ */
+import Container from '../ui/Container.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+import Button from '../ui/Button.astro';
+
+interface Props {
+  id?: string;
+  label?: string;
+  heading: string;              // HTML
+  intro?: string;
+  layout?: 'cards' | 'rows';
+  cards: Array<{ title: string; description: string }>;
+  note?: string;                // текст после блока
+  cta?: { label: string; href: string };
+}
+const { id = 'tasks', label, heading, intro, layout = 'cards', cards, note, cta } = Astro.props;
+const isRows = layout === 'rows';
+---
+{isRows ? (
+  <section class="scenarios scenarios--rows" id={id} data-screen-label="02 Задачи">
+    <Container>
+      <div class="scenarios__cols">
+        <div class="scenarios__side">
+          {label && <SectionLabel text={label} class="scenarios__label" />}
+          <div class="scenarios__head" data-reveal>
+            <SectionHeading size="side"><Fragment set:html={heading} /></SectionHeading>
+            {intro && <p class="scenarios__intro">{intro}</p>}
+          </div>
+        </div>
+        <ol class="scenarios__list">
+          {cards.map((c, i) => (
+            <li class="scenarios__row" data-reveal style={`transition-delay:${i * 90}ms`}>
+              <span class="scenarios__row-num">{String(i + 1).padStart(2, '0')}</span>
+              <div class="scenarios__row-body">
+                <h3 class="scenarios__row-title h-display">{c.title}</h3>
+                <p class="scenarios__row-desc">{c.description}</p>
+              </div>
+              <span class="scenarios__row-mark" aria-hidden="true">→</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div class="scenarios__foot" data-reveal>
+        {note && <p class="scenarios__note">{note}</p>}
+        {cta && <Button variant="ink-o" href={cta.href} class="scenarios__cta" arrow="→">{cta.label}</Button>}
+      </div>
+    </Container>
+  </section>
+) : (
+  <section class="scenarios" id={id} data-screen-label="02 Задачи">
+    <Container>
+      {label && <SectionLabel text={label} class="scenarios__label" />}
+      <div class="scenarios__head" data-reveal>
+        <SectionHeading size="process"><Fragment set:html={heading} /></SectionHeading>
+        {intro && <p class="scenarios__intro">{intro}</p>}
+      </div>
+      <div class="scenarios__grid">
+        {cards.map((c, i) => (
+          <article class="scenarios__card" data-reveal style={`transition-delay:${i * 90}ms`}>
+            <h3 class="scenarios__card-title h-display">{c.title}</h3>
+            <p class="scenarios__card-desc">{c.description}</p>
+          </article>
+        ))}
+      </div>
+      <div class="scenarios__foot" data-reveal>
+        {note && <p class="scenarios__note">{note}</p>}
+        {cta && <Button variant="ink-o" href={cta.href} class="scenarios__cta" arrow="→">{cta.label}</Button>}
+      </div>
+    </Container>
+  </section>
+)}
+
+<style>
+  .scenarios { background: var(--color-paper); padding: var(--section-gap) 0 var(--section-pad-y); }
+  .scenarios :global(.scenarios__label) { margin-bottom: 40px; }
+  .scenarios__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px 48px;
+  }
+  .scenarios__intro {
+    max-width: 460px;
+    font-size: 16px;
+    line-height: var(--fs-body-lh);
+    color: var(--ink-74);
+    text-wrap: pretty;
+  }
+  .scenarios__grid {
+    margin-top: 64px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2px;
+  }
+  .scenarios__card {
+    background: var(--color-card-light);
+    color: var(--color-ink);
+    padding: 36px clamp(24px, 2.4vw, 40px) 44px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .scenarios__card-title {
+    font-size: var(--fs-step-title);
+    line-height: .95;
+    text-wrap: balance;
+  }
+  .scenarios__card-desc {
+    max-width: 520px;
+    font-size: clamp(14px, 1.1vw, 16px);
+    line-height: var(--fs-body-lh);
+    color: var(--ink-70);
+    text-wrap: pretty;
+  }
+  .scenarios__foot {
+    margin-top: 56px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px 48px;
+  }
+  .scenarios__note {
+    max-width: 560px;
+    font-size: var(--fs-lead);
+    line-height: var(--fs-lead-lh);
+    color: var(--ink-80);
+    text-wrap: pretty;
+  }
+  .scenarios :global(.scenarios__cta) { padding: var(--btn-pad-y-lg) var(--btn-pad-x-lg); }
+
+  /* --- Редакционная раскладка (layout="rows"): 35 / 65 --- */
+  .scenarios--rows .scenarios__head { flex-direction: column; align-items: flex-start; gap: 24px; }
+  .scenarios--rows .scenarios__intro { font-size: var(--fs-form); }
+  .scenarios__cols {
+    display: grid;
+    grid-template-columns: minmax(0, 35fr) minmax(0, 65fr);
+    column-gap: clamp(40px, 6vw, 96px);
+    align-items: start;
+  }
+  .scenarios__side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+  .scenarios__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--line-ink-22);
+  }
+  .scenarios__row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 8px 28px;
+    align-items: start;
+    padding: var(--row-padding) 0;
+    border-bottom: 1px solid var(--line-ink-14);
+  }
+  .scenarios__row-num {
+    padding-top: calc(var(--fs-step-title) * 0.14);
+    font: 500 var(--fs-note)/1.4 var(--font-mono);
+    letter-spacing: var(--ls-label);
+    color: var(--color-red);
+  }
+  .scenarios__row-title {
+    font-size: var(--fs-step-title);
+    line-height: .95;
+    text-wrap: balance;
+  }
+  .scenarios__row-desc {
+    margin: 10px 0 0;
+    max-width: 560px;
+    font-size: clamp(14px, 1.1vw, 16px);
+    line-height: var(--fs-body-lh);
+    color: var(--ink-70);
+    text-wrap: pretty;
+  }
+  .scenarios__row-mark {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--line-ink-22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 500 14px var(--font-mono);
+    color: var(--ink-55);
+  }
+
+  @media (max-width: 768px) {
+    .scenarios { padding: 64px 0 88px; }
+    .scenarios__grid { margin-top: 40px; grid-template-columns: minmax(0, 1fr); }
+    .scenarios__card { padding: 28px 22px 32px; }
+    .scenarios__foot { margin-top: 40px; flex-direction: column; align-items: stretch; gap: 24px; }
+    .scenarios__foot :global(.scenarios__cta) { justify-content: space-between; }
+
+    .scenarios__cols { display: block; }
+    .scenarios__side { margin-bottom: 40px; }
+    .scenarios__list { margin-top: 0; }
+    .scenarios__row {
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 6px 20px;
+      padding: 24px 0;
+    }
+    .scenarios__row-num { padding-top: calc(var(--fs-step-title) * 0.14); }
+    .scenarios__row-mark { display: none; }
+  }
+</style>

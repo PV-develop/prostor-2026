@@ -1,0 +1,54 @@
+---
+/**
+ * KPI: таблица уровней метрик «уровень → что предлагаем отслеживать»
+ * (строки InfoRows — та же раскладка, что у ApproachSection, без копипаста)
+ * и пояснение про выбор показателей и аналитику.
+ */
+import Container from '../ui/Container.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+import InfoRows from '../ui/InfoRows.astro';
+
+interface Props {
+  id?: string;
+  label?: string;
+  heading: string;              // HTML
+  rows: Array<{ level: string; metrics: string }>;
+  termLabel?: string;           // заголовок колонки «уровень»
+  descriptionLabel?: string;    // заголовок колонки «что отслеживать»
+  note?: string;
+}
+const { id = 'kpi', label, heading, rows, termLabel, descriptionLabel, note } = Astro.props;
+---
+<section class="kpi" id={id} data-screen-label="06 Показатели">
+  <Container>
+    {label && <SectionLabel text={label} class="kpi__label" />}
+    <div class="kpi__head" data-reveal>
+      <SectionHeading size="process"><Fragment set:html={heading} /></SectionHeading>
+    </div>
+    <InfoRows
+      rows={rows.map((r) => ({ term: r.level, description: r.metrics }))}
+      termLabel={termLabel}
+      descriptionLabel={descriptionLabel}
+    />
+    {note && <p class="kpi__note" data-reveal>{note}</p>}
+  </Container>
+</section>
+
+<style>
+  .kpi { background: var(--color-paper); padding: var(--section-pad-y) 0 0; }
+  .kpi :global(.kpi__label) { margin-bottom: 40px; }
+  .kpi__note {
+    margin: 40px 0 0;
+    max-width: 720px;
+    font-size: var(--fs-lead);
+    line-height: var(--fs-lead-lh);
+    color: var(--ink-80);
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 768px) {
+    .kpi { padding: 88px 0 0; }
+    .kpi__note { font-size: var(--fs-form); }
+  }
+</style>

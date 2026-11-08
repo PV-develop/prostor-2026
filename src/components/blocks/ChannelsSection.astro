@@ -1,0 +1,78 @@
+---
+/**
+ * Каналы и инструменты: панель рекламных инструментов — карточки NumberedCard
+ * 01–05 с нижней зоной «Задача канала». Desktop — в один ряд, tablet —
+ * перестройка сетки, mobile — вертикально. Без ссылок: отдельные страницы
+ * услуг могут появиться позже.
+ */
+import Container from '../ui/Container.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+import NumberedCard from '../ui/NumberedCard.astro';
+
+interface Props {
+  id?: string;
+  label?: string;
+  heading: string;              // HTML
+  items: Array<{ title: string; description: string; purpose?: string }>;
+  purposeLabel?: string;        // метка нижней зоны карточки
+  footnote?: string;
+}
+const { id = 'channels', label, heading, items, purposeLabel = 'Задача канала', footnote } = Astro.props;
+---
+<section class="channels" id={id} data-screen-label="03 Каналы">
+  <Container>
+    {label && <SectionLabel text={label} class="channels__label" />}
+    <div class="channels__head" data-reveal>
+      <SectionHeading size="process"><Fragment set:html={heading} /></SectionHeading>
+    </div>
+    <div class="channels__grid" lang="ru">
+      {items.map((it, i) => (
+        <NumberedCard
+          class="channels__card"
+          num={String(i + 1).padStart(2, '0')}
+          title={it.title}
+          description={it.description}
+          footerLabel={it.purpose ? purposeLabel : undefined}
+          footerText={it.purpose}
+          data-reveal
+          style={`transition-delay:${i * 90}ms`}
+        />
+      ))}
+    </div>
+    {footnote && <p class="channels__footnote">{footnote}</p>}
+  </Container>
+</section>
+
+<style>
+  .channels { background: var(--color-paper); padding: var(--section-pad-y) 0 0; }
+  .channels :global(.channels__label) { margin-bottom: 40px; }
+  .channels__grid {
+    margin-top: 64px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    overflow-wrap: break-word;
+  }
+  .channels__grid > :global(.channels__card) { min-height: 440px; }
+  .channels__grid > :global(.channels__card):hover { background: var(--color-card-hover); }
+  .channels__footnote {
+    margin: 32px 0 0;
+    font-size: var(--fs-body);
+    line-height: var(--fs-body-lh);
+    color: var(--ink-60);
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 1100px) {
+    .channels__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .channels__grid > :global(.channels__card) { min-height: 380px; }
+  }
+  @media (max-width: 768px) {
+    .channels { padding: 88px 0 0; }
+    .channels__grid { margin-top: 40px; grid-template-columns: minmax(0, 1fr); gap: 2px; }
+    .channels__grid > :global(.channels__card) { min-height: 0; }
+  }
+</style>

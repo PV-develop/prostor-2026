@@ -1,0 +1,111 @@
+---
+/**
+ * Карточка кейса: фото (grayscale-оверлей снимается при hover),
+ * метка-тег + отрасль, крупная цифра (счётчик из main.ts), заголовок, описание.
+ */
+interface Props {
+  image: string;
+  imageAlt: string;
+  tag: string;
+  meta: string;
+  value: number;
+  valueSuffix: string;
+  valueLabel: string;
+  title: string;
+  description: string;
+  href?: string;
+  index?: number;
+}
+const { image, imageAlt, tag, meta, value, valueSuffix, valueLabel, title, description, href = '#cases', index = 0 } = Astro.props;
+---
+<a href={href} class="case-card" data-reveal style={`transition-delay:${index * 90}ms`}>
+  <div class="case-card__photo" data-gs-photo>
+    <img src={image} alt={imageAlt} loading="lazy" />
+  </div>
+  <div class="case-card__gs" data-gs aria-hidden="true"></div>
+  <div class="case-card__tags">
+    <span class="case-card__tag">{tag}</span>
+    <span class="case-card__meta">{meta}</span>
+  </div>
+  <div class="case-card__body">
+    <div class="case-card__number h-display">+<span data-count={value}>0</span><span class="case-card__suffix">{valueSuffix}</span></div>
+    <div class="case-card__value-label">{valueLabel}</div>
+    <div class="case-card__title h-display">{title}</div>
+    <p class="case-card__description">{description}</p>
+  </div>
+</a>
+
+<style>
+  .case-card {
+    position: relative;
+    background: var(--color-card-dark);
+    color: var(--color-paper);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform .5s;
+  }
+  .case-card:hover { transform: translateY(-12px); }
+  .case-card__photo {
+    position: relative;
+    height: 360px;
+    flex: none;
+    overflow: hidden;
+    filter: brightness(.7);
+  }
+  .case-card__photo img { width: 100%; height: 100%; object-fit: cover; }
+  .case-card__gs {
+    position: absolute;
+    inset: 0;
+    backdrop-filter: grayscale(1) brightness(.78);
+    -webkit-backdrop-filter: grayscale(1) brightness(.78);
+    clip-path: inset(0 0 0 0);
+    transition: clip-path .7s var(--ease-strong);
+    pointer-events: none;
+  }
+  .case-card:hover .case-card__gs { clip-path: inset(0 0 100% 0); }
+  .case-card__tags {
+    position: relative;
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    font: 600 12px/1.2 var(--font-sans);
+    letter-spacing: .01em;
+    pointer-events: none;
+  }
+  .case-card__tag { background: var(--color-red); color: var(--color-ink); padding: 6px 10px; }
+  .case-card__meta { opacity: .6; }
+  .case-card__body {
+    position: relative;
+    padding: 0 24px 28px;
+    pointer-events: none;
+    color: var(--color-paper);
+  }
+  .case-card__number {
+    font-size: var(--fs-case-number);
+    line-height: var(--fs-case-number-lh);
+  }
+  .case-card__suffix { color: var(--color-red); font-size: .55em; }
+  .case-card__value-label {
+    font: 500 var(--fs-note)/var(--fs-note-lh) var(--font-sans);
+    opacity: .6;
+    margin-top: 16px;
+  }
+  .case-card__title {
+    font-size: var(--fs-case-title);
+    line-height: var(--lh-tight);
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line-paper-25);
+  }
+  .case-card__description {
+    font-size: 14px;
+    line-height: 1.45;
+    opacity: .75;
+    margin-top: 10px;
+  }
+  @media (max-width: 768px) {
+    .case-card { height: auto; }
+    .case-card__photo { height: 300px; }
+  }
+</style>

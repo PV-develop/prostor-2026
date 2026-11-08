@@ -1,0 +1,165 @@
+---
+/**
+ * Фиксированная шапка: логотип (анимация букв из main.ts), телефон, CTA, кнопка меню.
+ * При скролле фон затемняется (main.ts), появляется красная нить.
+ */
+interface Props {
+  phone?: string;
+  ctaFull?: string;
+  ctaShort?: string;
+  /** Куда ведёт CTA шапки; на внутренних страницах — якорь их формы */
+  ctaHref?: string;
+}
+const { phone = '8 800 555-50-70', ctaFull = 'Обсудить задачу', ctaShort = 'Обсудить', ctaHref = '#contacts' } = Astro.props;
+---
+<header class="site-header" data-hdr>
+  <span class="site-header__conn" data-hconn aria-hidden="true"></span>
+  <a href="#top" class="site-header__logo" data-logo aria-label="Простор">
+    <img src="/images/logo/logo-white.svg" alt="" data-logo-word />
+  </a>
+  <div class="site-header__right" data-m="hright">
+    <span class="site-header__phone" data-m="hphone">{phone}</span>
+    <a href={ctaHref} class="site-header__cta">
+      <span data-mfull>{ctaFull}</span>
+      <span data-mshort class="site-header__cta-short">{ctaShort}</span>
+      <span aria-hidden="true">↗</span>
+    </a>
+    <button class="site-header__menu-btn" data-mbtn aria-label="Меню" aria-expanded="false">
+      <span data-mblabel>Меню</span>
+      <span class="site-header__burger" aria-hidden="true"><span></span><span></span><span></span></span>
+    </button>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: var(--gap-grid);
+    align-items: center;
+    padding: 24px var(--pad-page);
+    z-index: var(--z-header);
+    color: var(--color-paper);
+    background: var(--header-bg);
+    transition: background .4s, backdrop-filter .4s, -webkit-backdrop-filter .4s;
+  }
+  .site-header.is-scrolled {
+    background: var(--header-scrolled-bg);
+    backdrop-filter: blur(18px) saturate(1.4);
+    -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  }
+  .site-header__conn {
+    position: absolute;
+    left: 22px;
+    top: 56px;
+    bottom: 0;
+    width: 1px;
+    background: var(--color-red);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform .35s var(--ease-slide);
+  }
+  .site-header__logo {
+    position: relative;
+    display: block;
+    height: 26px;
+    width: 128px;
+  }
+  .site-header__logo img {
+    position: absolute;
+    top: 0;
+    left: -39px;
+    height: 26px;
+    width: auto;
+    max-width: none;
+    clip-path: inset(0 0 0 39px);
+  }
+  .site-header__right {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    justify-self: end;
+    font: 500 12px var(--font-mono);
+    letter-spacing: var(--ls-label);
+    white-space: nowrap;
+  }
+  .site-header__phone {
+    font: 700 var(--fs-header-phone)/1 var(--font-display);
+    font-stretch: 25%;
+    letter-spacing: var(--ls-header-phone);
+  }
+  .site-header__cta {
+    background-image: linear-gradient(90deg, var(--color-paper) 50%, var(--color-red) 50%);
+    background-size: 201% 100%;
+    background-position: 100% 0;
+    background-repeat: no-repeat;
+    color: #fff;
+    padding: 14px 18px;
+    font-weight: 600;
+    letter-spacing: var(--ls-mono-label);
+    text-transform: uppercase;
+    transition: background-position var(--dur-sweep) var(--ease-strong);
+  }
+  .site-header__cta:hover { background-position: 0 0; color: var(--color-ink); }
+  .site-header__cta-short { display: none; }
+  .site-header__menu-btn {
+    all: unset;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: var(--control-h-sm);
+    padding: 13px 16px;
+    border: 1px solid var(--line-paper-32);
+    color: var(--color-paper);
+    font: 600 12px/1 var(--font-mono);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background .3s, color .3s;
+  }
+  .site-header__menu-btn:hover { background: var(--color-paper); color: var(--color-ink); }
+  .site-header__burger {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .site-header__burger span {
+    width: 14px;
+    height: 1.5px;
+    background: currentColor;
+  }
+
+  @media (max-width: 1100px) {
+    .site-header__phone { display: none; }
+  }
+  @media (max-width: 768px) {
+    .site-header {
+      padding: 14px var(--pad-page-mobile);
+      gap: 8px;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+    }
+    .site-header__conn { display: none; }
+    .site-header__right { gap: 8px; }
+    .site-header__right > a {
+      padding: 12px 14px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .site-header__right > button {
+      padding: 0;
+      width: 40px;
+      height: 40px;
+      justify-content: center;
+    }
+    .site-header__right [data-mblabel] { display: none; }
+    .site-header__right [data-mfull] { display: none; }
+    .site-header__cta-short { display: inline; }
+  }
+</style>

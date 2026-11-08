@@ -1,0 +1,138 @@
+---
+/**
+ * Якорная навигация по странице: горизонтальная линейка ссылок под hero.
+ * sticky — прилипает под шапкой при прокрутке; активный раздел определяется
+ * при прокрутке и подсвечивается красным (на mobile активный пункт
+ * автопрокручивается в зону видимости списка). Только внутристраничные якоря.
+ * Отступ цели якоря — токен --anchor-scroll-offset (шапка + это меню).
+ */
+import Container from '../ui/Container.astro';
+
+interface Props {
+  items: Array<{ label: string; href: string }>; // href вида '#tasks'
+  sticky?: boolean;   // закрепление под шапкой при прокрутке
+  spy?: boolean;      // подсветка активного раздела (default true)
+}
+const { items, sticky = false, spy = true } = Astro.props;
+---
+<nav
+  class:list={['anchornav', { 'anchornav--sticky': sticky }]}
+  aria-label="Разделы страницы"
+  data-anchornav={spy ? '' : undefined}
+>
+  <Container>
+    <ul class="anchornav__list">
+      {items.map((i) => (
+        <li class="anchornav__item">
+          <a class="anchornav__link" href={i.href} data-nav-link>{i.label}</a>
+        </li>
+      ))}
+    </ul>
+  </Container>
+</nav>
+
+<script>
+  // Активный раздел при прокрутке; активный пункт держим видимым в списке
+  const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const nav = document.querySelector<HTMLElement>('[data-anchornav]');
+  if (nav) {
+    const links = [...nav.querySelectorAll<HTMLAnchorElement>('[data-nav-link]')];
+    const secs = links.map((l) => document.querySelector<HTMLElement>(l.getAttribute('href') ?? ''));
+    const hdr = document.querySelector<HTMLElement>('[data-hdr]');
+    let current = -1;
+
+    const activate = (i: number) => {
+      if (i === current) return;
+      current = i;
+      links.forEach((l, j) => {
+        const on = j === i;
+        l.classList.toggle('is-active', on);
+        if (on) l.setAttribute('aria-current', 'true');
+        else l.removeAttribute('aria-current');
+      });
+      // Активный пункт держим в горизонтальной видимости списка.
+      // Скроллим только сам список (scrollIntoView трогает страницу целиком
+      // и на mobile уводит вьюпорт к меню при первой активации).
+      const item = links[i]?.parentElement;
+      const list = item?.parentElement;
+      if (!item || !list) return;
+      const left = item.offsetLeft;
+      const right = left + item.offsetWidth;
+      const view = list.scrollLeft;
+      const vw = list.clientWidth;
+      let target = list.scrollLeft;
+      if (left < view + 8) target = Math.max(0, left - 8);
+      else if (right > view + vw - 8) target = right - vw + 8;
+      if (target !== list.scrollLeft) {
+        list.scrollTo({ left: target, behavior: REDUCED ? 'auto' : 'smooth' });
+      }
+    };
+
+    const pick = () => {
+      // Линия «активации»: не выше отступа цели якоря (--anchor-scroll-offset) —
+      // чтобы раздел, к которому перешли по клику, сразу стал активным
+      const offset = parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue('--anchor-scroll-offset'),
+      ) || 0;
+      const line = Math.max((hdr?.offsetHeight ?? 0) + nav.offsetHeight + 8, offset + 8);
+      let cur = 0;
+      secs.forEach((s, i) => {
+        if (s && s.getBoundingClientRect().top - line <= 0) cur = i;
+      });
+      // Последний раздел вошёл во вьюпорт — активен он (устойчиво к росту
+      // высоты страницы при догрузке шрифтов/графики)
+      const last = secs[secs.length - 1];
+      if (last && last.getBoundingClientRect().top < window.innerHeight) cur = secs.length - 1;
+      activate(cur);
+    };
+    // pick дешёвый (5–8 секций) — вызываем напрямую: не зависит от rAF,
+    // который окружение предпросмотра может приостанавливать
+    const onScroll = () => pick();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    pick();
+  }
+</script>
+
+<style>
+  .anchornav {
+    background: var(--color-paper);
+    border-bottom: 1px solid var(--line-ink-14);
+  }
+  .anchornav--sticky {
+    position: sticky;
+    top: var(--header-h);
+    z-index: calc(var(--z-header) - 5);
+  }
+  .anchornav__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    align-items: stretch;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scroll-padding-left: var(--pad-page-mobile);
+    scrollbar-width: none;
+  }
+  .anchornav__list::-webkit-scrollbar { display: none; }
+  .anchornav__item { flex: none; scroll-snap-align: start; }
+  .anchornav__link {
+    display: block;
+    padding: 22px 22px;
+    font: 500 var(--fs-small)/1 var(--font-mono);
+    letter-spacing: var(--ls-mono-label);
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--ink-70);
+    transition: color var(--dur-color-fast);
+  }
+  .anchornav__item:first-child .anchornav__link { padding-left: 0; }
+  .anchornav__link:hover,
+  .anchornav__link.is-active { color: var(--color-red); }
+
+  @media (max-width: 768px) {
+    .anchornav__link { padding: 18px 16px; }
+    .anchornav__item:first-child .anchornav__link { padding-left: 0; }
+  }
+</style>

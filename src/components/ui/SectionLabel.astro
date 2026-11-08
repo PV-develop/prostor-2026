@@ -1,0 +1,14 @@
+---
+/**
+ * Метка секции: красный квадратик + текст.
+ * variant="v" — вертикальная (боковая), "h" — горизонтальная.
+ * Проявление (clip-path) включается классом .in из scroll-логики.
+ */
+interface Props {
+  text: string;
+  variant?: 'h' | 'v';
+  class?: string;
+}
+const { text, variant = 'h', class: cls } = Astro.props;
+---
+<span class:list={['section-label', `section-label--${variant}`, cls]} data-tl={variant}>{text}</span>

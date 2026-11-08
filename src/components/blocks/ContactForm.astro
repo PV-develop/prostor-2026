@@ -1,0 +1,213 @@
+---
+/**
+ * Основная форма заявки (тёмная карточка). Набор полей задаётся конфигом
+ * config (по умолчанию — прежний набор главной: имя, почта, телефон, задача, файл).
+ * Обязательные поля (config.required) валидируются при отправке в src/scripts/main.ts:
+ * пустое значение блокирует отправку, поле получает состояние ошибки
+ * (акцентный цвет + текст под полем), ошибки сбрасываются при вводе,
+ * после неудачной отправки фокус переходит на первое ошибочное поле.
+ * mock-отправка — прежний паттерн [data-form] / [data-submit] / [data-sent].
+ */
+import TextField from '../ui/TextField.astro';
+import TextArea from '../ui/TextArea.astro';
+import FileField from '../ui/FileField.astro';
+import SelectField from '../ui/SelectField.astro';
+import ToggleGroup from '../ui/ToggleGroup.astro';
+import Button from '../ui/Button.astro';
+
+export interface ContactFormScenario { enabled: boolean; options: string[] }
+export interface ContactFormStatusToggle { enabled: boolean; options: string[] }
+export interface ContactFormConfig {
+  name?: boolean;                      // default true
+  contact?: 'split' | 'single';        // 'split' = почта + телефон (как на главной); 'single' = одно поле контакта
+  email?: boolean;                     // при contact: 'split'
+  phone?: boolean;                     // при contact: 'split'
+  company?: boolean;                   // «Сайт или название компании»
+  scenario?: ContactFormScenario;      // select «Сценарий/задача»
+  message?: boolean;                   // default true
+  file?: boolean;                      // default true
+  statusToggle?: ContactFormStatusToggle;
+  required?: string[];                 // имена обязательных полей (name / contact / email / phone)
+}
+
+interface Props {
+  title?: string;
+  titleAccent?: string;
+  note?: string;
+  fields?: {
+    name?: string; email?: string; phone?: string; message?: string;
+    contact?: string; company?: string; scenario?: string; status?: string;
+  };
+  fileDefault?: string;
+  fileHint?: string;
+  submitLabel?: string;
+  submit?: string;
+  sent?: string;
+  policy?: string;
+  config?: ContactFormConfig;
+  ariaLabel?: string;
+}
+
+const {
+  title, titleAccent = '', note,
+  fields: labels = {},
+  fileDefault = 'Приложить бриф или документ',
+  fileHint = 'PDF, DOC, XLS, PPT — до 20 МБ',
+  submitLabel, submit = submitLabel ?? 'Отправить заявку',
+  sent = 'Заявка отправлена',
+  policy, config, ariaLabel = 'Форма заявки',
+} = Astro.props;
+
+const cfg = {
+  name: true,
+  contact: 'split' as 'split' | 'single',
+  email: true,
+  phone: true,
+  company: false,
+  message: true,
+  file: true,
+  scenario: { enabled: false, options: [] as string[] },
+  statusToggle: { enabled: false, options: [] as string[] },
+  required: [] as string[],
+  ...config,
+};
+const required = new Set(cfg.required);
+// На главной имя занимает всю строку ( далее почта + телефон );
+// при едином поле контакта имя и контакт идут в одну строку
+const nameWide = cfg.contact === 'split';
+const L = {
+  name: labels.name ?? 'Имя',
+  email: labels.email ?? 'Почта',
+  phone: labels.phone ?? 'Телефон',
+  message: labels.message ?? 'Опишите задачу',
+  contact: labels.contact ?? 'Контакт и предпочтительный способ связи',
+  company: labels.company ?? 'Сайт или название компании',
+  scenario: labels.scenario ?? 'Сценарий/задача',
+  status: labels.status ?? 'Статус рекламы',
+};
+const errText = 'Заполните поле';
+---
+<form class="cform" data-form novalidate aria-label={ariaLabel}>
+  {(title || note) && (
+    <div class="cform__head">
+      {title && (
+        <h2 class="cform__title h-display h-display--contacts">
+          {title.replace(titleAccent, '')}{titleAccent && <span class="cform__accent">{titleAccent}</span>}
+        </h2>
+      )}
+      {note && <p class="cform__note">{note}</p>}
+    </div>
+  )}
+  <div class="cform__grid">
+    {cfg.name && (
+      <div class:list={['cform__cell', { 'cform__cell--wide': nameWide }]} data-cell>
+        <TextField name="name" label={L.name} theme="darker" autocomplete="name" required={required.has('name')} />
+        {required.has('name') && <div class="cform__err" data-err hidden>{errText}</div>}
+      </div>
+    )}
+
+    {cfg.contact === 'split' && (
+      <>
+        {cfg.email && (
+          <div class="cform__cell" data-cell>
+            <TextField name="email" label={L.email} type="email" theme="darker" autocomplete="email" required={required.has('email')} />
+            {required.has('email') && <div class="cform__err" data-err hidden>{errText}</div>}
+          </div>
+        )}
+        {cfg.phone && (
+          <div class="cform__cell" data-cell>
+            <TextField name="phone" label={L.phone} type="tel" theme="darker" autocomplete="tel" required={required.has('phone')} />
+            {required.has('phone') && <div class="cform__err" data-err hidden>{errText}</div>}
+          </div>
+        )}
+      </>
+    )}
+
+    {cfg.contact === 'single' && (
+      <div class="cform__cell" data-cell>
+        <TextField name="contact" label={L.contact} theme="darker" autocomplete="off" required={required.has('contact')} />
+        {required.has('contact') && <div class="cform__err" data-err hidden>{errText}</div>}
+      </div>
+    )}
+
+    {cfg.company && (
+      <div class="cform__cell" data-cell>
+        <TextField name="company" label={L.company} theme="darker" autocomplete="organization" />
+      </div>
+    )}
+
+    {cfg.scenario?.enabled && (
+      <div class="cform__cell" data-cell>
+        <SelectField name="scenario" label={L.scenario} options={cfg.scenario.options} theme="darker" />
+      </div>
+    )}
+
+    {cfg.message && (
+      <div class="cform__cell cform__cell--wide" data-cell>
+        <TextArea name="message" label={L.message} />
+      </div>
+    )}
+
+    {cfg.statusToggle?.enabled && (
+      <div class="cform__cell cform__cell--wide" data-cell>
+        <ToggleGroup name="ad_status" label={L.status} options={cfg.statusToggle.options} />
+      </div>
+    )}
+
+    {cfg.file && (
+      <div class="cform__cell cform__cell--wide" data-cell>
+        <FileField defaultLabel={fileDefault} hint={fileHint} />
+      </div>
+    )}
+  </div>
+  <div class="cform__actions">
+    <Button variant="paper-red" type="submit" class="cform__submit" arrow="→" data-submit>{submit}</Button>
+    {policy && <div class="cform__policy" set:html={policy} />}
+  </div>
+</form>
+<div class="cform__sent" data-sent hidden>{sent}</div>
+
+<style>
+  .cform {
+    margin: 0;
+    background: var(--color-card-dark);
+    padding: clamp(32px, 4vw, 56px);
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    color: var(--color-paper);
+  }
+  .cform__head { display: flex; flex-direction: column; gap: 16px; }
+  .cform__title { text-wrap: balance; }
+  .cform__accent { color: var(--color-red); }
+  .cform__note {
+    font-size: var(--fs-form);
+    line-height: var(--fs-body-lh);
+    color: var(--paper-72);
+    max-width: 440px;
+    text-wrap: pretty;
+  }
+  .cform__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(max(220px, calc(50% - 6px)), 1fr));
+    gap: 12px;
+  }
+  .cform__cell { display: flex; flex-direction: column; min-width: 0; }
+  .cform__cell--wide { grid-column: 1 / -1; }
+  .cform__err {
+    padding: 8px 18px 0;
+    font: 400 var(--fs-small)/1.4 var(--font-sans);
+    color: var(--color-red);
+  }
+  .cform :global(.field.is-error .field__input),
+  .cform :global(.sfield.is-error .sfield__select) { border-color: var(--color-red); }
+  .cform__actions { display: flex; flex-direction: column; gap: 14px; }
+  .cform :global(.cform__submit) { justify-content: space-between; padding: 24px 28px; }
+  .cform__policy {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--paper-50);
+  }
+  .cform__policy :global(a) { color: var(--paper-80); text-decoration: underline; text-underline-offset: 3px; }
+  .cform__sent { position: absolute; left: -9999px; }
+</style>

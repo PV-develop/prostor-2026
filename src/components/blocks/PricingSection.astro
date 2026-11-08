@@ -1,0 +1,140 @@
+---
+/**
+ * Стоимость: две основные составляющие бюджета (равные карточки NumberedCard
+ * с метками), широкая область дополнительных работ (2 колонки, тонкие
+ * разделители, красные маркеры) и CTA. Конкретные суммы не выводятся —
+ * только структура (данные согласовываются отдельно).
+ */
+import Container from '../ui/Container.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+import Button from '../ui/Button.astro';
+import NumberedCard from '../ui/NumberedCard.astro';
+
+interface PricingPart {
+  num?: string;
+  title: string;
+  description: string;
+  badge?: string;     // метка нижней зоны («Услуги агентства»)
+  accent?: boolean;   // акцентная (красная) карточка
+}
+interface Props {
+  id?: string;
+  label?: string;
+  heading: string;                                // HTML
+  parts: PricingPart[];                           // 2 составляющие
+  extrasTitle?: string;                           // «Также могут потребоваться отдельно»
+  extras: string[];
+  plus?: boolean;                                 // знак «+» между уровнями
+  cta?: { label: string; href: string; arrow?: string };
+}
+const { id = 'pricing', label, heading, parts, extrasTitle, extras, plus = false, cta } = Astro.props;
+// Нижняя строка списка (без разделителя) при двух колонках
+const lastRowStart = extras.length - (extras.length % 2 === 0 ? 2 : 1);
+---
+<section class="pricing" id={id} data-screen-label="08 Стоимость">
+  <Container>
+    {label && <SectionLabel text={label} class="pricing__label" />}
+    <div class="pricing__head" data-reveal>
+      <SectionHeading size="process"><Fragment set:html={heading} /></SectionHeading>
+    </div>
+    <div class="pricing__parts">
+      {parts.map((p, i) => (
+        <NumberedCard
+          class="pricing__part"
+          num={p.num ?? String(i + 1).padStart(2, '0')}
+          title={p.title}
+          description={p.description}
+          footerLabel={p.badge}
+          accent={p.accent}
+          data-reveal
+          style={`transition-delay:${i * 90}ms`}
+        />
+      ))}
+    </div>
+    {plus && <div class="pricing__plus" aria-hidden="true">+</div>}
+    <div class="pricing__extras" data-reveal>
+      {extrasTitle && <SectionLabel text={extrasTitle} class="pricing__extras-label" />}
+      <ul class="pricing__extras-list">
+        {extras.map((e, i) => (
+          <li class:list={['pricing__extras-item', { 'pricing__extras-item--lastrow': i >= lastRowStart }]}>{e}</li>
+        ))}
+      </ul>
+    </div>
+    {cta && (
+      <Button variant="red" href={cta.href} class="pricing__cta" arrow={cta.arrow ?? '→'}>{cta.label}</Button>
+    )}
+  </Container>
+</section>
+
+<style>
+  .pricing { background: var(--color-paper); padding: var(--section-pad-y) 0 0; }
+  .pricing :global(.pricing__label) { margin-bottom: 40px; }
+  .pricing__parts {
+    margin-top: 64px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .pricing__parts > :global(.pricing__part) { min-height: 300px; }
+  .pricing__parts > :global(.pricing__part):hover { background: var(--color-card-hover); }
+  .pricing__plus {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+    font: 500 var(--fs-h2-process)/1 var(--font-mono);
+    color: var(--color-red);
+  }
+  .pricing__extras {
+    margin-top: 24px;
+    padding-top: 40px;
+    border-top: 1px solid var(--line-ink-22);
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    gap: 24px 48px;
+    align-items: start;
+  }
+  .pricing__extras-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 48px;
+  }
+  .pricing__extras-item {
+    position: relative;
+    padding: 18px 0 18px 20px;
+    border-bottom: 1px solid var(--line-ink-14);
+    font-size: var(--fs-body);
+    line-height: var(--fs-body-lh);
+    color: var(--ink-80);
+    text-wrap: pretty;
+  }
+  .pricing__extras-item--lastrow { border-bottom: 0; }
+  .pricing__extras-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: calc(18px + .5em);
+    width: 6px;
+    height: 6px;
+    background: var(--color-red);
+  }
+  .pricing :global(.pricing__cta) {
+    margin-top: 56px;
+    width: 100%;
+    justify-content: space-between;
+    padding: var(--btn-pad-y-lg) var(--btn-pad-x-lg);
+  }
+
+  @media (max-width: 768px) {
+    .pricing { padding: 88px 0 0; }
+    .pricing__parts { margin-top: 40px; grid-template-columns: minmax(0, 1fr); gap: 2px; }
+    .pricing__parts > :global(.pricing__part) { min-height: 0; }
+    .pricing__plus { padding: 14px 0; font-size: var(--fs-side-h); }
+    .pricing__extras { margin-top: 16px; padding-top: 32px; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+    .pricing__extras-list { grid-template-columns: minmax(0, 1fr); column-gap: 0; }
+    .pricing :global(.pricing__cta) { margin-top: 40px; }
+  }
+</style>

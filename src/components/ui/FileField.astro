@@ -1,0 +1,58 @@
+---
+/**
+ * Поле прикрепления файла: скрытый input[type=file] + карточка с иконкой скрепки.
+ * Имя выбранного файла подставляет src/scripts/main.ts.
+ */
+interface Props {
+  name?: string;
+  defaultLabel?: string;
+  hint?: string;
+  accept?: string;
+}
+const {
+  name = 'file',
+  defaultLabel = 'Приложить бриф или документ',
+  hint = 'PDF, DOC, XLS, PPT — до 20 МБ',
+  accept = '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt',
+} = Astro.props;
+---
+<label class="file-field" data-file>
+  <input class="file-field__input" type="file" name={name} accept={accept} />
+  <svg viewBox="0 0 24 24" fill="none" stroke="var(--color-red)" stroke-width="2" stroke-linecap="square" aria-hidden="true" class="file-field__icon">
+    <path d="M20 11.5l-8.2 8.2a5 5 0 01-7.1-7.1l8.5-8.5a3.3 3.3 0 014.7 4.7l-8.5 8.5a1.7 1.7 0 01-2.4-2.4l7.8-7.8"></path>
+  </svg>
+  <span class="file-field__text">
+    <span class="file-field__label" data-file-label>{defaultLabel}</span>
+    <span class="file-field__hint">{hint}</span>
+  </span>
+</label>
+
+<style>
+  .file-field {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-height: var(--control-h);
+    padding: 12px 18px;
+    box-sizing: border-box;
+    border: 1px dashed var(--line-paper-32);
+    cursor: pointer;
+    transition: border-color var(--dur-color-fast);
+  }
+  .file-field:hover { border-color: var(--color-paper); }
+  .file-field__input { display: none; }
+  .file-field__icon { width: 20px; height: 20px; flex: none; }
+  .file-field__text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .file-field__label {
+    font: 500 15px/1.3 var(--font-sans);
+    color: var(--color-paper);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .file-field__hint {
+    font: 400 12px/1.3 var(--font-sans);
+    color: var(--paper-50);
+  }
+</style>

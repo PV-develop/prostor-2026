@@ -1,0 +1,229 @@
+---
+/**
+ * Первый экран главной страницы: H1 с выносным лид-абзацем, блок «20 лет»
+ * (canvas-частицы + параллакс из main.ts), CTA; в slot — марка доверия.
+ * Первый экран внутренних страниц — ServiceHero (библиотека).
+ */
+import Button from '../ui/Button.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+
+interface HeroCta { label: string; href: string }
+interface Props {
+  sideLabel?: string;
+  titleLines?: string[];
+  lead?: string;
+  capLines?: string[];
+  ctaPrimary?: HeroCta;
+  ctaSecondary?: HeroCta;
+}
+const {
+  sideLabel = '', titleLines = [], lead = '', capLines = [],
+  ctaPrimary = { label: '', href: '#top' }, ctaSecondary = { label: '', href: '#top' },
+} = Astro.props;
+---
+<section class="hero on-dark" id="top" data-hero data-screen-label="01 Первый экран">
+  <div class="noise-overlay" aria-hidden="true"></div>
+  <div class="hero__spacer" data-hsp aria-hidden="true"></div>
+
+  <div class="hero__pad" data-m="heropad">
+    <SectionLabel class="hero__side" variant="v" text={sideLabel} />
+    <div class="hero__grid" data-m="herogrid">
+      <h1 class="hero__title h-display" data-reveal data-hero-title>
+        {titleLines[0] ?? ''}<br />
+        <span class="hero__title-middle">
+          {titleLines[1] ?? ''},
+          <span class="hero__lead" data-m="lead">
+            <span class="hero__lead-text">{lead}</span>
+          </span>
+        </span><br />
+        <span class="hero__accent">вникаем</span>
+        <span> в бизнес</span><span class="hero__accent">.</span>
+      </h1>
+      <p class="hero__lead-mobile" data-m="leadm">{lead}</p>
+
+      <div class="hero__twenty" data-reveal data-m="twenty" aria-hidden="true">
+        <div class="hero__cap" data-cap>
+          <span class="hero__cap-mask"><span class="hero__cap-line h-display" data-cap-line>{capLines[0] ?? ''}</span></span>
+          <span class="hero__cap-mask"><span class="hero__cap-line h-display" data-cap-line><span class="hero__cap-plate" data-cap-plate>{capLines[1] ?? ''}</span></span></span>
+        </div>
+        <div class="hero__parallax h-display" data-parallax>20</div>
+      </div>
+
+      <div class="hero__cta" data-reveal data-m="herocta">
+        <div class="hero__cta-row">
+          <Button variant="red" href={ctaPrimary.href} class="hero__cta-main" arrow="→">{ctaPrimary.label}</Button>
+          <Button variant="paper-o" href={ctaSecondary.href} arrow="↓">{ctaSecondary.label}</Button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <slot />
+</section>
+
+<style>
+  .hero {
+    background: var(--color-ink);
+    color: var(--color-paper);
+    position: relative;
+    min-height: 860px;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    overflow: hidden;
+  }
+  .hero__spacer { height: 91px; }
+  .hero__pad {
+    position: relative;
+    padding: 0 var(--pad-page);
+    display: flex;
+    flex-direction: column;
+  }
+  .hero :global(.hero__side) {
+    position: absolute;
+    left: 30px;
+    top: 40px;
+  }
+  .hero__grid {
+    position: relative;
+    z-index: var(--z-content);
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gap-grid);
+    padding: 72px 0 56px 32px;
+    align-items: start;
+  }
+  .hero__title {
+    font-size: var(--fs-hero);
+    line-height: var(--fs-h1-lh);
+    grid-column: 1 / 9;
+    grid-row: 1;
+    text-wrap: balance;
+    position: relative;
+    z-index: 2;
+  }
+  .hero__accent { color: var(--color-red); }
+  .hero__title-middle { position: relative; }
+  .hero__lead {
+    position: absolute;
+    left: calc(100% + .3em);
+    top: -.66em;
+    width: min(340px, 22vw);
+  }
+  .hero__lead-text {
+    display: block;
+    font: 400 clamp(15px, 1.2vw, 18px)/1.45 var(--font-sans);
+    font-stretch: 100%;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--paper-86);
+    text-wrap: pretty;
+    text-align: left;
+  }
+  .hero__lead-mobile { display: none; margin: 0; font: 400 17px/1.5 var(--font-sans); color: var(--paper-86); text-wrap: pretty; max-width: 520px; }
+
+  .hero__twenty {
+    grid-column: 9 / 13;
+    grid-row: 1;
+    justify-self: end;
+    align-self: end;
+    margin-bottom: .02em;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 28px;
+    position: relative;
+    z-index: 1;
+    font-size: var(--fs-hero);
+  }
+  .hero__cap {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    pointer-events: none;
+  }
+  .hero__cap-mask {
+    display: block;
+    overflow: hidden;
+    padding: 0 4px;
+  }
+  .hero__cap-line {
+    display: block;
+    transform: translateY(110%);
+    font-size: var(--fs-hero-cap);
+    line-height: var(--fs-hero-cap-lh);
+    white-space: nowrap;
+    color: var(--color-paper);
+  }
+  .hero__cap-plate {
+    display: inline-block;
+    background: var(--color-red);
+    color: var(--color-ink);
+    padding: 0 8px;
+    clip-path: inset(0 100% 0 0);
+  }
+  .hero__parallax {
+    font-weight: 800;
+    font-size: var(--fs-twenty);
+    line-height: .72;
+    letter-spacing: var(--ls-twenty);
+    text-align: right;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    user-select: none;
+  }
+  .hero__cta {
+    grid-column: 1 / 8;
+    grid-row: 2;
+    align-self: start;
+    margin-top: 56px;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    max-width: 620px;
+  }
+  .hero__cta-row { display: flex; gap: 2px; flex-wrap: wrap; }
+  .hero__cta-row :global(.btn) { padding: var(--btn-pad-y-lg) var(--btn-pad-x-lg); }
+
+  @media (max-width: 768px) {
+    .hero { min-height: 0; }
+    .hero__side { display: none !important; }
+    .hero__pad { padding: 0 var(--pad-page-mobile); }
+    .hero__grid {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      padding: 36px 0 48px;
+      gap: 32px;
+    }
+    .hero__title { font-size: min(22vw, 96px) !important; }
+    .hero__lead { display: none !important; }
+    .hero__lead-mobile { display: block; order: 1; }
+    .hero__cta {
+      order: 2;
+      margin-top: 0;
+      max-width: none;
+    }
+    .hero__cta-row :global(.btn) {
+      flex: 1 1 100%;
+      justify-content: center;
+      padding: 22px 20px !important;
+    }
+    .hero__twenty {
+      order: -1;
+      align-items: center !important;
+      align-self: center !important;
+      justify-self: center !important;
+      gap: 8px !important;
+      margin: 0 0 8px !important;
+    }
+    .hero__cap { align-items: center !important; text-align: center !important; }
+    .hero__parallax {
+      font-size: min(88vw, 420px) !important;
+      width: max-content;
+      text-align: center !important;
+    }
+    .hero__cap-line { font-size: 30px !important; }
+  }
+</style>

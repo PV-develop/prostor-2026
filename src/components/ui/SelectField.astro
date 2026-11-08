@@ -1,0 +1,76 @@
+---
+/**
+ * Выпадающий список с плавающей подписью (стилистика TextField).
+ * Состояния .is-focus / .is-filled переключает src/scripts/main.ts
+ * (select учитывается в общем цикле полей вместе с input/textarea).
+ * Плейсхолдер — скрытая пустая опция: подпись поля работает как placeholder.
+ */
+interface Props {
+  name: string;
+  label: string;
+  options: string[];
+  theme?: 'dark' | 'darker';
+  wide?: boolean;
+}
+const { name, label, options, theme = 'darker', wide = false } = Astro.props;
+---
+<label class:list={['sfield', `sfield--${theme}`, { 'sfield--wide': wide }]} data-field>
+  <span class="sfield__label">{label}</span>
+  <span class="sfield__box">
+    <select class="sfield__select" name={name}>
+      <option value="" selected disabled hidden label=" "></option>
+      {options.map((o) => <option value={o}>{o}</option>)}
+    </select>
+    <svg class="sfield__chevron" viewBox="0 0 12 8" fill="none" stroke="var(--color-red)" stroke-width="2" stroke-linecap="square" aria-hidden="true">
+      <path d="M1 1.5 6 6.5 11 1.5"></path>
+    </svg>
+  </span>
+</label>
+
+<style>
+  .sfield { position: relative; display: block; cursor: pointer; }
+  .sfield--wide { grid-column: 1 / -1; }
+  .sfield__label {
+    position: absolute;
+    left: 18px;
+    top: 20px;
+    z-index: 1;
+    font: 400 var(--fs-form) var(--font-sans);
+    color: var(--paper-55);
+    pointer-events: none;
+    transition: top .2s, font-size .2s;
+  }
+  .sfield.is-focus .sfield__label,
+  .sfield.is-filled .sfield__label {
+    top: 10px;
+    font-size: 11px;
+  }
+  .sfield__box { position: relative; display: block; }
+  .sfield__select {
+    all: unset;
+    box-sizing: border-box;
+    width: 100%;
+    height: var(--control-h);
+    padding: 22px 46px 0 18px;
+    border: 1px solid var(--line-paper-22);
+    color: var(--color-paper);
+    font: 400 var(--fs-form) var(--font-sans);
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    transition: border-color var(--dur-color-fast);
+  }
+  .sfield__select:focus { border-color: var(--color-paper); }
+  .sfield__select option { color: var(--color-ink); background: var(--color-paper); }
+  .sfield--darker .sfield__select { background: var(--color-ink); }
+  .sfield--dark .sfield__select { background: var(--color-card-dark); }
+  .sfield__chevron {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    width: 12px;
+    height: 8px;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+</style>

@@ -1,0 +1,338 @@
+---
+/**
+ * Секция «Как работаем».
+ * variant="cards" (по умолчанию): 5 карточек-этапов (UI NumberedCard) с
+ * анимированными стрелками (main.ts initArrows по [data-process-arrows]),
+ * на ≤1024px — горизонтальный скролл-снап.
+ * variant="table": адаптивная таблица «этап / что делаем / что получаете»;
+ * на mobile строки стекаются (подписи колонок показываются внутри ячеек).
+ * Заголовок — HTML (поддержка span.h-stroke и других акцентов).
+ */
+import type { ProcessStep } from '../../content/home';
+import SectionLabel from '../ui/SectionLabel.astro';
+import NumberedCard from '../ui/NumberedCard.astro';
+
+export interface ProcessTableRow {
+  num?: string;
+  title: string;       // этап
+  detail: string;      // что мы делаем
+  outcome: string;     // что вы получаете
+}
+
+interface Props {
+  variant?: 'cards' | 'table';
+  label?: string;
+  heading?: string;             // HTML-заголовок (оба варианта)
+  intro?: string;
+  hint?: string;                // подсказка о скролле этапов (cards, mobile)
+  steps?: ProcessStep[];
+  rows?: ProcessTableRow[];
+  columns?: { stage: string; detail: string; outcome: string };
+  notes?: string[];
+  /** метка экрана для логики страницы (счётчики/стрелки); default по варианту */
+  screenLabel?: string;
+}
+const {
+  variant = 'cards', label = '', heading = '', intro = '', hint = '',
+  steps = [], rows = [],
+  columns = { stage: 'Этап', detail: 'Что мы делаем', outcome: 'Что вы получаете' },
+  notes = [],
+  screenLabel,
+} = Astro.props;
+const isCards = variant === 'cards';
+const screen = screenLabel ?? (isCards ? '04 Как работаем' : '07 Процесс');
+---
+{isCards && (
+  <section class="process" id="process" data-screen-label={screen} data-process-arrows>
+    <div class="process__head" data-reveal data-m="s4head">
+      <div class="process__head-main">
+        {label && <SectionLabel variant="v" text={label} class="process__label" />}
+        <h2 class="process__title h-display h-display--process" set:html={heading} />
+      </div>
+      <div class="process__intro">{intro}</div>
+    </div>
+
+    <div class="process__hint" data-m="prochint" aria-hidden="true">
+      <span>{hint}</span><span class="process__hint-line"></span><span class="process__hint-arrow">→</span>
+    </div>
+
+    <div class="process__grid" data-m="proc" lang="ru">
+      {steps.map((s, i) => (
+        <NumberedCard
+          num={s.num}
+          meta={s.duration}
+          title={s.title}
+          description={s.description}
+          footerLabel={s.resultLabel}
+          footerText={s.result}
+          accent={s.accent}
+          data-reveal
+          style={`transition-delay:${i * 90}ms`}
+        >
+          {s.arrow && s.arrow !== 'none' && (
+            <div class="pdecor" slot="decor">
+              {s.arrow === 'straight' && (
+                <div class="arw" data-arw>
+                  <span class="arw__line"></span><span class="arw__head"></span>
+                </div>
+              )}
+              {s.arrow === 'corner' && (
+                <>
+                  <div class="arw-c" data-arw-c><span></span></div>
+                  <div class="arw" data-arw>
+                    <span class="arw__line"></span><span class="arw__head"></span>
+                  </div>
+                </>
+              )}
+              {s.arrow === 'return' && (
+                <div class="arw-r">
+                  <span class="arw-r__top" data-arw-a></span>
+                  <span class="arw-r__bottom" data-arw-b><span class="arw-r__head"></span></span>
+                </div>
+              )}
+            </div>
+          )}
+        </NumberedCard>
+      ))}
+    </div>
+
+    {notes.length > 0 && (
+      <div class="process__notes" data-reveal data-m="procnote">
+        {notes.map((n) => <span>{n}</span>)}
+      </div>
+    )}
+  </section>
+)}
+
+{!isCards && (
+  <section class="process process--table" id="process" data-screen-label={screen}>
+    <div class="process__head" data-reveal>
+      <div class="process__head-main">
+        {label && <SectionLabel variant="v" text={label} class="process__label" />}
+        <h2 class="process__title h-display h-display--process" set:html={heading} />
+      </div>
+      {intro && <div class="process__intro">{intro}</div>}
+    </div>
+
+    <div class="ptable" data-reveal>
+      <div class="ptable__row ptable__row--head">
+        <div class="ptable__cell ptable__cell--stage">{columns.stage}</div>
+        <div class="ptable__cell ptable__cell--detail">{columns.detail}</div>
+        <div class="ptable__cell ptable__cell--outcome">{columns.outcome}</div>
+      </div>
+      {rows.map((r, i) => (
+        <div class="ptable__row">
+          <div class="ptable__cell ptable__cell--stage">
+            <span class="ptable__num">{r.num ?? String(i + 1).padStart(2, '0')}</span>
+            <span class="ptable__stage h-display">{r.title}</span>
+          </div>
+          <div class="ptable__cell ptable__cell--detail">
+            <span class="ptable__cap">{columns.detail}</span>
+            {r.detail}
+          </div>
+          <div class="ptable__cell ptable__cell--outcome">
+            <span class="ptable__cap">{columns.outcome}</span>
+            {r.outcome}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    {notes.length > 0 && (
+      <div class="process__notes" data-reveal>
+        {notes.map((n) => <span>{n}</span>)}
+      </div>
+    )}
+  </section>
+)}
+
+<style>
+  .process { position: relative; padding: var(--section-pad-y) 0 0; background: var(--color-paper); }
+
+  .process__head {
+    padding: 0 var(--pad-page);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px var(--pad-page);
+  }
+  .process__head-main { display: flex; gap: 20px; }
+  .process__intro {
+    font-size: 16px;
+    line-height: var(--fs-body-lh);
+    color: var(--ink-74);
+    max-width: 460px;
+    text-wrap: pretty;
+  }
+
+  .process__hint { display: none; align-items: center; gap: 10px; font: 500 13px/1 var(--font-sans); letter-spacing: .04em; text-transform: uppercase; color: var(--ink-60); }
+  .process__hint-line { display: flex; width: 28px; height: 1px; background: currentColor; position: relative; }
+  .process__hint-arrow { margin-left: -12px; }
+
+  .process__grid {
+    padding: 0 var(--pad-page);
+    margin-top: 80px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0 12px;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    overflow-wrap: break-word;
+  }
+  .process__grid > :global(.ncard) { min-height: 480px; }
+  .process__grid > :global(.ncard):nth-child(1) { z-index: 10; }
+  .process__grid > :global(.ncard):nth-child(2) { z-index: 9; }
+  .process__grid > :global(.ncard):nth-child(3) { z-index: 8; }
+  .process__grid > :global(.ncard):nth-child(4) { z-index: 7; }
+
+  /* Декорации-стрелки в верхней зоне карточки (слот NumberedCard) */
+  .pdecor { display: flex; flex-direction: column; gap: 8px; }
+  .arw { position: relative; height: 2px; }
+  .arw__line { position: absolute; left: 0; right: 1px; top: 0; height: 2px; background: var(--color-gray-arrow); }
+  .arw__head {
+    position: absolute;
+    right: 1px;
+    top: -3px;
+    width: 8px;
+    height: 8px;
+    box-sizing: border-box;
+    border-top: 2px solid var(--color-gray-arrow);
+    border-right: 2px solid var(--color-gray-arrow);
+    transform: rotate(45deg);
+  }
+  .arw-c { position: relative; height: 0; margin-bottom: -8px; }
+  .arw-c > span {
+    position: absolute;
+    left: 0; right: 1px; top: 0;
+    height: 12px;
+    box-sizing: border-box;
+    border-left: 2px solid var(--color-gray-arrow);
+    border-bottom: 2px solid var(--color-gray-arrow);
+  }
+  .arw-r { position: relative; height: 14px; margin-bottom: -12px; }
+  .arw-r__top {
+    position: absolute;
+    left: 0; right: 0; top: 0;
+    height: 12px;
+    box-sizing: border-box;
+    border-top: 2px solid var(--color-gray-arrow);
+    border-right: 2px solid var(--color-gray-arrow);
+  }
+  .arw-r__bottom { position: absolute; left: 0; right: 0; top: 10px; height: 2px; background: var(--color-gray-arrow); }
+  .arw-r__head {
+    position: absolute;
+    left: 1px; top: -3px;
+    width: 8px; height: 8px;
+    box-sizing: border-box;
+    border-left: 2px solid var(--color-gray-arrow);
+    border-bottom: 2px solid var(--color-gray-arrow);
+    transform: rotate(45deg);
+  }
+
+  .process__notes {
+    margin: 8px var(--pad-page) 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px 32px;
+    font: 400 var(--fs-body)/var(--fs-body-lh) var(--font-sans);
+    color: var(--ink-60);
+  }
+
+  /* --- Табличный вариант (variant="table") --- */
+  .ptable {
+    margin-top: 80px;
+    padding: 0 var(--pad-page);
+  }
+  .ptable__row {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) minmax(0, 2fr);
+    gap: 24px 48px;
+    padding: var(--row-padding) 0;
+    border-top: 1px solid var(--line-ink-14);
+  }
+  .ptable__row:last-child { border-bottom: 1px solid var(--line-ink-14); }
+  .ptable__row--head { padding: 16px 0 20px; border-top: 0; }
+  .ptable__row--head .ptable__cell {
+    font: 500 var(--fs-small)/1.3 var(--font-mono);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    color: var(--ink-55);
+  }
+  .ptable__cell {
+    min-width: 0;
+    font-size: clamp(14px, 1.1vw, 16px);
+    line-height: var(--fs-body-lh);
+    color: var(--ink-74);
+    text-wrap: pretty;
+  }
+  .ptable__cell--stage { display: flex; align-items: baseline; gap: 16px; }
+  .ptable__num {
+    flex: none;
+    font: 500 var(--fs-note)/1.3 var(--font-mono);
+    letter-spacing: var(--ls-label);
+    color: var(--color-red);
+  }
+  .ptable__stage {
+    font-size: var(--fs-step-title);
+    line-height: .95;
+    text-wrap: balance;
+    color: var(--color-ink);
+  }
+  .ptable__cap { display: none; }
+
+  @media (max-width: 1024px) {
+    .process__grid {
+      display: flex !important;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 2px !important;
+      scroll-padding: 0 var(--pad-page);
+      scrollbar-width: none;
+      padding-bottom: 4px;
+    }
+    .process__grid::-webkit-scrollbar { display: none; }
+    .process__grid > :global(.ncard) {
+      flex: 0 0 min(78vw, 340px);
+      scroll-snap-align: start;
+      min-height: 380px !important;
+    }
+  }
+  @media (max-width: 768px) {
+    .process { padding-top: 88px; }
+    .process__head { padding: 0 var(--pad-page-mobile); gap: 20px; }
+    .process__head-main { flex-direction: column; gap: 20px; }
+    .process__head-main > :global(.section-label--v) { writing-mode: horizontal-tb; transform: none; }
+    .process__grid {
+      padding-left: var(--pad-page-mobile);
+      padding-right: var(--pad-page-mobile);
+      margin-top: 16px;
+      scroll-padding: 0 var(--pad-page-mobile);
+    }
+    .process__grid > :global(.ncard) { flex: 0 0 80% !important; min-height: 0 !important; }
+    .process__hint { display: flex !important; margin: 32px var(--pad-page-mobile) 0 !important; }
+    .process__notes {
+      margin: 16px var(--pad-page-mobile) 0;
+      flex-direction: column;
+      gap: 6px !important;
+    }
+
+    .ptable { margin-top: 32px; padding: 0 var(--pad-page-mobile); }
+    .ptable__row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 12px;
+      padding: 28px 0;
+    }
+    .ptable__row--head { display: none; }
+    .ptable__cap {
+      display: block;
+      margin-bottom: 4px;
+      font: 500 var(--fs-small)/1.3 var(--font-mono);
+      letter-spacing: var(--ls-label);
+      text-transform: uppercase;
+      color: var(--ink-55);
+    }
+    .ptable__cell--outcome { color: var(--ink-80); }
+  }
+</style>

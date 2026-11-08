@@ -1,0 +1,66 @@
+---
+/**
+ * Тёмная CTA-плашка с краткой формой (имя + телефон) — mock-отправка.
+ */
+import TextField from '../ui/TextField.astro';
+import Button from '../ui/Button.astro';
+
+interface Props {
+  title: string[];
+  note: string;
+  fields: { name: string; phone: string };
+  submit: string;
+}
+const { title, note, fields, submit } = Astro.props;
+---
+<div class="cta on-dark" data-reveal data-m="cta" data-cta-form>
+  <h2 class="cta__title h-display">
+    {title[0]}<br />{title[1]}<br /><span class="cta__accent">{title[2]}</span>
+  </h2>
+  <form class="cta__form" data-form novalidate>
+    <div class="cta__note">{note}</div>
+    <TextField name="name" label={fields.name} theme="dark" />
+    <TextField name="phone" label={fields.phone} type="tel" theme="dark" />
+    <Button variant="red" type="submit" class="cta__submit" arrow="→" data-submit>{submit}</Button>
+  </form>
+</div>
+
+<style>
+  .cta {
+    margin: 80px var(--pad-page) 0;
+    background: var(--color-ink);
+    color: var(--color-paper);
+    padding: 64px 56px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+    gap: 40px 64px;
+    align-items: start;
+  }
+  .cta__title { font-size: var(--fs-service-title); line-height: var(--fs-h2-lh); }
+  .cta__accent { color: var(--color-red); }
+  .cta__form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 28px;
+    align-items: end;
+  }
+  .cta__note {
+    grid-column: 1 / -1;
+    font-size: var(--fs-form);
+    line-height: var(--fs-body-lh);
+    color: var(--paper-72);
+    max-width: 440px;
+    text-wrap: pretty;
+  }
+  .cta :global(.cta__submit) {
+    grid-column: 1 / -1;
+    justify-content: space-between;
+    padding: 26px 30px;
+  }
+  .cta :global(.cta__submit:hover) { gap: 36px; }
+
+  @media (max-width: 768px) {
+    .cta { margin: 56px var(--pad-page-mobile) 0; padding: 36px var(--pad-page-mobile); gap: 28px; }
+    .cta__form { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  }
+</style>

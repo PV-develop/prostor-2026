@@ -1,0 +1,39 @@
+---
+/**
+ * Плашка-выноска: тёмная подложка, белый текст, тонкая красная вертикальная
+ * линия слева. Сопроводительные заметки под таблицами и списками.
+ */
+interface Props {
+  text: string;
+  offset?: boolean;   // смещение вправо (к правому краю родителя)
+  class?: string;
+  [key: string]: unknown;
+}
+const { text, offset = false, class: cls, ...rest } = Astro.props;
+---
+<div class:list={['noteplate', { 'noteplate--offset': offset }, cls]} {...rest}>
+  <p class="noteplate__text">{text}</p>
+</div>
+
+<style>
+  .noteplate {
+    background: var(--color-ink);
+    color: var(--color-paper);
+    border-left: 2px solid var(--color-red);
+    padding: clamp(28px, 3vw, 44px) clamp(28px, 3.5vw, 52px);
+    max-width: 640px;
+  }
+  .noteplate--offset { margin-left: auto; }
+  .noteplate__text {
+    font-size: var(--fs-lead);
+    line-height: var(--fs-lead-lh);
+    color: var(--paper-86);
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 768px) {
+    .noteplate { padding: 24px 20px; }
+    .noteplate__text { font-size: var(--fs-form); }
+    .noteplate--offset { margin-left: 0; }
+  }
+</style>

@@ -1,0 +1,196 @@
+/* ============================================================
+   Пр О С Т О Р — дизайн-токены (единственный источник значений)
+   Все цвета, шрифты, отступы, анимации и слои берутся отсюда.
+   В компонентах хардкод запрещён; уникальные значения блока
+   объявляются здесь с префиксом блока.
+   ============================================================ */
+
+:root {
+  /* --- Базовые цвета --- */
+  --color-ink: #0F0F0F;          /* почти чёрный: тёмные секции, текст на светлом */
+  --color-paper: #E9EBEF;        /* светлый фон и текст на тёмном */
+  --color-red: #FA001E;          /* фирменный красный акцент */
+  --color-red-dark: #BD0000;     /* тёмный красный (второй стоп градиентов) */
+  --color-card-dark: #1A1A1A;    /* карточка на тёмном фоне (кейсы, форма) */
+  --color-card-light: #F4F5F7;   /* карточка этапов процесса на светлом фоне */
+  --color-card-hover: #FFFFFF;   /* hover светлой карточки (каналы, стоимость) */
+  --color-photo-bg: #D6D8DC;     /* подложка фото команды */
+  --color-gray-arrow: #9A9CA1;   /* стрелки этапов процесса */
+  --color-particle: #D4D7DC;     /* частицы «20» */
+
+  /* --- Линии на тёмном (paper + альфа) --- */
+  --line-paper-14: rgba(233, 235, 239, .14);
+  --line-paper-18: rgba(233, 235, 239, .18);
+  --line-paper-22: rgba(233, 235, 239, .22);
+  --line-paper-25: rgba(233, 235, 239, .25);
+  --line-paper-32: rgba(233, 235, 239, .32);
+  --line-paper-35: rgba(233, 235, 239, .35);
+  --line-paper-40: rgba(233, 235, 239, .4);
+
+  /* --- Линии на светлом (ink + альфа) --- */
+  --line-ink-12: rgba(15, 15, 15, .12);
+  --line-ink-14: rgba(15, 15, 15, .14);
+  --line-ink-18: rgba(15, 15, 15, .18);
+  --line-ink-22: rgba(15, 15, 15, .22);
+
+  /* --- Текст с альфой --- */
+  --ink-35: rgba(15, 15, 15, .35);
+  --ink-55: rgba(15, 15, 15, .55);
+  --ink-60: rgba(15, 15, 15, .6);
+  --ink-62: rgba(15, 15, 15, .62);
+  --ink-70: rgba(15, 15, 15, .7);
+  --ink-74: rgba(15, 15, 15, .74);
+  --ink-75: rgba(15, 15, 15, .75);
+  --ink-80: rgba(15, 15, 15, .8);
+  --paper-40: rgba(233, 235, 239, .4);
+  --paper-50: rgba(233, 235, 239, .5);
+  --paper-55: rgba(233, 235, 239, .55);
+  --paper-60: rgba(233, 235, 239, .6);
+  --paper-72: rgba(233, 235, 239, .72);
+  --paper-75: rgba(233, 235, 239, .75);
+  --paper-80: rgba(233, 235, 239, .8);
+  --paper-86: rgba(233, 235, 239, .86);
+
+  /* --- Фон шапки при скролле --- */
+  --header-scrolled-bg: rgba(15, 15, 15, .62);
+  --header-bg: rgba(15, 15, 15, 0);
+
+  /* --- Шрифтовые семейства --- */
+  --font-sans: 'Onest', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-display: 'Steelfish', sans-serif;
+
+  /* --- Типографика (шкала заголовков Steelfish) --- */
+  --fs-hero: clamp(84px, 11.7vw, 168px);
+  --fs-h1-lh: .88;
+  --fs-h2: clamp(64px, 8.3vw, 120px);
+  --fs-h2-lh: .9;
+  --fs-h2-process: clamp(48px, 6vw, 96px);
+  --fs-service-title: clamp(40px, 5vw, 72px);
+  --fs-service-title-lh: .92;
+  --fs-quote: clamp(36px, 5vw, 72px);
+  --fs-contacts-h: clamp(44px, 4.6vw, 68px);
+  --fs-contacts-h-lh: .92;
+  --fs-side-h: clamp(36px, 3.6vw, 52px);
+  --fs-side-h-lh: .92;
+  --fs-team-name: clamp(30px, 2.4vw, 44px);
+  --fs-team-name-lh: .95;
+  --fs-footer-h: clamp(44px, 4.4vw, 64px);
+  --fs-footer-h-lh: .92;
+  --fs-footer-link: clamp(28px, 2.6vw, 36px);
+  --fs-footer-action: clamp(26px, 2.2vw, 32px);
+  --fs-industry: clamp(34px, 4.4vw, 64px);
+  --fs-case-number: clamp(96px, 11vw, 170px);
+  --fs-case-number-lh: .78;
+  --fs-case-title: 30px;
+  --fs-menu-main: clamp(28px, 2.4vw, 38px);
+  --fs-menu-main-lh: 1.02;
+  --fs-menu-group: 24px;
+  --fs-hero-cap: clamp(28px, 2.8vw, 40px);
+  --fs-hero-cap-lh: 1.04;
+  --fs-shero-title: clamp(56px, 7vw, 118px);  /* заголовок ServiceHero */
+  --fs-shero-title-lh: .9;
+  --fs-twenty: clamp(220px, 30vw, 440px);
+  --fs-quote-mark: clamp(120px, 15vw, 220px);
+  --fs-step-num: clamp(52px, 5vw, 72px);
+  --fs-step-num-lh: .8;
+  --fs-step-title: clamp(22px, 1.9vw, 32px);
+  --fs-step-title-scale: clamp(28px, 2.5vw, 46px);
+  --fs-header-phone: 24px;
+
+  /* --- Текстовая база --- */
+  --fs-body: 15px;
+  --fs-body-lh: 1.5;
+  --fs-lead: 20px;
+  --fs-lead-lh: 1.45;
+  --fs-note: 13px;
+  --fs-note-lh: 1.35;
+  --fs-small: 12px;
+  --fs-form: 16px;
+
+  /* --- Буквенные интервалы --- */
+  --ls-display: -.005em;
+  --ls-twenty: -.04em;
+  --ls-label: .08em;
+  --ls-mono-label: .12em;
+  --ls-mono-label-lg: .14em;
+  --ls-header-phone: .02em;
+  --ls-menu-phone: .01em;
+
+  /* --- Межстрочные (текстовые) --- */
+  --lh-tight: 1;
+  --lh-menu-item: 1.45;
+  --lh-form: 1.5;
+
+  /* --- Отступы и сетка --- */
+  --pad-page: 48px;              /* боковой отступ контента от края вьюпорта */
+  --pad-page-mobile: 20px;
+  --gap-grid: 24px;              /* межколоночный интервал 12-колоночной сетки */
+  --cols-main: 12;
+  --grid-content: minmax(72px, 168px) minmax(0, 3fr) minmax(0, 2fr) 56px;
+  --row-padding: 36px;
+  --section-pad-y: 140px;
+  --section-pad-y-bottom: 160px;
+  --section-gap: 96px;
+
+  /* --- Контролы --- */
+  --control-h: 60px;
+  --control-h-sm: 44px;
+  --btn-pad-y: 24px;
+  --btn-pad-x: 28px;
+  --btn-pad-y-lg: 28px;
+  --btn-pad-x-lg: 36px;
+  --arrow-box: 56px;
+
+  /* --- Каркас внутренней страницы --- */
+  --header-h: 92px;              /* высота шапки: sticky-точка in-page меню */
+  --anchor-scroll-offset: 164px; /* отступ цели якоря: шапка + sticky-меню */
+  --shero-visual-h: 280px;       /* область генеративной графики hero на mobile */
+
+  /* --- Breakpoints (используются в media query как значения, не var) ---
+     bp-menu-wide: 1100px — упрощение сетки меню
+     bp-tablet:   1024px — горизонтальный скролл этапов процесса
+     bp-mobile:   768px  — мобильная вёрстка                            */
+
+  /* --- Анимации --- */
+  --ease-strong: cubic-bezier(.7, 0, .2, 1);
+  --ease-smooth: cubic-bezier(.2, .7, .2, 1);
+  --ease-slide: cubic-bezier(.6, 0, .2, 1);
+  --ease-bounce: cubic-bezier(.3, 1.3, .5, 1);
+  --dur-sweep: 550ms;            /* заливка кнопок/строк градиентом */
+  --dur-sweep-slow: 600ms;
+  --dur-color: 350ms;
+  --dur-color-fast: 250ms;
+  --dur-reveal: 1s;
+  --dur-menu: 455ms;
+
+  /* --- z-index --- */
+  --z-thread: 6;
+  --z-content: 3;
+  --z-header: 50;
+  --z-menu: 60;
+
+  /* --- Состояния фокуса --- */
+  --focus-outline: 2px solid var(--color-paper);
+  --focus-outline-offset: 3px;
+  --focus-outline-dark: 2px solid var(--color-red);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --header-h: 68px;
+    --anchor-scroll-offset: 128px;
+    --shero-visual-h: 240px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-sweep: 0ms;
+    --dur-sweep-slow: 0ms;
+    --dur-color: 0ms;
+    --dur-color-fast: 0ms;
+    --dur-reveal: 0ms;
+    --dur-menu: 0ms;
+  }
+}

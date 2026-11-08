@@ -1,0 +1,139 @@
+---
+/**
+ * FAQ-аккордеон: кнопка-вопрос + раскрывающаяся панель (hidden + aria-атрибуты),
+ * анимация по токенам переходов, чистый TS без библиотек.
+ * Пункты без answer — TODO-контент: пока есть вопросы без ответов,
+ * секция на страницу не выводится (решается на уровне страницы/контента).
+ */
+import Container from '../ui/Container.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+interface Props {
+  id?: string;
+  label?: string;
+  heading: string;   // HTML
+  items: Array<{ question: string; answer?: string }>;
+}
+const { id = 'faq', label, heading, items } = Astro.props;
+---
+<section class="faq" id={id} data-screen-label="09 FAQ">
+  <Container>
+    {label && <SectionLabel text={label} class="faq__label" />}
+    <div class="faq__head" data-reveal>
+      <SectionHeading size="process"><Fragment set:html={heading} /></SectionHeading>
+    </div>
+    <div class="faq__list">
+      {items.map((item, i) => {
+        const btnId = `faq-btn-${i}`;
+        const panelId = `faq-panel-${i}`;
+        return (
+          <div class="faq__item" data-faq-item>
+            <h3 class="faq__q">
+              <button type="button" class="faq__btn" id={btnId} aria-expanded="false" aria-controls={panelId}>
+                <span class="faq__q-text">{item.question}</span>
+                <span class="faq__icon" aria-hidden="true">+</span>
+              </button>
+            </h3>
+            <div class="faq__a" id={panelId} role="region" aria-labelledby={btnId} hidden>
+              {item.answer
+                ? <p class="faq__a-text">{item.answer}</p>
+                : <p class="faq__a-text faq__a-todo">TODO: ответ не подготовлен</p>}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </Container>
+</section>
+
+<script>
+  // Аккордеон: показ/скрытие через hidden, анимация opacity/transform по токенам
+  function initFaq(): void {
+    document.querySelectorAll<HTMLElement>('[data-faq-item]').forEach((item) => {
+      const btn = item.querySelector<HTMLButtonElement>('.faq__btn');
+      const panel = item.querySelector<HTMLElement>('.faq__a');
+      if (!btn || !panel) return;
+      btn.addEventListener('click', () => {
+        const open = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!open));
+        if (open) {
+          panel.classList.remove('is-open');
+          const hide = () => { panel.hidden = true; };
+          panel.addEventListener('transitionend', hide, { once: true });
+          window.setTimeout(hide, 450); // страховка, если transitionend не придёт
+        } else {
+          panel.hidden = false;
+          requestAnimationFrame(() => panel.classList.add('is-open'));
+        }
+      });
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFaq, { once: true });
+  } else {
+    initFaq();
+  }
+</script>
+
+<style>
+  .faq { background: var(--color-paper); padding: var(--section-pad-y) 0 var(--section-pad-y-bottom); }
+  .faq :global(.faq__label) { margin-bottom: 40px; }
+  .faq__list { margin-top: 64px; }
+  .faq__item { border-top: 1px solid var(--line-ink-14); }
+  .faq__item:last-child { border-bottom: 1px solid var(--line-ink-14); }
+  .faq__q { margin: 0; }
+  .faq__btn {
+    all: unset;
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    padding: var(--row-padding) 0;
+    cursor: pointer;
+    transition: color var(--dur-color-fast);
+  }
+  .faq__btn:hover { color: var(--color-red); }
+  .faq__q-text {
+    font-family: var(--font-display);
+    font-stretch: 25%;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: var(--ls-display);
+    font-size: clamp(20px, 1.9vw, 30px);
+    line-height: .95;
+    text-wrap: balance;
+    text-align: left;
+  }
+  .faq__icon {
+    flex: none;
+    font: 400 28px/1 var(--font-sans);
+    color: var(--color-red);
+    transition: transform var(--dur-color) var(--ease-smooth);
+  }
+  .faq__btn[aria-expanded="true"] .faq__icon { transform: rotate(45deg); }
+  .faq__a {
+    padding: 0 0 var(--row-padding);
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity var(--dur-color) var(--ease-smooth), transform var(--dur-color) var(--ease-smooth);
+  }
+  .faq__a.is-open { opacity: 1; transform: none; }
+  .faq__a-text {
+    max-width: 720px;
+    font-size: clamp(15px, 1.2vw, 17px);
+    line-height: var(--fs-body-lh);
+    color: var(--ink-74);
+    text-wrap: pretty;
+  }
+  .faq__a-todo { color: var(--ink-55); }
+
+  @media (max-width: 768px) {
+    .faq { padding: 88px 0 96px; }
+    .faq__list { margin-top: 40px; }
+    .faq__btn { padding: 24px 0; gap: 20px; }
+    .faq__a { padding-bottom: 24px; }
+  }
+</style>

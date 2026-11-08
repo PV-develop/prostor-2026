@@ -1,0 +1,28 @@
+---
+/**
+ * Кнопка/ссылка с градиентной заливкой (общие классы в global.css).
+ * variant: red | paper-o | paper-red | red-ink | ink-o
+ */
+interface Props {
+  variant?: 'red' | 'paper-o' | 'paper-red' | 'red-ink' | 'ink-o';
+  href?: string;
+  type?: 'button' | 'submit';
+  class?: string;
+  arrow?: string;
+  disabled?: boolean;
+  [key: string]: unknown;
+}
+const {
+  variant = 'red', href, type = 'button', class: cls, arrow = '→', disabled = false, ...rest
+} = Astro.props;
+const Tag = href ? 'a' : 'button';
+---
+<Tag
+  class:list={['btn', `btn--${variant}`, cls]}
+  href={href}
+  type={href ? undefined : type}
+  disabled={href ? undefined : disabled}
+  {...rest}
+>
+  <span><slot /></span><span aria-hidden="true">{arrow}</span>
+</Tag>

@@ -1,0 +1,286 @@
+---
+/**
+ * Футер: крупный призыв, контакты, колонки услуг/агентства, большая марка (анимация main.ts), нижняя панель.
+ */
+interface Props {
+  title: string[];
+  email: string;
+  phoneMain: string;
+  phoneSpb: string;
+  address: string;
+  actions: { label: string; href: string; hidden?: boolean }[];
+  servicesTitle: string;
+  serviceGroups: { title: string; links: string[] }[];
+  agencyTitle: string;
+  agencyLinks: string[];
+  industriesTitle: string;
+  industryLinks: string[];
+  bigLinks: { label: string; href: string }[];
+  bigLinksHidden: { label: string; href: string }[];
+  copyright: string;
+  legal: string[];
+  toTop: string;
+  /** Префикс ссылок услуг ('/' на внутренних страницах → /#directions) */
+  serviceLinkBase?: string;
+}
+const {
+  title, email, phoneMain, phoneSpb, address, actions,
+  servicesTitle, serviceGroups, agencyTitle, agencyLinks,
+  industriesTitle, industryLinks, bigLinks, bigLinksHidden,
+  copyright, legal, toTop, serviceLinkBase = '',
+} = Astro.props;
+const servicesHref = `${serviceLinkBase}#directions`;
+---
+<footer class="footer on-dark" data-screen-label="07 Футер">
+  <div class="footer__inner">
+    <div class="footer__cols">
+      <div class="footer__main">
+        <div class="footer__main-top">
+          <div class="footer__title h-display h-display--footer">
+            {title[0]}<br /><span class="footer__accent">{title[1]}</span>
+          </div>
+          <div class="footer__contacts">
+            <a href={`mailto:${email}`}>{email}</a>
+            <a href="tel:88005555070">{phoneMain}</a>
+            <a href="tel:88126400709">{phoneSpb}</a>
+          </div>
+          <div class="footer__messengers">
+            <a href="https://telegram.me/agency_prostor" target="_blank" rel="noopener noreferrer">Telegram</a>
+            <a href="https://wa.me/79118270369" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+          </div>
+          <div class="footer__address" set:html={address} />
+        </div>
+        <div class="footer__actions">
+          {actions.map((a) => (
+            <a href={a.href} class="footer__action">
+              {a.label}<span aria-hidden="true">→</span>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <div class="footer__services">
+        <div class="footer__group-label">{servicesTitle}</div>
+        <div class="footer__services-grid">
+          {serviceGroups.map((g) => (
+            <div class="footer__links">
+              <div class="footer__links-strong"><a href={servicesHref}>{g.title}</a></div>
+              {g.links.map((l) => <a href={servicesHref}>{l}</a>)}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="footer__agency">
+        <div class="footer__group-label">{agencyTitle}</div>
+        <div class="footer__links">
+          {agencyLinks.map((l) => <a href="#top">{l}</a>)}
+        </div>
+        <div class="footer__links">
+          <div class="footer__links-strong"><a href={servicesHref}>{industriesTitle}</a></div>
+          {industryLinks.map((l) => <a href={servicesHref}>{l}</a>)}
+        </div>
+        <div class="footer__big-links">
+          {bigLinks.map((l) => <a href={l.href}>{l.label}</a>)}
+          {bigLinksHidden.map((l) => <a href={l.href}>{l.label}</a>)}
+        </div>
+      </div>
+    </div>
+
+    <div class="footer__bar" data-m="fbar">
+      <span>{copyright}</span>
+      <div class="footer__legal">
+        {legal.map((l) => <a href="#top">{l}</a>)}
+      </div>
+      <a href="#top" class="footer__top" aria-label={toTop} data-top>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true">
+          <path d="M12 20V5M5 12l7-7 7 7"></path>
+        </svg>
+      </a>
+    </div>
+
+    <div class="footer__mark" data-fmark role="img" aria-label="Простор"></div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    color: var(--color-paper);
+    /* тёмная полоса на всю ширину (в исходнике весь низ страницы тёмный);
+       зазор от секции контактов — внутренним отступом */
+    background: var(--color-ink);
+    margin: 0;
+    padding: 120px var(--pad-page) 0;
+  }
+  .footer__cols {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 56px 48px;
+    border-top: 1px solid var(--line-paper-18);
+    padding-top: 64px;
+  }
+  .footer__main {
+    flex: 4 1 320px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 56px;
+  }
+  .footer__main-top { display: flex; flex-direction: column; gap: 28px; }
+  .footer__accent { color: var(--color-red); }
+  .footer__contacts { display: flex; flex-direction: column; gap: 14px; }
+  .footer__contacts a {
+    font-family: var(--font-display);
+    font-size: var(--fs-footer-link);
+    line-height: 1;
+    font-weight: 700;
+    font-stretch: 25%;
+    text-transform: uppercase;
+    color: var(--color-paper);
+    transition: color .2s;
+  }
+  .footer__contacts a:hover { color: var(--color-red); }
+  .footer__messengers { display: flex; gap: 2px; flex-wrap: wrap; }
+  .footer__messengers a {
+    border: 1px solid var(--line-paper-32);
+    padding: 12px 16px;
+    font: 600 11px var(--font-mono);
+    letter-spacing: var(--ls-mono-label);
+    text-transform: uppercase;
+    color: var(--color-paper);
+    transition: background var(--dur-color-fast), color var(--dur-color-fast);
+  }
+  .footer__messengers a:hover { background: var(--color-paper); color: var(--color-ink); }
+  .footer__address { font: 400 14px/1.5 var(--font-sans); color: var(--paper-60); }
+  .footer__actions { display: flex; flex-direction: column; gap: 16px; }
+  .footer__action {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-family: var(--font-display);
+    font-size: var(--fs-footer-action);
+    line-height: 1;
+    font-weight: 700;
+    font-stretch: 25%;
+    text-transform: uppercase;
+    color: var(--color-paper);
+    transition: color .2s, gap .3s;
+  }
+  .footer__action:hover { color: var(--color-red); gap: 20px; }
+
+  .footer__group-label {
+    font: 500 var(--fs-note)/var(--fs-note-lh) var(--font-sans);
+    color: var(--color-red);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .footer__group-label::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--color-red);
+    display: inline-block;
+  }
+
+  .footer__services {
+    flex: 5 1 420px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .footer__services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+    gap: 32px;
+  }
+  .footer__agency {
+    flex: 3 1 240px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .footer__links { display: flex; flex-direction: column; gap: 8px; }
+  .footer__links a {
+    font: 400 14px/1.4 var(--font-sans);
+    color: var(--paper-60);
+    transition: color .2s;
+  }
+  .footer__links a:hover { color: var(--color-red); }
+  .footer__links-strong a {
+    font-weight: 500;
+    color: var(--color-paper);
+  }
+  .footer__big-links { display: flex; flex-direction: column; gap: 12px; padding-top: 8px; }
+  .footer__big-links a {
+    font-family: var(--font-display);
+    font-size: var(--fs-footer-action);
+    line-height: 1;
+    font-weight: 700;
+    font-stretch: 25%;
+    text-transform: uppercase;
+    color: var(--color-paper);
+    transition: color .2s;
+  }
+  .footer__big-links a:hover { color: var(--color-red); }
+
+  .footer__bar {
+    margin-top: 72px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line-paper-18);
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px 40px;
+    font: 400 13px/1.5 var(--font-sans);
+    color: var(--paper-50);
+  }
+  .footer__legal { display: flex; gap: 8px 28px; flex-wrap: wrap; justify-content: flex-end; }
+  .footer__legal a { color: var(--paper-50); transition: color .2s; }
+  .footer__legal a:hover { color: var(--color-paper); }
+  .footer__top {
+    flex: none;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--line-paper-32);
+    color: var(--color-paper);
+    transition: background var(--dur-color-fast), color var(--dur-color-fast), border-color var(--dur-color-fast);
+  }
+  .footer__top:hover { background: var(--color-red); border-color: var(--color-red); }
+  .footer__top svg { width: 18px; height: 18px; }
+
+  .footer__mark {
+    margin-top: 72px;
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: 219 / 34;
+    position: relative;
+  }
+
+  @media (max-width: 768px) {
+    .footer { padding: 80px var(--pad-page-mobile) 0; }
+    .footer__cols { padding-top: 48px; }
+    .footer__bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px 24px;
+      margin-top: 56px;
+    }
+    .footer__bar > div { justify-content: flex-start; order: 3; flex-basis: 100%; }
+    .footer__bar > a { margin-left: auto; }
+    .footer__mark {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin-left: 0 !important;
+      aspect-ratio: 168 / 34 !important;
+      background: url('/images/logo/logo-white.svg') no-repeat 100% 0 / 130.36% auto;
+    }
+    .footer__mark > svg { display: none !important; }
+  }
+</style>

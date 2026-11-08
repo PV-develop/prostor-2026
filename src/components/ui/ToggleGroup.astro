@@ -1,0 +1,66 @@
+---
+/**
+ * Группа переключателей (радио) в виде сегментов-плашек.
+ * Нативные radio: клавиатура и доступность из коробки;
+ * выбор одного значения — CSS :checked, без JS.
+ * По умолчанию ничего не выбрано; обязательность не предполагается.
+ */
+interface Props {
+  name: string;
+  label: string;
+  options: string[];
+}
+const { name, label, options } = Astro.props;
+---
+<fieldset class="tgroup" data-tgroup>
+  <legend class="tgroup__legend">{label}</legend>
+  <div class="tgroup__row">
+    {options.map((o) => (
+      <label class="tgroup__option">
+        <input class="tgroup__input" type="radio" name={name} value={o} />
+        <span class="tgroup__chip">{o}</span>
+      </label>
+    ))}
+  </div>
+</fieldset>
+
+<style>
+  .tgroup { all: unset; box-sizing: border-box; display: block; }
+  .tgroup__legend {
+    display: block;
+    margin-bottom: 14px;
+    padding: 0;
+    font: 400 var(--fs-form)/1.35 var(--font-sans);
+    color: var(--paper-55);
+  }
+  .tgroup__row { display: flex; flex-wrap: wrap; gap: 2px; }
+  .tgroup__option { position: relative; display: flex; flex: 1 1 auto; min-width: 0; }
+  .tgroup__input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+  .tgroup__chip {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: var(--control-h-sm);
+    padding: 12px 18px;
+    border: 1px solid var(--line-paper-32);
+    font: 500 13px/1.3 var(--font-sans);
+    color: var(--paper-72);
+    cursor: pointer;
+    user-select: none;
+    transition: background var(--dur-color-fast), color var(--dur-color-fast), border-color var(--dur-color-fast);
+  }
+  .tgroup__option:hover .tgroup__chip { border-color: var(--color-paper); color: var(--color-paper); }
+  .tgroup__input:checked + .tgroup__chip {
+    background: var(--color-red);
+    border-color: var(--color-red);
+    color: var(--color-paper);
+  }
+  .tgroup__input:focus-visible + .tgroup__chip { outline: var(--focus-outline); outline-offset: 2px; }
+  .tgroup__input:checked:focus-visible + .tgroup__chip { outline: var(--focus-outline-dark); }
+
+  @media (max-width: 768px) {
+    .tgroup__option { flex: 1 1 100%; }
+  }
+</style>

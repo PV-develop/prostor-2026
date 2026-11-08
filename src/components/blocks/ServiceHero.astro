@@ -1,0 +1,177 @@
+---
+/**
+ * Универсальный первый экран внутренней страницы направления (услуги):
+ * тёмный фон, крупный заголовок слева, описание справа, пара CTA и
+ * генеративная графика из пресета (src/scripts/visuals). Контент — пропсами.
+ * In-page меню (AnchorNav) — отдельным блоком следом за hero: sticky-меню
+ * не может жить внутри hero с overflow: hidden.
+ */
+import Button from '../ui/Button.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+
+interface HeroCta { label: string; href: string }
+interface Props {
+  eyebrow?: string;            // маркер/название направления (вертикальная метка)
+  title: string;               // HTML: <br />, span.h-stroke (контур), span.accent (красный)
+  description: string;
+  additionalLabel?: string;    // доп. строка под описанием
+  primaryCta?: HeroCta;
+  secondaryCta?: HeroCta;
+  visualPreset?: string;       // имя пресета в реестре src/scripts/visuals/presets
+}
+const { eyebrow, title, description, additionalLabel, primaryCta, secondaryCta, visualPreset } = Astro.props;
+---
+<section class="shero on-dark" id="top" data-hero data-screen-label="01 Первый экран">
+  <div class="noise-overlay" aria-hidden="true"></div>
+  <div class="shero__spacer" data-hsp aria-hidden="true"></div>
+
+  <div class="shero__pad">
+    {eyebrow && <SectionLabel variant="v" text={eyebrow} class="shero__side" />}
+    <div class="shero__grid">
+      <h1 class="shero__title h-display" data-reveal set:html={title} />
+      <div class="shero__aside">
+        <p class="shero__lead" data-reveal style="transition-delay:90ms">{description}</p>
+        {additionalLabel && (
+          <p class="shero__note" data-reveal style="transition-delay:180ms">{additionalLabel}</p>
+        )}
+        {(primaryCta || secondaryCta) && (
+          <div class="shero__cta" data-reveal style="transition-delay:270ms">
+            <div class="shero__cta-row">
+              {primaryCta && <Button variant="red" href={primaryCta.href} class="shero__cta-main" arrow="→">{primaryCta.label}</Button>}
+              {secondaryCta && <Button variant="paper-o" href={secondaryCta.href} arrow="↓">{secondaryCta.label}</Button>}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+
+    {visualPreset && (
+      <div class="shero__visual" data-service-visual={visualPreset} aria-hidden="true"></div>
+    )}
+  </div>
+</section>
+
+<style>
+  .shero {
+    background: var(--color-ink);
+    color: var(--color-paper);
+    position: relative;
+    min-height: min(100svh, 860px);
+    display: grid;
+    grid-template-rows: auto 1fr;
+    overflow: hidden;
+  }
+  .shero__spacer { height: 91px; }
+  .shero__pad {
+    position: relative;
+    padding: 0 var(--pad-page);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .shero :global(.shero__side) {
+    position: absolute;
+    left: 30px;
+    top: 40px;
+  }
+  .shero__grid {
+    position: relative;
+    z-index: var(--z-content);
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gap-grid);
+    align-items: end;
+    padding: 72px 0 96px;
+  }
+  .shero__title {
+    grid-column: 1 / 9;
+    font-size: var(--fs-shero-title);
+    line-height: var(--fs-shero-title-lh);
+    text-wrap: balance;
+    position: relative;
+    z-index: 2;
+  }
+  .shero__aside {
+    grid-column: 9 / 13;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 28px;
+    padding-bottom: 8px;
+  }
+  .shero__lead {
+    margin: 0;
+    max-width: 460px;
+    font: 400 var(--fs-lead)/var(--fs-lead-lh) var(--font-sans);
+    color: var(--paper-86);
+    text-wrap: pretty;
+  }
+  .shero__note {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 460px;
+    font: 500 var(--fs-form)/1.4 var(--font-sans);
+    color: var(--paper-72);
+  }
+  .shero__note::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--color-red);
+    flex: none;
+  }
+  .shero__cta-row { display: flex; gap: 2px; flex-wrap: wrap; }
+  .shero__cta-row :global(.btn) { padding: var(--btn-pad-y-lg) var(--btn-pad-x-lg); }
+
+  /* Область генеративной графики: desktop — за контентом на весь hero,
+     mobile — отдельная полоса под CTA (пресет занимает всю область) */
+  .shero__visual {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  @media (max-width: 768px) {
+    .shero { min-height: 0; }
+    .shero__side { display: none !important; }
+    .shero__pad { padding: 0 var(--pad-page-mobile); justify-content: flex-start; }
+    .shero__grid {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 32px;
+      padding: 48px 0 40px;
+    }
+    .shero__title { font-size: clamp(44px, 12vw, 72px); }
+    .shero__aside { gap: 24px; }
+    .shero__lead { font-size: 17px; }
+    .shero__cta-row :global(.btn) {
+      flex: 1 1 100%;
+      justify-content: center;
+      padding: 22px 20px !important;
+    }
+    .shero__visual {
+      position: relative;
+      inset: auto;
+      height: var(--shero-visual-h);
+      margin: 0 calc(var(--pad-page-mobile) * -1) 56px;
+    }
+  }
+</style>
+
+<style is:global>
+  /* Акцентный фрагмент заголовка, переданного через set:html */
+  .shero .accent { color: var(--color-red); }
+</style>
+
+<script>
+  // Подключение генеративной графики по имени пресета (src/scripts/visuals)
+  import { mountByName } from '../../scripts/visuals/presets/registry';
+  document.querySelectorAll<HTMLElement>('[data-service-visual]').forEach((host) => {
+    const name = host.dataset.serviceVisual;
+    if (name) mountByName(host, name);
+  });
+</script>

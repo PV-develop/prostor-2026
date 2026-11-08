@@ -1,0 +1,132 @@
+---
+/**
+ * Блок отзывов внутри тёмной секции: марка логотипов-заглушек, цитата, автор.
+ */
+import SectionLabel from '../ui/SectionLabel.astro';
+import Button from '../ui/Button.astro';
+
+interface Props {
+  label: string;
+  logoMarquee: string[];
+  quoteMark: string;
+  quote: string;
+  quoteAccent: string;
+  author: string;
+  allLink: { label: string; href: string };
+}
+const { label, logoMarquee, quoteMark, quote, quoteAccent, author, allLink } = Astro.props;
+const track = [...logoMarquee, ...logoMarquee];
+---
+<div class="reviews on-dark">
+  <SectionLabel variant="h" text={label} class="reviews__label" />
+  <div class="reviews__logos" aria-hidden="true">
+    <div class="reviews__logos-track" data-marquee>
+      {track.map((l, i) => <div class:list={['reviews__logo', { 'reviews__logo--dupe': i >= logoMarquee.length }]}>{l}</div>)}
+    </div>
+  </div>
+
+  <figure class="reviews__quote" data-reveal data-m="quote">
+    <div class="reviews__mark h-display" aria-hidden="true">{quoteMark}</div>
+    <div>
+      <blockquote class="reviews__text h-display">
+        {quote.replace(quoteAccent, '')}<span class="h-stroke">{quoteAccent}</span>
+      </blockquote>
+      <figcaption class="reviews__footer">
+        <div class="reviews__author" set:html={author} />
+        <div class="reviews__dots" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        {/* Ссылка-заглушка до появления страницы отзывов (как в оригинале) */}
+        <a href={allLink.href} class="reviews__all">
+          {allLink.label} <span aria-hidden="true">→</span>
+        </a>
+      </figcaption>
+    </div>
+  </figure>
+</div>
+
+<style>
+  .reviews :global(.reviews__label) { margin: 180px var(--pad-page) 40px; }
+  .reviews__logos {
+    border-top: 1px solid var(--line-paper-18);
+    border-bottom: 1px solid var(--line-paper-18);
+    overflow: hidden;
+    padding: 18px 0;
+  }
+  .reviews__logos-track {
+    display: flex;
+    gap: 16px;
+    width: max-content;
+    animation: marqR 60s linear infinite;
+    padding-right: 16px;
+  }
+  .reviews__logo {
+    flex: none;
+    width: 168px;
+    height: 64px;
+    border: 1px dashed var(--line-paper-22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 500 11px/1 var(--font-mono);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--paper-40);
+  }
+
+  .reviews__quote {
+    margin: 0;
+    padding: 96px var(--pad-page) 0;
+    display: grid;
+    grid-template-columns: minmax(24px, 120px) minmax(0, 1fr);
+    column-gap: 32px;
+  }
+  .reviews__mark {
+    font-size: var(--fs-quote-mark);
+    line-height: .6;
+    color: var(--color-red);
+  }
+  .reviews__text {
+    font-size: var(--fs-quote);
+    line-height: var(--lh-tight);
+    max-width: 1100px;
+    text-wrap: balance;
+  }
+  .reviews__footer {
+    margin-top: 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    flex-wrap: wrap;
+    gap: var(--pad-page);
+  }
+  .reviews__author {
+    font: 500 var(--fs-note)/1.8 var(--font-sans);
+    color: var(--paper-55);
+  }
+  .reviews__dots { display: flex; gap: 2px; }
+  .reviews__dots span { width: 40px; height: 4px; background: var(--line-paper-25); }
+  .reviews__dots span:first-child { background: var(--color-red); }
+  .reviews__all {
+    font: 600 11px var(--font-mono);
+    letter-spacing: var(--ls-mono-label);
+    text-transform: uppercase;
+    display: flex;
+    gap: 16px;
+    border-bottom: 1px solid var(--color-paper);
+    padding-bottom: 4px;
+    transition: gap .3s, color .3s, border-color .3s;
+  }
+  .reviews__all:hover { gap: 26px; color: var(--color-red); border-color: var(--color-red); }
+
+  @media (max-width: 768px) {
+    .reviews :global(.reviews__label) { margin: 0 var(--pad-page-mobile) 40px; }
+    .reviews__quote {
+      padding: 64px var(--pad-page-mobile) 0;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .reviews__mark { font-size: 96px; line-height: .8; }
+  }
+</style>

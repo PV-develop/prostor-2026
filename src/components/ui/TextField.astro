@@ -1,0 +1,58 @@
+---
+/**
+ * Поле ввода с плавающей подписью.
+ * Состояния .is-focus / .is-filled переключает src/scripts/main.ts.
+ */
+interface Props {
+  name: string;
+  label: string;
+  type?: 'text' | 'tel' | 'email';
+  placeholder?: string;
+  theme?: 'dark' | 'darker';
+  wide?: boolean;
+  autocomplete?: string;
+  required?: boolean;
+}
+const { name, label, type = 'text', placeholder = '', theme = 'dark', wide = false, autocomplete, required = false } = Astro.props;
+---
+<label class:list={['field', `field--${theme}`, { 'field--wide': wide }]} data-field>
+  <span class="field__label">{label}</span>
+  <input class="field__input" type={type} name={name} placeholder={placeholder} autocomplete={autocomplete} required={required} aria-required={required || undefined} />
+</label>
+
+<style>
+  .field {
+    position: relative;
+    display: block;
+    cursor: text;
+  }
+  .field--wide { grid-column: 1 / -1; }
+  .field__label {
+    position: absolute;
+    left: 18px;
+    top: 20px;
+    font: 400 var(--fs-form) var(--font-sans);
+    color: var(--paper-55);
+    pointer-events: none;
+    transition: top .2s, font-size .2s;
+  }
+  .field.is-focus .field__label,
+  .field.is-filled .field__label {
+    top: 10px;
+    font-size: 11px;
+  }
+  .field__input {
+    all: unset;
+    box-sizing: border-box;
+    width: 100%;
+    height: var(--control-h);
+    padding: 22px 18px 0;
+    border: 1px solid var(--line-paper-22);
+    color: var(--color-paper);
+    font: 400 var(--fs-form) var(--font-sans);
+    transition: border-color var(--dur-color-fast);
+  }
+  .field__input:focus { border-color: var(--color-paper); }
+  .field--darker .field__input { background: var(--color-ink); }
+  .field--dark .field__input { background: var(--color-card-dark); }
+</style>

@@ -1,0 +1,192 @@
+/* ============================================================
+   Базовые стили и общие классы. Только на токенах design-tokens.css.
+   ============================================================ */
+
+/* --- Локальные шрифты (без внешних CDN) --- */
+@font-face { font-family: Onest; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/onest-400.ttf') format('truetype'); }
+@font-face { font-family: Onest; font-style: normal; font-weight: 500; font-display: swap; src: url('/fonts/onest-500.ttf') format('truetype'); }
+@font-face { font-family: Onest; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/onest-600.ttf') format('truetype'); }
+@font-face { font-family: 'JetBrains Mono'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/jetbrains-mono-400.ttf') format('truetype'); }
+@font-face { font-family: 'JetBrains Mono'; font-style: normal; font-weight: 500; font-display: swap; src: url('/fonts/jetbrains-mono-500.ttf') format('truetype'); }
+@font-face { font-family: 'JetBrains Mono'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/jetbrains-mono-600.ttf') format('truetype'); }
+@font-face { font-family: Steelfish; font-weight: 700; font-display: swap; font-stretch: 25% 100%; src: url('/fonts/Steelfish-Bold.ttf') format('truetype'); }
+@font-face { font-family: Steelfish; font-weight: 800; font-display: swap; font-stretch: 25% 100%; src: url('/fonts/Steelfish-ExtraBold.ttf') format('truetype'); }
+
+/* --- Сброс и база --- */
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+a:hover { color: inherit; }
+img { display: block; max-width: 100%; }
+button { font: inherit; }
+h1, h2, h3, h4, p, blockquote, figure { margin: 0; }
+summary { list-style: none; }
+summary::-webkit-details-marker { display: none; }
+
+/* --- Доступный фокус --- */
+:focus-visible { outline: var(--focus-outline-dark); outline-offset: var(--focus-outline-offset); }
+.on-dark :focus-visible, .site-header :focus-visible { outline: var(--focus-outline); }
+
+/* --- Контейнер страницы: боковые поля + сетка --- */
+.container { padding-inline: var(--pad-page); }
+.container--grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols-main), minmax(0, 1fr));
+  column-gap: var(--gap-grid);
+}
+
+/* --- Типовой заголовок секции (Steelfish, uppercase) --- */
+.h-display {
+  font-family: var(--font-display);
+  font-stretch: 25%;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--ls-display);
+  text-wrap: balance;
+}
+/* шкала размеров (общая, используется всеми блоками) */
+.h-display--hero { font-size: var(--fs-hero); line-height: var(--fs-h1-lh); }
+.h-display--section { font-size: var(--fs-h2); line-height: var(--fs-h2-lh); }
+.h-display--process { font-size: var(--fs-h2-process); line-height: var(--fs-h2-lh); }
+.h-display--side { font-size: var(--fs-side-h); line-height: var(--fs-side-h-lh); }
+.h-display--contacts { font-size: var(--fs-contacts-h); line-height: var(--fs-contacts-h-lh); }
+.h-display--footer { font-size: var(--fs-footer-h); line-height: var(--fs-footer-h-lh); }
+/* Контурный текст: цвет обводки задаётся токеном (на тёмном — светлый) */
+.h-stroke {
+  --stroke-c: var(--color-ink);
+  -webkit-text-stroke: 2px var(--stroke-c);
+  color: transparent;
+}
+.on-dark .h-stroke { --stroke-c: var(--color-paper); }
+
+/* --- Метка секции «⣿ Название» --- */
+.section-label {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: max-content;
+  font: 500 var(--fs-note)/var(--fs-note-lh) var(--font-sans);
+  color: var(--color-red);
+}
+.section-label::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: var(--color-red);
+  flex: none;
+}
+.section-label--h {
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path .6s var(--ease-strong) .2s;
+}
+.section-label--h.in { clip-path: inset(0 0 0 0); }
+.section-label--v {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  clip-path: inset(100% 0 0 0);
+}
+.section-label--v.in { clip-path: inset(0 0 0 0); }
+
+/* --- Кнопки с градиентной заливкой (сдвиг background-position) --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 20px;
+  padding: var(--btn-pad-y) var(--btn-pad-x);
+  font: 600 var(--fs-small) var(--font-mono);
+  letter-spacing: var(--ls-mono-label-lg);
+  text-transform: uppercase;
+  border: 0;
+  appearance: none;
+  background-color: transparent;
+  background-size: 201% 100%;
+  background-position: 100% 0;
+  background-repeat: no-repeat;
+  transition: background-position var(--dur-sweep) var(--ease-strong), color var(--dur-color), border-color var(--dur-color), gap var(--dur-color);
+  cursor: pointer;
+}
+/* тёмно-красная заливка → красная (основной CTA) */
+.btn--red {
+  background-image: linear-gradient(90deg, var(--color-red) 50%, var(--color-red-dark) 50%);
+  color: var(--color-paper);
+}
+.btn--red:hover { background-position: 0 0; color: var(--color-ink); }
+/* светлая заливка на тёмном фоне (без обводки) */
+.btn--paper-o {
+  background-image: linear-gradient(90deg, var(--color-paper) 50%, transparent 50%);
+}
+.btn--paper-o:hover { background-position: 0 0; color: var(--color-ink); }
+/* светлая заливка → красная (кнопка отправки формы) */
+.btn--paper-red {
+  background-image: linear-gradient(90deg, var(--color-paper) 50%, var(--color-red) 50%);
+  color: #fff;
+}
+.btn--paper-red:hover { background-position: 0 0; color: var(--color-ink); }
+/* красная → чёрная (вторичные тёмные CTA) */
+.btn--red-ink {
+  background-image: linear-gradient(90deg, var(--color-red) 50%, var(--color-ink) 50%);
+  color: #fff;
+}
+.btn--red-ink:hover { background-position: 0 0; }
+/* светлая заливка на светлом фоне (без обводки) */
+.btn--ink-o {
+  background-image: linear-gradient(90deg, var(--color-ink) 50%, transparent 50%);
+}
+.btn--ink-o:hover { background-position: 0 0; color: var(--color-paper); }
+.btn[disabled] { opacity: .6; pointer-events: none; }
+
+/* --- Строка-ссылка сервисного меню (градиент чёрный) --- */
+.row-link {
+  background-image: linear-gradient(90deg, var(--color-ink) 50%, transparent 50%);
+  background-size: 201% 100%;
+  background-position: 100% 0;
+  background-repeat: no-repeat;
+  transition: background-position var(--dur-sweep-slow) var(--ease-strong), color var(--dur-color);
+}
+.row-link:hover { background-position: 0 0; color: var(--color-paper); }
+
+/* --- Бегущие строки --- */
+@keyframes marq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes marqR { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+
+/* --- Scroll-reveal --- */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity var(--dur-reveal) var(--ease-smooth), transform var(--dur-reveal) var(--ease-smooth);
+}
+[data-reveal].in { opacity: 1; transform: none; }
+
+/* --- Зерно (шум) для тёмного hero --- */
+.noise-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: .07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 220px 220px;
+}
+
+/* --- Ссылки-чипы отраслей (фон-фото при hover добавляет скрипт) --- */
+.chip {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid var(--color-ink);
+  padding: 16px 22px;
+  text-box: trim-both cap alphabetic;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] { opacity: 1; transform: none; transition: none; }
+  .section-label--h, .section-label--v { clip-path: none; transition: none; }
+  [data-marquee] { animation: none !important; }
+}

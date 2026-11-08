@@ -1,0 +1,349 @@
+---
+/**
+ * Внутренняя страница «Performance-маркетинг».
+ * Спецификация: docs/page-specs/performance-marketing.md
+ * Секции без подтверждённого контента (кейсы, FAQ) не выводятся —
+ * блоки готовы к наполнению через src/content/performance-marketing.ts.
+ */
+import BaseLayout from '../../components/layouts/BaseLayout.astro';
+import SiteHeader from '../../components/blocks/SiteHeader.astro';
+import MobileMenu from '../../components/blocks/MobileMenu.astro';
+import ServiceHero from '../../components/blocks/ServiceHero.astro';
+import AnchorNav from '../../components/blocks/AnchorNav.astro';
+import ScenarioGrid from '../../components/blocks/ScenarioGrid.astro';
+import ChannelsSection from '../../components/blocks/ChannelsSection.astro';
+import CasesSection from '../../components/blocks/CasesSection.astro';
+import ApproachSection from '../../components/blocks/ApproachSection.astro';
+import KpiSection from '../../components/blocks/KpiSection.astro';
+import ProcessSection from '../../components/blocks/ProcessSection.astro';
+import PricingSection from '../../components/blocks/PricingSection.astro';
+import FaqSection from '../../components/blocks/FaqSection.astro';
+import ContactForm from '../../components/blocks/ContactForm.astro';
+import SiteFooter from '../../components/blocks/SiteFooter.astro';
+import SectionLabel from '../../components/ui/SectionLabel.astro';
+import Button from '../../components/ui/Button.astro';
+
+import * as pm from '../../content/performance-marketing';
+import { site, contacts } from '../../content/home';
+
+// Секции с неподтверждённым контентом не выводятся (спецификация, раздел 6);
+// их пункты исчезают и из якорной навигации, чтобы не было мёртвых якорей
+const showCases = pm.cases.items.length > 0;
+const showFaq = pm.faq.items.length > 0 && pm.faq.items.every((i) => i.answer);
+const navItems = pm.anchorNav.items.filter((i) => {
+  if (i.href === '#cases') return showCases;
+  if (i.href === '#faq') return showFaq;
+  return true;
+});
+---
+<BaseLayout title={pm.seo.title} description={pm.seo.description} htmlClass="pm-page">
+  <SiteHeader
+    phone={pm.pageHeader.phone}
+    ctaFull={pm.pageHeader.ctaFull}
+    ctaShort={pm.pageHeader.ctaShort}
+    ctaHref={pm.pageHeader.ctaHref}
+  />
+  <MobileMenu
+    sections={pm.pageMenu.sections}
+    hiddenSections={pm.pageMenu.hiddenSections}
+    services={pm.pageMenu.services}
+    pricesTitle={pm.pageMenu.prices.title}
+    prices={pm.pageMenu.prices.items}
+    bigLinks={pm.pageMenu.bigLinks}
+    socials={pm.pageMenu.socials}
+    phone={pm.pageHeader.phone}
+    email={site.email}
+    cta={pm.pageMenu.cta}
+    ctaHref={pm.pageMenu.ctaHref}
+    serviceLinkBase={pm.pageMenu.serviceLinkBase}
+    activeService={pm.pageMenu.activeService}
+  />
+
+  <main class="page-root" data-page-root>
+    <ServiceHero {...pm.hero} />
+
+    <AnchorNav items={navItems} sticky />
+
+    <ScenarioGrid
+      id="tasks"
+      label={pm.scenarios.label}
+      heading={pm.scenarios.heading}
+      intro={pm.scenarios.intro}
+      layout="rows"
+      cards={pm.scenarios.cards}
+      note={pm.scenarios.note}
+      cta={pm.scenarios.cta}
+    />
+
+    <ChannelsSection
+      id="channels"
+      label={pm.channels.label}
+      heading={pm.channels.heading}
+      items={pm.channels.items}
+    />
+
+    {showCases && (
+      <CasesSection label={pm.cases.label} title={pm.cases.title} items={pm.cases.items} />
+      /* allLink не передаём: страницы «Все performance-кейсы» нет (спецификация, блок 5) */
+    )}
+
+    <ApproachSection
+      id="approach"
+      label={pm.approach.label}
+      heading={pm.approach.heading}
+      rows={pm.approach.rows}
+      termLabel={pm.approach.termLabel}
+      descriptionLabel={pm.approach.descriptionLabel}
+      note={pm.approach.note}
+    />
+
+    <KpiSection
+      id="kpi"
+      label={pm.kpi.label}
+      heading={pm.kpi.heading}
+      rows={pm.kpi.rows}
+      termLabel={pm.kpi.termLabel}
+      descriptionLabel={pm.kpi.descriptionLabel}
+      note={pm.kpi.note}
+    />
+
+    <ProcessSection
+      variant="cards"
+      screenLabel="07 Процесс"
+      label={pm.process.label}
+      heading={pm.process.heading}
+      hint={pm.process.hint}
+      steps={pm.process.steps}
+    />
+
+    <PricingSection
+      id="pricing"
+      label={pm.pricing.label}
+      heading={pm.pricing.heading}
+      parts={pm.pricing.parts}
+      extrasTitle={pm.pricing.extrasTitle}
+      extras={pm.pricing.extras}
+      plus={pm.pricing.plus}
+      cta={pm.pricing.cta}
+    />
+
+    {showFaq && (
+      <FaqSection id="faq" label={pm.faq.label} heading={pm.faq.heading} items={pm.faq.items} />
+    )}
+
+    <div class="dark-section">
+      <section class="cta-contact" id="contact-form" data-screen-label="10 Форма и контакты">
+        <SectionLabel variant="h" text={pm.contactSection.label} class="cta-contact__label" />
+        <div class="cta-contact__grid">
+          <div class="cta-contact__intro" data-reveal>
+            <h2 class="cta-contact__title h-display h-display--contacts">
+              {pm.contactSection.titleStart} <span class="cta-contact__accent">{pm.contactSection.titleAccent}</span> {pm.contactSection.titleEnd}
+            </h2>
+
+            <div class="cta-contact__scenario">
+              <p class="cta-contact__scenario-text">{pm.contactSection.primaryScenario.text}</p>
+              <Button
+                variant="red"
+                href={pm.contactSection.primaryScenario.cta.href}
+                arrow="→">{pm.contactSection.primaryScenario.cta.label}</Button>
+            </div>
+
+            <div class="cta-contact__scenario">
+              <p class="cta-contact__scenario-text">{pm.contactSection.secondaryScenario.text}</p>
+              <Button
+                variant="paper-o"
+                href={pm.contactSection.secondaryScenario.cta.href}
+                arrow="→">{pm.contactSection.secondaryScenario.cta.label}</Button>
+            </div>
+
+            <div class="cta-contact__contacts">
+              <h3 class="cta-contact__contacts-title h-display">{pm.contactSection.contactsTitle}</h3>
+              <div class="cta-contact__channels">
+                {contacts.channels.map((c) => (
+                  <a href={c.href} class="cta-contact__channel">
+                    <span class="cta-contact__channel-label h-display">{c.label}</span>
+                    <span class="cta-contact__channel-note">{c.note}</span>
+                  </a>
+                ))}
+              </div>
+              <div class="cta-contact__messengers">
+                <span class="cta-contact__messengers-label">{contacts.messengersLabel}</span>
+                <div class="cta-contact__messengers-row">
+                  {contacts.messengers.map((m) => (
+                    <a href={m.href} target="_blank" rel="noopener noreferrer" class="cta-contact__messenger">{m.label}</a>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cta-contact__form" data-reveal>
+            <ContactForm
+              ariaLabel="Форма заявки: performance-маркетинг"
+              submitLabel={pm.contactSection.form.submitLabel}
+              fields={pm.contactSection.form.fields}
+              config={pm.contactSection.form.config}
+              fileDefault={pm.contactSection.form.fileDefault}
+              fileHint={pm.contactSection.form.fileHint}
+              policy={pm.contactSection.form.policy}
+            />
+          </div>
+        </div>
+      </section>
+
+      <SiteFooter
+        title={pm.pageFooter.title}
+        email={site.email}
+        phoneMain={site.phoneMain.label}
+        phoneSpb={site.phoneSpb.label}
+        address={site.address}
+        actions={pm.pageFooter.actions}
+        servicesTitle={pm.pageFooter.servicesTitle}
+        serviceGroups={pm.pageFooter.serviceGroups}
+        serviceLinkBase={pm.pageFooter.serviceLinkBase}
+        agencyTitle={pm.pageFooter.agencyTitle}
+        agencyLinks={pm.pageFooter.agencyLinks}
+        industriesTitle={pm.pageFooter.industriesTitle}
+        industryLinks={pm.pageFooter.industryLinks}
+        bigLinks={pm.pageFooter.bigLinks}
+        bigLinksHidden={pm.pageFooter.bigLinksHidden}
+        copyright={pm.pageFooter.copyright}
+        legal={pm.pageFooter.legal}
+        toTop={pm.pageFooter.toTop}
+      />
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .page-root { background: var(--color-paper); overflow: clip; }
+  .dark-section { background: var(--color-ink); color: var(--color-paper); }
+
+  .cta-contact { padding: var(--section-pad-y) 0 0; overflow: hidden; }
+  .cta-contact :global(.cta-contact__label) { margin: 0 var(--pad-page) 40px; }
+  .cta-contact__grid {
+    padding: 0 var(--pad-page);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr));
+    gap: 2px;
+    align-items: start;
+  }
+  .cta-contact__intro {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 36px;
+    padding: 16px 64px 64px 0;
+    min-width: 0;
+  }
+  .cta-contact__title { text-wrap: balance; }
+  .cta-contact__accent { color: var(--color-red); }
+  .cta-contact__scenario { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
+  .cta-contact__scenario-text {
+    max-width: 420px;
+    font-size: var(--fs-form);
+    line-height: var(--fs-body-lh);
+    color: var(--paper-72);
+    text-wrap: pretty;
+  }
+  .cta-contact__scenario :global(.btn) { padding: var(--btn-pad-y) var(--btn-pad-x); }
+  .cta-contact__contacts {
+    background: var(--color-card-dark);
+    padding: clamp(28px, 3vw, 44px);
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    align-self: stretch;
+  }
+  .cta-contact__contacts-title { font-size: var(--fs-case-title); line-height: var(--lh-tight); }
+  .cta-contact__channels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+    gap: 24px 28px;
+  }
+  .cta-contact__channel {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: color var(--dur-color-fast);
+  }
+  .cta-contact__channel:hover { color: var(--color-red); }
+  .cta-contact__channel-label { font-size: var(--fs-footer-link); line-height: 1; }
+  .cta-contact__channel-note { font-size: var(--fs-note); line-height: 1.4; color: var(--paper-50); }
+  .cta-contact__messengers { display: flex; flex-direction: column; gap: 10px; }
+  .cta-contact__messengers-label { font-size: var(--fs-note); line-height: 1.4; color: var(--paper-50); }
+  .cta-contact__messengers-row { display: flex; gap: 2px; flex-wrap: wrap; }
+  .cta-contact__messenger {
+    border: 1px solid var(--line-paper-32);
+    padding: 12px 16px;
+    font: 600 11px var(--font-mono);
+    letter-spacing: var(--ls-mono-label);
+    text-transform: uppercase;
+    color: var(--color-paper);
+    transition: background var(--dur-color-fast), color var(--dur-color-fast);
+  }
+  .cta-contact__messenger:hover { background: var(--color-paper); color: var(--color-ink); }
+  .cta-contact__form { min-width: 0; }
+
+  @media (max-width: 768px) {
+    .cta-contact { padding: 88px 0 0; }
+    .cta-contact :global(.cta-contact__label) { margin: 0 var(--pad-page-mobile) 40px; }
+    .cta-contact__grid { padding: 0 var(--pad-page-mobile); }
+    .cta-contact__intro { gap: 28px; padding: 0 0 48px; }
+    .cta-contact__scenario { gap: 14px; }
+    .cta-contact__scenario :global(.btn) { width: 100%; justify-content: space-between; }
+  }
+</style>
+
+<style is:global>
+  /* Страничный модификатор: отступ цели якоря под фиксированной шапкой.
+     Плавный скролл — JS ниже (CSS scroll-behavior: smooth конфликтует
+     с overflow: clip у .page-root и ломает якоря). */
+  html.pm-page #tasks,
+  html.pm-page #channels,
+  html.pm-page #cases,
+  html.pm-page #approach,
+  html.pm-page #kpi,
+  html.pm-page #process,
+  html.pm-page #pricing,
+  html.pm-page #faq,
+  html.pm-page #contact-form { scroll-margin-top: var(--anchor-scroll-offset); }
+</style>
+
+<script>
+  // Плавные якоря страницы (паттерн initMenu из main.ts: scrollIntoView + reduced motion).
+  // Fallback на setTimeout: если анимация скролла не запустилась (например,
+  // окружение приостанавливает requestAnimationFrame), доскролливаем мгновенно.
+  function scrollToAnchor(target: Element, reduced: boolean): void {
+    if (reduced) {
+      target.scrollIntoView({ behavior: 'auto' });
+      return;
+    }
+    const y0 = window.scrollY;
+    target.scrollIntoView({ behavior: 'smooth' });
+    window.setTimeout(() => {
+      if (Math.abs(window.scrollY - y0) > 1) return; // анимация идёт — не мешаем
+      target.scrollIntoView({ behavior: 'auto' });
+    }, 180);
+  }
+
+  function initSmoothAnchors(): void {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.addEventListener('click', (e) => {
+      const a = (e.target as Element).closest?.('a[href^="#"]');
+      if (!a || a.hasAttribute('data-top')) return;
+      const id = a.getAttribute('href');
+      if (!id || id.length < 2) return;
+      const target = document.querySelector(id);
+      if (!target) return;
+      e.preventDefault();
+      scrollToAnchor(target, reduced);
+      history.replaceState(null, '', id);
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSmoothAnchors, { once: true });
+  } else {
+    initSmoothAnchors();
+  }
+</script>

@@ -1,0 +1,53 @@
+---
+/**
+ * Многострочное поле с плавающей подписью (тема darker — на фоне #1A1A1A).
+ */
+interface Props {
+  name: string;
+  label: string;
+  rows?: number;
+}
+const { name, label, rows = 4 } = Astro.props;
+---
+<label class="textarea field--darker" data-field data-textarea>
+  <span class="textarea__label">{label}</span>
+  <textarea class="textarea__input" name={name} rows={rows}></textarea>
+</label>
+
+<style>
+  .textarea {
+    position: relative;
+    display: block;
+    cursor: text;
+    grid-column: 1 / -1;
+  }
+  .textarea__label {
+    position: absolute;
+    left: 18px;
+    top: 20px;
+    font: 400 var(--fs-form) var(--font-sans);
+    color: var(--paper-55);
+    pointer-events: none;
+    transition: top .2s, font-size .2s;
+  }
+  .textarea.is-focus .textarea__label,
+  .textarea.is-filled .textarea__label {
+    top: 10px;
+    font-size: 11px;
+  }
+  .textarea__input {
+    all: unset;
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    min-height: 136px;
+    padding: 30px 18px 14px;
+    background: var(--color-ink);
+    border: 1px solid var(--line-paper-22);
+    color: var(--color-paper);
+    font: 400 var(--fs-form)/var(--lh-form) var(--font-sans);
+    white-space: pre-wrap;
+    transition: border-color var(--dur-color-fast);
+  }
+  .textarea__input:focus { border-color: var(--color-paper); }
+</style>

@@ -1,0 +1,51 @@
+---
+/**
+ * Подход: редакционная таблица «что выясняем → какое решение принимаем»
+ * (строки InfoRows с красными номерами, стрелками и вертикальной линией
+ * между колонками) и сопроводительная плашка-выноска (NotePlate).
+ */
+import Container from '../ui/Container.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+import InfoRows from '../ui/InfoRows.astro';
+import NotePlate from '../ui/NotePlate.astro';
+
+interface Props {
+  id?: string;
+  label?: string;
+  heading: string;              // HTML
+  rows: Array<{ question: string; decision: string }>;
+  termLabel?: string;           // заголовок колонки «что выясняем»
+  descriptionLabel?: string;    // заголовок колонки «какое решение»
+  note?: string;                // сопроводительный текст (плашка)
+}
+const { id = 'approach', label, heading, rows, termLabel, descriptionLabel, note } = Astro.props;
+---
+<section class="approach" id={id} data-screen-label="05 Подход">
+  <Container>
+    {label && <SectionLabel text={label} class="approach__label" />}
+    <div class="approach__head" data-reveal>
+      <SectionHeading size="process"><Fragment set:html={heading} /></SectionHeading>
+    </div>
+    <InfoRows
+      rows={rows.map((r) => ({ term: r.question, description: r.decision }))}
+      termLabel={termLabel}
+      descriptionLabel={descriptionLabel}
+      numbering={true}
+      arrows={true}
+      divider={true}
+    />
+    {note && <NotePlate text={note} offset class="approach__note" data-reveal />}
+  </Container>
+</section>
+
+<style>
+  .approach { background: var(--color-paper); padding: var(--section-pad-y) 0 0; }
+  .approach :global(.approach__label) { margin-bottom: 40px; }
+  .approach :global(.approach__note) { margin: 56px 0 0; }
+
+  @media (max-width: 768px) {
+    .approach { padding: 88px 0 0; }
+    .approach :global(.approach__note) { margin: 40px 0 0; }
+  }
+</style>

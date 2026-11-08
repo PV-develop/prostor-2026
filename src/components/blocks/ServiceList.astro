@@ -1,0 +1,278 @@
+---
+/**
+ * Секция «Задачи»: список направлений (01–06, последний — акцентный красный)
+ * и отраслевые чипы с фото-заливкой при hover (main.ts).
+ */
+import type { Direction, Industry } from '../../content/home';
+import SectionLabel from '../ui/SectionLabel.astro';
+import Button from '../ui/Button.astro';
+
+interface Props {
+  label: string;
+  title: string[];
+  intro: string;
+  items: Direction[];
+  industriesLabel: string;
+  industriesTitle: string;
+  industries: Industry[];
+  industriesNote: string;
+  industriesCta: { label: string; href: string };
+}
+const {
+  label, title, intro, items,
+  industriesLabel, industriesTitle, industries, industriesNote, industriesCta,
+} = Astro.props;
+---
+<section class="services" id="directions" data-screen-label="02 Задачи">
+  <div class="services__head" data-reveal data-m="s2head">
+    <SectionLabel variant="v" text={label} />
+    <h2 class="services__title h-display h-display--section">
+      {title[0]}<br />{title[1].slice(0, title[1].indexOf('помощь'))}
+      <span class="h-stroke">помощь</span><span class="accent">?</span>
+    </h2>
+    <p class="services__intro">{intro}</p>
+  </div>
+
+  <div class="services__list">
+    {items.map((d) => d.highlight ? (
+      <a href="#contacts" data-reveal data-tl-inv class:list={['srow', 'srow--highlight']} data-m="srow">
+        <span class="srow__label" data-tl><span class="srow__sq srow__sq--dark"></span><span class="srow__num srow__num--light">{d.num}</span></span>
+        <span class="srow__name-wrap">
+          <span class="srow__badge srow__badge--dark">{d.badge}</span>
+          <span class="srow__name h-display"><span class="srow__name-ink">{d.titleAccent}</span> {d.title.replace(String(d.titleAccent ?? ''), '').replace('Комплексный ', '')}</span>
+        </span>
+        <span class="srow__desc">
+          {d.description}
+          {d.ctaText && <span class="srow__cta-text">{d.ctaText}</span>}
+        </span>
+        <span class="srow__arrow" aria-hidden="true">→</span>
+      </a>
+    ) : (
+      <a href="#contacts" data-reveal class="srow row-link" data-m="srow">
+        <span class="srow__label" data-tl><span class="srow__sq"></span><span class="srow__num">{d.num}</span></span>
+        <span class="srow__name-wrap">
+          {d.badge && <span class="srow__badge">{d.badge}</span>}
+          <span class="srow__name h-display">{d.title}</span>
+        </span>
+        <span class="srow__desc">
+          {d.description}
+          {d.tags && <span class="srow__tags">{d.tags}</span>}
+        </span>
+        <span class="srow__arrow" aria-hidden="true">→</span>
+      </a>
+    ))}
+  </div>
+
+  <div class="industries" data-reveal data-m="otr">
+    <SectionLabel variant="v" text={industriesLabel} />
+    <div>
+      <div class="industries__row h-display">
+        <span class="industries__lead accent">{industriesTitle}</span>
+        {industries.map((ind) => (
+          <a href="#contacts" class="chip" data-chip={ind.chip ?? ''}>{ind.label}</a>
+        ))}
+        <a href="#contacts" class="industries__more">
+          и других отраслей
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square" aria-hidden="true"><path d="M3 12h17M13 5l7 7-7 7"></path></svg>
+        </a>
+      </div>
+      <div class="industries__footer">
+        <span class="industries__note">{industriesNote}</span>
+        <Button variant="red-ink" href={industriesCta.href} class="industries__cta" arrow="→">{industriesCta.label}</Button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .services { padding: var(--section-pad-y) 0 var(--section-pad-y-bottom); position: relative; }
+
+  .services__head {
+    padding: 0 var(--pad-page);
+    display: grid;
+    grid-template-columns: minmax(72px, 168px) minmax(0, 3fr) minmax(0, 2fr) 56px;
+    column-gap: var(--gap-grid);
+    row-gap: 40px;
+    align-items: end;
+  }
+  .services__head :global(.section-label--v) { grid-column: 1; align-self: start; justify-self: start; }
+  .services__title { grid-column: 2; }
+  .services__intro {
+    grid-column: 3 / 5;
+    align-self: end;
+    max-width: 420px;
+    font: 400 var(--fs-lead)/var(--fs-lead-lh) var(--font-sans);
+    color: var(--color-ink);
+    text-wrap: pretty;
+  }
+  .accent { color: var(--color-red); }
+
+  .services__list { margin-top: 72px; border-top: 1px solid var(--color-ink); }
+
+  .srow {
+    display: grid;
+    grid-template-columns: minmax(72px, 168px) minmax(0, 3fr) minmax(0, 2fr) 56px;
+    column-gap: var(--gap-grid);
+    align-items: center;
+    padding: var(--row-padding) var(--pad-page);
+    border-bottom: 1px solid var(--color-ink);
+  }
+  .srow:not(.srow--highlight) {
+    background-size: 201% 100%;
+    background-position: 100% 0;
+    background-repeat: no-repeat;
+    transition: background-position var(--dur-sweep-slow) var(--ease-strong), color var(--dur-color);
+  }
+  .srow:not(.srow--highlight):hover { background-position: 0 0; color: var(--color-paper); }
+  .srow--highlight {
+    position: relative;
+    color: var(--color-paper);
+    background-image: linear-gradient(90deg, var(--color-red) 50%, var(--color-red-dark) 50%);
+    background-size: 201% 100%;
+    background-position: 100% 0;
+    background-repeat: no-repeat;
+    transition: background-position var(--dur-sweep-slow) var(--ease-strong), color var(--dur-color);
+  }
+  .srow--highlight:hover { background-position: 0 0; color: var(--color-ink); }
+
+  .srow__label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    align-self: start;
+    margin: 10px 0 0 12px;
+    justify-self: start;
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path .5s var(--ease-strong);
+    font: 500 var(--fs-note)/var(--fs-note-lh) var(--font-sans);
+  }
+  .srow__label.in { clip-path: inset(0 0 0 0); }
+  .srow__sq { width: 8px; height: 8px; background: var(--color-red); flex: none; }
+  .srow__sq--dark { background: var(--color-ink); }
+  .srow__num { opacity: .5; }
+  .srow__num--light { opacity: .7; }
+
+  .srow__name-wrap { display: flex; flex-direction: row-reverse; justify-content: flex-end; align-items: flex-start; gap: 14px; }
+  .srow__name {
+    font-size: var(--fs-service-title);
+    line-height: var(--fs-service-title-lh);
+  }
+  .srow__name-ink { color: var(--color-ink); }
+  .srow__badge {
+    font: 600 12px/1.2 var(--font-sans);
+    letter-spacing: .01em;
+    background: var(--color-red);
+    color: var(--color-ink);
+    padding: 5px 8px;
+    flex: none;
+    white-space: nowrap;
+    line-height: 1;
+    margin-top: calc(var(--fs-service-title) * .06);
+  }
+  .srow__badge--dark { background: var(--color-ink); color: var(--color-paper); }
+  .srow__desc {
+    font-size: var(--fs-body);
+    line-height: var(--fs-body-lh);
+    opacity: .8;
+    max-width: 420px;
+    text-wrap: pretty;
+  }
+  .srow__tags {
+    font: 500 var(--fs-note)/var(--fs-note-lh) var(--font-sans);
+    display: block;
+    margin-top: 14px;
+    opacity: .65;
+  }
+  .srow__cta-text {
+    font: 600 12px/1.2 var(--font-sans);
+    letter-spacing: .01em;
+    display: block;
+    margin-top: 14px;
+  }
+  .srow__arrow {
+    width: var(--arrow-box);
+    height: var(--arrow-box);
+    border: 1px solid currentColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 500 16px var(--font-mono);
+  }
+
+  .industries {
+    margin-top: var(--section-pad-y-bottom);
+    padding: 0 var(--pad-page);
+    display: grid;
+    grid-template-columns: minmax(24px, 120px) minmax(0, 1fr);
+    column-gap: 32px;
+  }
+  .industries__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    font-size: var(--fs-industry);
+    line-height: 1;
+  }
+  .industries__lead { margin-right: 20px; }
+  .industries__row .chip {
+    background-image: linear-gradient(90deg, var(--color-ink) 50%, transparent 50%);
+    background-size: 201% 100%;
+    background-position: 100% 0;
+    background-repeat: no-repeat;
+    transition: background-position .5s var(--ease-strong), color var(--dur-color);
+  }
+  .industries__row .chip:hover { background-position: 0 0; color: var(--color-paper); }
+  .industries__more {
+    display: inline-flex;
+    gap: .22em;
+    align-items: center;
+    color: var(--ink-35);
+    transition: color .3s, gap .3s;
+  }
+  .industries__more:hover { color: var(--color-ink); gap: .36em; }
+  .industries__more svg { width: .6em; height: .6em; flex: none; }
+  .industries__footer {
+    margin-top: 48px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px 40px;
+    align-items: center;
+    font-size: var(--fs-body);
+    color: var(--ink-70);
+  }
+  .industries__note { max-width: 440px; flex: 1 1 300px; }
+  .industries :global(.industries__cta) { padding: 22px 28px; }
+
+  @media (max-width: 768px) {
+    .services { padding: 88px 0 96px; }
+    .services__head {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 40px;
+      padding: 0 var(--pad-page-mobile);
+    }
+    .services__head :global(.section-label--v) { writing-mode: horizontal-tb; transform: none; }
+    .services__intro { font-size: 17px; }
+    .srow {
+      grid-template-columns: minmax(0, 1fr) 48px;
+      grid-template-areas: 'n a' 't t' 'd d';
+      gap: 14px 16px;
+      padding: 28px var(--pad-page-mobile);
+      align-items: start;
+    }
+    .srow__label { grid-area: n; margin: 0; align-self: center; }
+    .srow__name-wrap { grid-area: t; }
+    .srow__desc { grid-area: d; max-width: none; }
+    .srow__arrow { grid-area: a; width: 48px; height: 48px; justify-self: end; }
+    .industries {
+      margin-top: 96px;
+      padding: 0 var(--pad-page-mobile);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .industries :global(.section-label--v) { writing-mode: horizontal-tb; transform: none; }
+  }
+</style>

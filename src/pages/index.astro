@@ -1,0 +1,121 @@
+---
+/**
+ * Главная страница «Простор».
+ */
+import BaseLayout from '../components/layouts/BaseLayout.astro';
+import SiteHeader from '../components/blocks/SiteHeader.astro';
+import MobileMenu from '../components/blocks/MobileMenu.astro';
+import HeroMain from '../components/blocks/HeroMain.astro';
+import TrustMarquee from '../components/blocks/TrustMarquee.astro';
+import ServiceList from '../components/blocks/ServiceList.astro';
+import CasesSection from '../components/blocks/CasesSection.astro';
+import ProcessSection from '../components/blocks/ProcessSection.astro';
+import CtaForm from '../components/blocks/CtaForm.astro';
+import TeamSection from '../components/blocks/TeamSection.astro';
+import ReviewsSection from '../components/blocks/ReviewsSection.astro';
+import ContactSection from '../components/blocks/ContactSection.astro';
+import SiteFooter from '../components/blocks/SiteFooter.astro';
+
+import {
+  header, menu, hero, trust, directions, cases, process,
+  ctaForm, team, reviews, contactForm, contacts, footer, site,
+} from '../content/home';
+---
+<BaseLayout
+  title="Простор — digital-маркетинг с 2006 года"
+  description="Стратегия, продвижение, разработка и аналитика в единой системе: привлекаем целевые обращения, повышаем конверсию и показываем, какие вложения приносят результат."
+>
+  <SiteHeader phone={header.phone} ctaFull={header.ctaFull} ctaShort={header.ctaShort} />
+  <MobileMenu
+    sections={menu.sections}
+    hiddenSections={menu.hiddenSections}
+    services={menu.services}
+    pricesTitle={menu.prices.title}
+    prices={menu.prices.items}
+    bigLinks={menu.bigLinks}
+    socials={menu.socials}
+    phone={header.phone}
+    email={site.email}
+    cta={menu.cta}
+  />
+
+  <main class="page-root" data-page-root>
+    <HeroMain {...hero}>
+      <TrustMarquee label={trust.label} items={trust.items} />
+    </HeroMain>
+
+    <ServiceList
+      label={directions.label}
+      title={directions.title}
+      intro={directions.intro}
+      items={directions.items}
+      industriesLabel={directions.industriesLabel}
+      industriesTitle={directions.industriesTitle}
+      industries={directions.industries}
+      industriesNote={directions.industriesNote}
+      industriesCta={directions.industriesCta}
+    />
+
+    <CasesSection label={cases.label} title={cases.title} allLink={cases.allLink} items={cases.items} />
+
+    <ProcessSection
+      label={process.label}
+      heading={process.heading}
+      intro={process.intro}
+      hint={process.hint}
+      steps={process.steps}
+      notes={process.notes}
+    />
+
+    <CtaForm {...ctaForm} />
+
+    <!-- Тёмная секция «Команда и отзывы» (spacer сохраняет светлый фон между CTA и секцией) -->
+    <div class="page-spacer" data-m="spacer" aria-hidden="true"></div>
+    <section class="team-reviews" id="reviews" data-screen-label="05 Команда и отзывы">
+      <TeamSection label={team.label} title={team.title} allLink={team.allLink} members={team.members} />
+      <ReviewsSection {...reviews} />
+    </section>
+
+    <ContactSection
+      label={contacts.label}
+      form={contactForm}
+      briefTitle={contacts.briefTitle}
+      briefNote={contacts.briefNote}
+      briefCta={contacts.briefCta}
+      channels={contacts.channels}
+      messengersLabel={contacts.messengersLabel}
+      messengers={contacts.messengers}
+    />
+
+    <SiteFooter
+      title={footer.title}
+      email={site.email}
+      phoneMain={site.phoneMain.label}
+      phoneSpb={site.phoneSpb.label}
+      address={site.address}
+      actions={footer.actions}
+      servicesTitle={footer.servicesTitle}
+      serviceGroups={footer.serviceGroups}
+      agencyTitle={footer.agencyTitle}
+      agencyLinks={footer.agencyLinks}
+      industriesTitle={footer.industriesTitle}
+      industryLinks={footer.industryLinks}
+      bigLinks={footer.bigLinks}
+      bigLinksHidden={footer.bigLinksHidden}
+      copyright={footer.copyright}
+      legal={footer.legal}
+      toTop={footer.toTop}
+    />
+  </main>
+</BaseLayout>
+
+<style>
+  .page-root { background: var(--color-paper); overflow: clip; }
+  .page-spacer { height: 160px; background: var(--color-paper); }
+  .team-reviews { background: var(--color-ink); color: var(--color-paper); padding: 140px 0 100px; overflow: hidden; }
+
+  @media (max-width: 768px) {
+    .page-spacer { height: 80px; }
+    .team-reviews { padding: 88px 0 72px; }
+  }
+</style>

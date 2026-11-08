@@ -1,0 +1,23 @@
+---
+/**
+ * Типовой заголовок секции (Steelfish, uppercase).
+ * Содержимое передаётся слотом: акценты и обводки — вручную span.h-stroke / span.accent.
+ */
+interface Props {
+  as?: 'h1' | 'h2' | 'h3';
+  size?: 'hero' | 'section' | 'process' | 'side' | 'contacts' | 'footer';
+  class?: string;
+}
+const { as: Tag = 'h2', size = 'section', class: cls } = Astro.props;
+---
+<Tag class:list={['h-display', `h-display--${size}`, cls]}><slot /></Tag>
+
+<style>
+  .h-display--hero { font-size: var(--fs-hero); line-height: var(--fs-h1-lh); }
+  .h-display--section { font-size: var(--fs-h2); line-height: var(--fs-h2-lh); }
+  .h-display--process { font-size: var(--fs-h2-process); line-height: var(--fs-h2-lh); }
+  .h-display--side { font-size: var(--fs-side-h); line-height: var(--fs-side-h-lh); }
+  .h-display--contacts { font-size: var(--fs-contacts-h); line-height: var(--fs-contacts-h-lh); }
+  .h-display--footer { font-size: var(--fs-footer-h); line-height: var(--fs-footer-h-lh); }
+  .h-display { text-wrap: balance; }
+</style>

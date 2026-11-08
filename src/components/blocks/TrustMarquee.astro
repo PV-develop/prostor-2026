@@ -1,0 +1,71 @@
+---
+/**
+ * Строка доверия: метка + бегущая марка клиентов (дублированный трек, marq 40s).
+ */
+import SectionLabel from '../ui/SectionLabel.astro';
+
+interface Props {
+  label: string;
+  items: string[];
+}
+const { label, items } = Astro.props;
+const track = [...items, ...items];
+---
+<div class="trust" data-m="trust">
+  <SectionLabel class="trust__label" variant="h" text={label} data-tl="h" />
+  <div class="trust__viewport">
+    <div class="trust__track" data-marquee>
+      {track.map((item) => (
+        <>
+          <span class="trust__item h-display">{item}</span>
+          <span class="trust__dot" aria-hidden="true"></span>
+        </>
+      ))}
+    </div>
+  </div>
+</div>
+
+<style>
+  .trust {
+    position: relative;
+    z-index: 4;
+    margin: 0 var(--pad-page);
+    border-top: 1px solid var(--line-paper-14);
+    padding: 22px 0 26px;
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    align-items: center;
+    column-gap: var(--gap-grid);
+  }
+  .trust__viewport {
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .trust__track {
+    display: flex;
+    gap: 44px;
+    align-items: center;
+    width: max-content;
+    animation: marq 40s linear infinite;
+    font-size: 30px;
+    line-height: 1;
+    font-weight: 700;
+    font-stretch: 25%;
+    text-transform: uppercase;
+    color: var(--paper-55);
+  }
+  .trust__item { white-space: nowrap; }
+  .trust__dot { width: 5px; height: 5px; background: var(--color-red); flex: none; }
+
+  .trust :global(.trust__label) { margin: 0; }
+  @media (max-width: 768px) {
+    .trust {
+      margin: 0 var(--pad-page-mobile);
+      grid-template-columns: minmax(0, 1fr) !important;
+      row-gap: 14px;
+      padding: 18px 0 22px;
+    }
+    .trust :global(.trust__label) { margin-left: 0 !important; margin-right: 0 !important; }
+  }
+</style>

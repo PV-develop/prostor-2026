@@ -1,0 +1,138 @@
+---
+/**
+ * Секция контактов: форма заявки + карточка брифа + карточка контактов.
+ */
+import ContactForm from './ContactForm.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+import Button from '../ui/Button.astro';
+
+interface Props {
+  label: string;
+  form: {
+    title: string; titleAccent: string; note: string;
+    fields: { name: string; email: string; phone: string; message: string };
+    fileDefault: string; fileHint: string; submit: string; sent: string; policy: string;
+  };
+  briefTitle: string;
+  briefNote: string;
+  briefCta: { label: string; href: string };
+  channels: { label: string; href: string; note: string }[];
+  messengersLabel: string;
+  messengers: { label: string; href: string }[];
+}
+const {
+  label, form, briefTitle, briefNote, briefCta, channels, messengersLabel, messengers,
+} = Astro.props;
+---
+<section class="contacts on-dark" id="contacts" data-screen-label="06 Контакты">
+  <SectionLabel variant="h" text={label} class="contacts__label" />
+  <div class="contacts__grid" data-reveal data-m="contacts">
+    <ContactForm {...form} />
+
+    <div class="contacts__side">
+      <div class="contacts__brief">
+        <h3 class="contacts__brief-title h-display h-display--side">{briefTitle}</h3>
+        <p class="contacts__brief-note">{briefNote}</p>
+        {/* Ссылка-заглушка до появления страницы брифа (как в оригинале) */}
+        <Button variant="red-ink" href={briefCta.href} class="contacts__brief-cta" arrow="→">{briefCta.label}</Button>
+      </div>
+      <div class="contacts__info">
+        <h3 class="contacts__info-title h-display h-display--side">Контакты</h3>
+        <div class="contacts__channels">
+          {channels.map((c) => (
+            <a href={c.href} class="contacts__channel">
+              <span class="contacts__channel-label h-display">{c.label}</span>
+              <span class="contacts__channel-note">{c.note}</span>
+            </a>
+          ))}
+          <div class="contacts__messengers">
+            <span class="contacts__messengers-label">{messengersLabel}</span>
+            <div class="contacts__messengers-row">
+              {messengers.map((m) => (
+                <a href={m.href} target="_blank" rel="noopener noreferrer" class="contacts__messenger">{m.label}</a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contacts {
+    background: var(--color-ink);
+    color: var(--color-paper);
+    padding: 60px 0 48px;
+    overflow: hidden;
+  }
+  .contacts :global(.contacts__label) { margin: 0 var(--pad-page) 40px; }
+  .contacts__grid {
+    padding: 0 var(--pad-page);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr));
+    gap: 2px;
+  }
+  .contacts__side {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 2px;
+    min-width: 0;
+  }
+  .contacts__brief {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    padding: clamp(32px, 4vw, 56px);
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .contacts__brief-title { text-wrap: balance; }
+  .contacts__brief-note {
+    font-size: var(--fs-form);
+    line-height: var(--fs-body-lh);
+    max-width: 420px;
+    text-wrap: pretty;
+  }
+  .contacts :global(.contacts__brief-cta) { align-self: flex-start; padding: 22px 28px; }
+  .contacts__info {
+    background: var(--color-card-dark);
+    padding: clamp(32px, 4vw, 56px);
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  .contacts__channels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 28px 32px;
+  }
+  .contacts__channel {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: var(--color-paper);
+    transition: color var(--dur-color-fast);
+  }
+  .contacts__channel:hover { color: var(--color-red); }
+  .contacts__channel-label { font-size: var(--fs-footer-link); line-height: 1; }
+  .contacts__channel-note { font-size: var(--fs-note); line-height: 1.4; color: var(--paper-50); }
+  .contacts__messengers { display: flex; flex-direction: column; gap: 10px; }
+  .contacts__messengers-label { font-size: var(--fs-note); line-height: 1.4; color: var(--paper-50); }
+  .contacts__messengers-row { display: flex; gap: 2px; flex-wrap: wrap; }
+  .contacts__messenger {
+    border: 1px solid var(--line-paper-32);
+    padding: 12px 16px;
+    font: 600 11px var(--font-mono);
+    letter-spacing: var(--ls-mono-label);
+    text-transform: uppercase;
+    color: var(--color-paper);
+    transition: background var(--dur-color-fast), color var(--dur-color-fast);
+  }
+  .contacts__messenger:hover { background: var(--color-paper); color: var(--color-ink); }
+
+  @media (max-width: 768px) {
+    .contacts :global(.contacts__label) { margin: 0 var(--pad-page-mobile) 40px; }
+    .contacts__grid { padding: 0 var(--pad-page-mobile); }
+  }
+</style>

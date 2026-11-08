@@ -1,0 +1,132 @@
+---
+/**
+ * Универсальные строки «термин → описание»: две колонки на desktop,
+ * вертикальный стек на mobile. Общий паттерн для блоков каналов (при
+ * строковой подаче), подхода и KPI.
+ * numbering — красные номера 01..N перед терминами; arrows — красная
+ * стрелка перед описанием; divider — тонкая вертикальная линия между
+ * колонками. Деликатный hover: усиление красного акцента номера/стрелки.
+ */
+interface InfoRow { term: string; description: string }
+interface Props {
+  rows: InfoRow[];
+  termLabel?: string;
+  descriptionLabel?: string;
+  numbering?: boolean;
+  arrows?: boolean;
+  divider?: boolean;
+}
+const { rows, termLabel, descriptionLabel, numbering = false, arrows = false, divider = false } = Astro.props;
+const hasHead = Boolean(termLabel || descriptionLabel);
+---
+<div class:list={['irows', { 'irows--divided': divider, 'irows--arrows': arrows }]}>
+  {hasHead && (
+    <div class="irows__row irows__row--head">
+      <div class="irows__term irows__col-label">{termLabel}</div>
+      <div class="irows__desc irows__col-label">{descriptionLabel}</div>
+    </div>
+  )}
+  {rows.map((r, i) => (
+    <div class="irows__row" data-reveal>
+      <div class="irows__term">
+        {numbering && <span class="irows__num">{String(i + 1).padStart(2, '0')}</span>}
+        <span class="irows__term-text h-display">{r.term}</span>
+      </div>
+      <div class="irows__desc">
+        {arrows && <span class="irows__arrow" aria-hidden="true">→</span>}
+        <span class="irows__desc-text">{r.description}</span>
+      </div>
+    </div>
+  ))}
+</div>
+
+<style>
+  .irows {
+    /* межколонник строк — точка отсчёта вертикального разделителя */
+    --gap-irows: 48px;
+  }
+  .irows__row {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    gap: 20px var(--gap-irows);
+    padding: var(--row-padding) 0;
+    border-top: 1px solid var(--line-ink-14);
+  }
+  .irows__row:last-child { border-bottom: 1px solid var(--line-ink-14); }
+  .irows__row--head {
+    padding: 16px 0 20px;
+    border-top: 0;
+  }
+  .irows__term {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    align-self: center;
+  }
+  .irows__term-text {
+    font-size: var(--fs-team-name);
+    line-height: var(--fs-team-name-lh);
+    text-wrap: balance;
+    color: var(--color-ink);
+  }
+  .irows__num {
+    flex: none;
+    font: 500 var(--fs-note)/1.6 var(--font-mono);
+    letter-spacing: var(--ls-label);
+    color: var(--color-red-dark);
+    transition: color var(--dur-color-fast);
+  }
+  .irows__row:hover .irows__num { color: var(--color-red); }
+  .irows__col-label {
+    font: 500 var(--fs-small)/1.3 var(--font-mono);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    color: var(--ink-55);
+  }
+  .irows__desc {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    align-self: center;
+    max-width: 640px;
+    font-size: clamp(15px, 1.2vw, 17px);
+    line-height: var(--fs-body-lh);
+    color: var(--ink-74);
+    text-wrap: pretty;
+  }
+  .irows__arrow {
+    flex: none;
+    width: 16px;
+    text-align: center;
+    font: 500 var(--fs-form)/1 var(--font-mono);
+    color: var(--color-red-dark);
+    transition: color var(--dur-color-fast), transform var(--dur-color-fast);
+  }
+  /* Заголовок колонки решений — на одном отступе с текстом (после стрелки) */
+  .irows--arrows .irows__row--head .irows__desc { padding-left: 28px; }
+  .irows__row:hover .irows__arrow { color: var(--color-red); transform: translateX(2px); }
+  /* Вертикальная линия между колонками */
+  .irows--divided .irows__desc { position: relative; align-self: stretch; align-items: center; }
+  .irows--divided .irows__desc::before {
+    content: '';
+    position: absolute;
+    left: calc(var(--gap-irows) / -2);
+    top: 4px;
+    bottom: 4px;
+    width: 1px;
+    background: var(--line-ink-14);
+  }
+  .irows__row--head .irows__desc::before { display: none; }
+
+  @media (max-width: 768px) {
+    .irows__row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 12px;
+      padding: 24px 0;
+    }
+    .irows__row--head { display: none; }
+    .irows__term-text { font-size: var(--fs-step-title); }
+    .irows--divided .irows__desc { align-self: auto; }
+    .irows--divided .irows__desc::before { display: none; }
+  }
+</style>

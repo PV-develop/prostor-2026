@@ -1,0 +1,103 @@
+---
+/**
+ * Универсальная нумерованная карточка: крупный номер, заголовок, описание
+ * и нижняя информационная зона с тонким разделителем. Атом карточек этапов
+ * (ProcessSection) и рекламных инструментов (ChannelsSection, PricingSection).
+ * Декорации верхней зоны (стрелки процесса) — слотом "decor".
+ */
+interface Props {
+  num?: string;                 // номер (01, 02, …)
+  title: string;
+  description?: string;
+  meta?: string;                // строка у номера (срок этапа)
+  footerLabel?: string;         // метка нижней зоны («Что вы получаете», «Задача канала»)
+  footerText?: string;
+  accent?: boolean;             // акцентная (красная) карточка
+  class?: string;
+  [key: string]: unknown;
+}
+const {
+  num, title, description, meta, footerLabel, footerText, accent,
+  class: cls, ...rest
+} = Astro.props;
+const hasDecor = Astro.slots.has('decor');
+const hasTop = Boolean(meta) || hasDecor;
+---
+<article class:list={['ncard', { 'ncard--accent': accent, 'ncard--notop': !hasTop }, cls]} {...rest}>
+  {hasTop ? (
+    <div class="ncard__top">
+      {num && <div class="ncard__num h-display">{num}</div>}
+      <div class="ncard__meta">
+        {meta && <div class="ncard__meta-text">{meta}</div>}
+        <slot name="decor" />
+      </div>
+    </div>
+  ) : (
+    num && <div class="ncard__num h-display">{num}</div>
+  )}
+  <div class="ncard__title h-display">{title}</div>
+  {description && <p class="ncard__desc">{description}</p>}
+  {(footerLabel || footerText) && (
+    <div class="ncard__footer">
+      {footerLabel && <div class="ncard__footer-label">{footerLabel}</div>}
+      {footerText && <div class="ncard__footer-text">{footerText}</div>}
+    </div>
+  )}
+</article>
+
+<style>
+  .ncard {
+    position: relative;
+    background: var(--color-card-light);
+    color: var(--color-ink);
+    padding: 32px clamp(18px, 1.6vw, 28px) 40px;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    box-sizing: border-box;
+    transition: background var(--dur-color-fast);
+  }
+  .ncard--accent { background: var(--color-red); color: var(--color-paper); }
+  .ncard__top { display: flex; align-items: flex-end; gap: 12px; }
+  .ncard__num {
+    font-size: var(--fs-step-num);
+    line-height: var(--fs-step-num-lh);
+    letter-spacing: -.02em;
+    flex: none;
+  }
+  .ncard__meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; padding-bottom: 6px; }
+  .ncard__meta-text {
+    font: 500 clamp(11px, 1vw, 13px)/1.25 var(--font-sans);
+    white-space: nowrap;
+    color: var(--ink-70);
+  }
+  .ncard--accent .ncard__meta-text { color: var(--color-paper); }
+  .ncard__title {
+    margin-top: 44px;
+    font-size: var(--fs-step-title);
+    line-height: .95;
+    text-wrap: balance;
+  }
+  .ncard--accent .ncard__title { font-size: var(--fs-step-title-scale); }
+  .ncard--notop .ncard__title { margin-top: 28px; }
+  .ncard__desc {
+    margin: 20px 0 0;
+    font-size: clamp(13px, 1.1vw, 15px);
+    line-height: var(--fs-body-lh);
+    color: var(--ink-70);
+    text-wrap: pretty;
+  }
+  .ncard--accent .ncard__desc { color: var(--paper-86); }
+  .ncard__footer {
+    margin-top: auto;
+    padding-top: 32px;
+    border-top: 1px solid var(--line-ink-14);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .ncard--accent .ncard__footer { border-top-color: var(--line-paper-35); }
+  .ncard__footer-label { font: 500 var(--fs-note)/1.3 var(--font-sans); color: var(--color-red-dark); }
+  .ncard--accent .ncard__footer-label { color: var(--color-paper); }
+  .ncard__footer-text { font: 500 clamp(14px, 1.2vw, 17px)/1.3 var(--font-sans); text-wrap: pretty; }
+</style>

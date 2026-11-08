@@ -1,0 +1,81 @@
+---
+/**
+ * Секция кейсов: тёмная, 3 карточки в сетке.
+ */
+import type { CaseItem } from '../../content/home';
+import SectionLabel from '../ui/SectionLabel.astro';
+import Button from '../ui/Button.astro';
+import CaseCard from '../ui/CaseCard.astro';
+
+interface Props {
+  label: string;
+  /** Три части заголовка: начало / строка с обводкой / окончание */
+  title: [string, string, string?];
+  /** Не передан — кнопка «Все кейсы» не выводится (страницы архива нет) */
+  allLink?: { label: string; href: string };
+  items: CaseItem[];
+}
+const { label, title, allLink, items } = Astro.props;
+---
+<section class="cases on-dark" id="cases" data-screen-label="03 Кейсы">
+  <div class="cases__container">
+    <SectionLabel variant="h" text={label} class="cases__label" />
+    <div class="cases__head" data-reveal data-m="sechead">
+      <h2 class="cases__title h-display h-display--section">
+        {title[0]}<br /><span class="h-stroke">{title[1]}</span>{title[2] ?? ''}
+      </h2>
+      {/* Ссылка-заглушка до появления страницы кейсов (как в оригинале) */}
+      {allLink && <Button variant="paper-o" href={allLink.href} class="cases__all" arrow="→">{allLink.label}</Button>}
+    </div>
+    <div class="cases__grid" data-m="cases">
+      {items.map((c, i) => (
+        <CaseCard {...c} index={i} />
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .cases {
+    background: var(--color-ink);
+    color: var(--color-paper);
+    padding: var(--section-pad-y) 0 var(--section-pad-y-bottom);
+    overflow: hidden;
+  }
+  .cases__container { padding: 0; }
+  .cases :global(.cases__label) { margin: 0 var(--pad-page) 40px; }
+  .cases__head {
+    padding: 0 var(--pad-page);
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: var(--pad-page);
+  }
+  .cases :global(.cases__all) { margin-bottom: 12px; white-space: nowrap; padding: 24px 28px; }
+  .cases__grid {
+    margin-top: var(--section-gap);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2px;
+    padding: 0 var(--pad-page);
+  }
+  .cases__grid > :global(a) { margin-top: 0; }
+
+  @media (max-width: 768px) {
+    .cases { padding: 88px 0 96px; }
+    .cases :global(.cases__label) { margin: 0 var(--pad-page-mobile) 40px; }
+    .cases__head {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 28px;
+      padding: 0 var(--pad-page-mobile);
+    }
+    .cases__head > :global(a) { margin-bottom: 0; }
+    .cases__grid {
+      margin-top: 48px;
+      padding: 0 var(--pad-page-mobile);
+      grid-template-columns: minmax(0, 1fr);
+      gap: 32px;
+    }
+  }
+</style>
